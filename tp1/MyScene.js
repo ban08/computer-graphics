@@ -104,11 +104,50 @@ export class MyScene extends CGFscene {
 
     // ---- BEGIN Primitive drawing section
 
-    if (this.displayDiamond) this.diamond.display();
-    if (this.displayTriangle) this.triangle.display();
-    if (this.displayParallelogram) this.parallelogram.display();
-    if (this.displayTriangleSmall) this.triangleSmall.display();
-    if (this.displayTriangleBig) this.triangleBig.display();
+    // Diamond - Green
+    if (this.displayDiamond) {
+      this.setAmbient(0.0, 0.5, 0.0, 1.0);
+      this.setDiffuse(0.0, 0.8, 0.0, 1.0);
+      this.setSpecular(0.0, 0.8, 0.0, 1.0);
+      this.setShininess(10.0);
+      this.diamond.display();
+    }
+
+    // Triangle - Pink
+    if (this.displayTriangle) {
+      this.setAmbient(1.0, 0.6, 0.8, 1.0);
+      this.setDiffuse(1.0, 0.6, 0.8, 1.0);
+      this.setSpecular(1.0, 0.6, 0.8, 1.0);
+      this.setShininess(10.0);
+      this.triangle.display();
+    }
+
+    // Parallelogram - Yellow
+    if (this.displayParallelogram) {
+      this.setAmbient(1.0, 1.0, 0.0, 1.0);
+      this.setDiffuse(1.0, 1.0, 0.0, 1.0);
+      this.setSpecular(1.0, 1.0, 0.0, 1.0);
+      this.setShininess(10.0);
+      this.parallelogram.display();
+    }
+
+    // Triangle Small - Red
+    if (this.displayTriangleSmall) {
+      this.setAmbient(0.8, 0.0, 0.0, 1.0);
+      this.setDiffuse(1.0, 0.0, 0.0, 1.0);
+      this.setSpecular(1.0, 0.0, 0.0, 1.0);
+      this.setShininess(10.0);
+      this.triangleSmall.display();
+    }
+
+    // Triangle Big - Blue
+    if (this.displayTriangleBig) {
+      this.setAmbient(0.0, 0.5, 1.0, 1.0);
+      this.setDiffuse(0.0, 0.6, 1.0, 1.0);
+      this.setSpecular(0.0, 0.6, 1.0, 1.0);
+      this.setShininess(10.0);
+      this.triangleBig.display();
+    }
 
     // ---- END Primitive drawing section
   }
