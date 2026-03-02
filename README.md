@@ -1,10 +1,12 @@
 # CG 2025/2026
 
-## Group T0xG0y
-| Name             | Number    | E-Mail             |
-| ---------------- | --------- | ------------------ |
-| John Doe         | 201901010 | ...                |
-| Jane Doe         | 201901011 | ...                |
+## Group T11G03
+
+| Name                       | Number    | E-Mail            |
+| -------------------------- | --------- | ----------------- |
+| Filipe Camacho             | 202208040 | up202208040@up.pt |
+| Yago Sentieiro Alba        | 202306314 | up202306314@up.pt |
+| Sara Marques Ribeiro       | 202305327 | up202305327@up.pt |
 
 ----
 
