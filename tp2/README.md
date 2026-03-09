@@ -12,7 +12,7 @@
 *Figure 1: Final result with displayed tangram (and GUI) compared to original tangram.*
 
 ![Screenshot 2](screenshots/cg-t11g03-tp2-2.png)
-*Figure 2: ...*
+*Figure 2: Final result with displayed tangram (and GUI) and the unit cube*
 
 ![Screenshot 3](screenshots/cg-t11g03-tp2-3.png)
-*Figure 3: ...*
+*Figure 3: Final result with displayed tangram (and GUI) and the unit quad cube*
