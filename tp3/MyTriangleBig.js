@@ -11,28 +11,51 @@ export class MyTriangleBig extends CGFobject {
 		this.initBuffers();
 	}
 
+	/**
+
+	    A
+       / \
+      /   \
+     /     \
+    B-------C
+ 
+	**/
+
 	initBuffers() {
-		// Isoceles right triangle (right angle at apex), scaled 2x
-		// Base: 4 units wide, height: 2 units
-		// Origin at base midpoint (0,0,0)
 		this.vertices = [
-			-2, 0, 0,	//0 bottom-left
-			 2, 0, 0,	//1 bottom-right
-			 0, 2, 0	//2 apex (right angle here)
+			// front
+			0, 2, 0, // A 0
+			-2, 0, 0, // B 1
+			2, 0, 0, // C 2
+
+			// back
+			0, 2, 0, // A 3
+			-2, 0, 0, // B 4
+			2, 0, 0 // C 5
 		];
 
-		// Counter-clockwise (normal pointing +Z)
 		this.indices = [
-			0, 1, 2
+			// front
+			0, 1, 2,
+
+			// back
+			3, 5, 4
 		];
 
 		this.normals = [
+			// front
 			0, 0, 1,
 			0, 0, 1,
-			0, 0, 1
+			0, 0, 1,
+
+			// back
+			0, 0, -1,
+			0, 0, -1,
+			0, 0, -1
 		];
 
 		this.primitiveType = this.scene.gl.TRIANGLES;
+
 		this.initGLBuffers();
 	}
 }

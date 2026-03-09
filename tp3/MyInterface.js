@@ -26,6 +26,7 @@ export class MyInterface extends CGFinterface {
 
         this.gui.add(this.scene, 'scaleFactor', 0.1, 10.0).name('Scale');
         this.gui.add(this.scene, 'objectComplexity', 0.01, 1.0).onChange(this.scene.updateObjectComplexity.bind(this.scene));
+        this.gui.add(this.scene, 'ambientLight', 0.01, 1.0).name('Ambient Light');
 
         this.gui.add(this.scene, 'selectedMaterial', this.scene.materialIDs).name('Selected Material');
 
@@ -57,9 +58,6 @@ export class MyInterface extends CGFinterface {
         f2.addColor(this.scene.customMaterialValues,'Diffuse').onChange(this.scene.updateCustomMaterial.bind(this.scene));
         f2.addColor(this.scene.customMaterialValues,'Specular').onChange(this.scene.updateCustomMaterial.bind(this.scene));
         f2.add(this.scene.customMaterialValues,'Shininess', 0, 100).onChange(this.scene.updateCustomMaterial.bind(this.scene));
-
-        // experience 2
-        this.gui.add(this.scene, 'ambientLight', 0.01, 1.0).name('Ambient Light');
 
         return true;
     }

@@ -11,27 +11,53 @@ export class MyTriangle extends CGFobject {
 		this.initBuffers();
 	}
 
+	/**
+
+	A
+	|\
+	| \
+	|  \
+	|   \
+	|    \
+	B-----C
+
+	**/
+
 	initBuffers() {
-		// Right triangle in XY plane, legs of 2 units
-		// Origin (0,0,0) is the midpoint of the hypotenuse
 		this.vertices = [
-			-1,  1, 0,	//0 top-left
-			-1, -1, 0,	//1 bottom-left (right angle)
-			 1, -1, 0	//2 bottom-right
+			// front
+			-1, 1, 0, // A 0
+			-1, -1, 0, // B 1
+			1, -1, 0, // C 2
+
+			// back
+			-1, 1, 0, // A 3
+			-1, -1, 0, // B 4
+			1, -1, 0 // C 5
 		];
 
-		// Counter-clockwise (normal pointing +Z)
 		this.indices = [
-			0, 1, 2
+			// front
+			0, 1, 2,
+
+			// back
+			3, 5, 4
 		];
 
 		this.normals = [
+			// front
 			0, 0, 1,
 			0, 0, 1,
-			0, 0, 1
+			0, 0, 1,
+
+			// back
+			0, 0, -1,
+			0, 0, -1,
+			0, 0, -1
 		];
 
 		this.primitiveType = this.scene.gl.TRIANGLES;
+
 		this.initGLBuffers();
 	}
 }

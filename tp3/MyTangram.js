@@ -158,4 +158,24 @@ export class MyTangram extends CGFobject {
 
         this.scene.popMatrix();
     }
+
+    enableNormalViz() {
+        this.diamond.enableNormalViz();
+        this.triangle.enableNormalViz();
+        this.parallelogram.enableNormalViz();
+        this.triangleSmallOne.enableNormalViz();
+        this.triangleSmallTwo.enableNormalViz();
+        this.triangleBigOne.enableNormalViz();
+        this.triangleBigTwo.enableNormalViz();
+    }
+
+        disableNormalViz() {
+        this.diamond.disableNormalViz();
+        this.triangle.disableNormalViz();
+        this.parallelogram.disableNormalViz();
+        this.triangleSmallOne.disableNormalViz();
+        this.triangleSmallTwo.disableNormalViz();
+        this.triangleBigOne.disableNormalViz();
+        this.triangleBigTwo.disableNormalViz();
+    }
 }
