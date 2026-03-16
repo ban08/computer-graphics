@@ -44,8 +44,8 @@ export class MyCylinder extends CGFobject {
             for(var j = 0; j < this.stacks; j++){
                var current = baseIndex + j;
                 var next =  ((i + 1) % this.slices) * (this.stacks + 1) + j;
-                this.indices.push(current, current+1, next);
-                this.indices.push(current+1, next+1, next);
+                this.indices.push(current, next, current+1);
+                this.indices.push(current+1, next, next+1);
             }
 
         }
