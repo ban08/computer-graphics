@@ -1,6 +1,7 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/CGF.js";
 import { MyQuad } from "./MyQuad.js";
 import { MyTangram } from './MyTangram.js';
+import { MyUnitCubeQuad } from './MyUnitCubeQuad.js';
 
 /**
  * MyScene
@@ -30,6 +31,14 @@ export class MyScene extends CGFscene {
         this.quad = new MyQuad(this);
         this.tangram = new MyTangram(this);
 
+        this.mineTopTexture = new CGFtexture(this, 'images/mineTop.png');
+        this.mineSideTexture = new CGFtexture(this, 'images/mineSide.png');
+        this.mineBottomTexture = new CGFtexture(this, 'images/mineBottom.png');
+
+        this.unitCubeQuad = new MyUnitCubeQuad(this,
+            this.mineTopTexture, this.mineSideTexture, this.mineSideTexture,
+            this.mineSideTexture, this.mineSideTexture, this.mineBottomTexture);
+
         //------ Applied Material
         this.quadMaterial = new CGFappearance(this);
         this.quadMaterial.setAmbient(0.1, 0.1, 0.1, 1);
@@ -49,8 +58,11 @@ export class MyScene extends CGFscene {
         //-------Objects connected to MyInterface
         this.displayAxis = true;
         this.displayQuad = true;
+        this.displayTangram = false;
+        this.displayUnitCubeQuad = false;
+        this.useNearestTextureFilter = true;
         this.scaleFactor = 5;
-        this.selectedTexture = -1;        
+        this.selectedTexture = -1;
         this.wrapS = 0;
         this.wrapT = 0;
 
@@ -97,6 +109,19 @@ export class MyScene extends CGFscene {
         this.quad.updateTexCoords(this.texCoords);
     }
 
+    setTextureFilter(texture) {
+        if (texture && this.activeTexture === texture) {
+            // Default texture filtering in WebCGF is LINEAR. 
+            // Uncomment next line for NEAREST when magnifying, or 
+            // add a checkbox in the GUI to alternate in real time
+            
+            // this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+            
+            const filter = this.useNearestTextureFilter ? this.gl.NEAREST : this.gl.LINEAR;
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, filter);
+        }
+    }
+
     display() {
   
         // ---- BEGIN Background, camera and axis setup
@@ -122,16 +147,16 @@ export class MyScene extends CGFscene {
         if (this.displayQuad) {
             this.quadMaterial.apply();
 
-            // Default texture filtering in WebCGF is LINEAR. 
-            // Uncomment next line for NEAREST when magnifying, or 
-            // add a checkbox in the GUI to alternate in real time
-            
-            // this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-
             this.quad.display();
         }
 
-        this.tangram.display();
+        if (this.displayTangram) {
+            this.tangram.display();
+        }
+
+        if (this.displayUnitCubeQuad) {
+            this.unitCubeQuad.display();
+        }
 
         // ---- END Primitive drawing section
     }
