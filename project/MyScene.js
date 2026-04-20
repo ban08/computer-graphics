@@ -1,5 +1,5 @@
 import { CGFscene, CGFcamera, CGFaxis } from "../lib/CGF.js";
-import { MySphere } from "./objects/MySphere.js";
+import { MySky } from "./elements/part1/MySky.js";
 
 /**
  * MyScene
@@ -26,7 +26,7 @@ export class MyScene extends CGFscene {
 
 		// Initialize scene objects
 		this.axis = new CGFaxis(this);
-		this.sky = new MySphere(this);
+		this.sky = new MySky(this);
 
 		// Objects connected to MyInterface
     	this.displayAxis = true;
