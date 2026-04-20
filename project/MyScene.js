@@ -1,4 +1,5 @@
 import { CGFscene, CGFcamera, CGFaxis } from "../lib/CGF.js";
+import { MySphere } from "./objects/MySphere.js";
 
 /**
  * MyScene
@@ -25,6 +26,7 @@ export class MyScene extends CGFscene {
 
 		// Initialize scene objects
 		this.axis = new CGFaxis(this);
+		this.sky = new MySphere(this);
 
 		// Objects connected to MyInterface
     	this.displayAxis = true;
@@ -56,6 +58,7 @@ export class MyScene extends CGFscene {
 
   	display() {
 		// BEGIN Background, camera and axis setup
+
 		// Clear image and depth buffer everytime we update the scene
 		this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -71,9 +74,12 @@ export class MyScene extends CGFscene {
 		if (this.displayAxis) this.axis.display();
 
 		this.setDefaultAppearance();
+
 		// END Background, camera and axis setup
 
 		// BEGIN Primitive drawing section
+
+		this.sky.display();
 
 		// END Primitive drawing section
   	}
