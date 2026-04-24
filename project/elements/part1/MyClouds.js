@@ -1,21 +1,8 @@
 import { CGFobject, CGFshader } from '../../../lib/CGF.js';
 import { MyReverseSphere } from '../../primitives/MyReverseSphere.js';
 
-/**
- * MyClouds
- * Procedural animated cloud layer rendered on a reverse-sphere placed just
- * inside the sky dome (slightly smaller radius). Uses an FBM noise shader
- * with alpha blending; depth writes are disabled so future opaque geometry
- * is not occluded by the cloud layer.
- *
- * @constructor
- * @param scene - Reference to MyScene object
- * @param radius - Cloud-sphere radius (should be slightly smaller than the sky)
- * @param slices - Longitudinal subdivisions
- * @param stacks - Latitudinal subdivisions
- */
 export class MyClouds extends CGFobject {
-    constructor(scene, radius = 29.9, slices = 60, stacks = 30) {
+    constructor(scene, radius = 30, slices = 60, stacks = 30) {
         super(scene);
 
         this.sphere = new MyReverseSphere(scene, radius, slices, stacks);
@@ -39,7 +26,7 @@ export class MyClouds extends CGFobject {
     }
 
     update(t) {
-        // Keep timeFactor bounded for shader-precision safety.
+        // Limit the time uniform to avoid precision loss in the shader.
         this.shader.setUniformsValues({
             timeFactor: (t / 100.0) % 10000.0,
             coverage: this.coverage,

@@ -1,11 +1,8 @@
 import { CGFscene, CGFcamera, CGFaxis } from "../lib/CGF.js";
 import { MySky } from "./elements/part1/MySky.js";
 import { MyClouds } from "./elements/part1/MyClouds.js";
+import { MyTerrain } from "./elements/part2/MyTerrain.js";
 
-/**
- * MyScene
- * @constructor
- */
 export class MyScene extends CGFscene {
   	constructor() {
     	super();
@@ -17,7 +14,6 @@ export class MyScene extends CGFscene {
     	this.initCameras();
     	this.initLights();
 
-    	// Background color
     	this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
 		this.gl.clearDepth(100.0);
@@ -25,15 +21,13 @@ export class MyScene extends CGFscene {
 		this.gl.enable(this.gl.CULL_FACE);
 		this.gl.depthFunc(this.gl.LEQUAL);
 
-		// Initialize scene objects
 		this.axis = new CGFaxis(this);
 		this.sky = new MySky(this);
 		this.clouds = new MyClouds(this);
+		this.terrain = new MyTerrain(this);
 
-		// Time-driven shader animation (clouds, future grass/arrows)
 		this.setUpdatePeriod(50);
 
-		// Objects connected to MyInterface
     	this.displayAxis = true;
   	}
 
@@ -66,31 +60,20 @@ export class MyScene extends CGFscene {
 	}
 
   	display() {
-		// BEGIN Background, camera and axis setup
-
-		// Clear image and depth buffer everytime we update the scene
 		this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-		// Initialize Model-View matrix as identity (no transformation
 		this.updateProjectionMatrix();
 		this.loadIdentity();
 
-		// Apply transformations corresponding to the camera position relative to the origin
 		this.applyViewMatrix();
 
-		// Draw axis
 		if (this.displayAxis) this.axis.display();
 
 		this.setDefaultAppearance();
 
-		// END Background, camera and axis setup
-
-		// BEGIN Primitive drawing section
-
 		this.sky.display();
 		this.clouds.display();
-
-		// END Primitive drawing section
+		this.terrain.display();
   	}
 }

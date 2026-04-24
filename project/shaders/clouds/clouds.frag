@@ -42,29 +42,29 @@ void main() {
 
     if (dir.y < -0.05) discard;
 
-    // Larger cloud bodies via smaller projection scale.
+    // Project the dome direction onto the horizontal plane.
     vec2 uv = dir.xz * 3.0;
     vec2 drift = vec2(timeFactor * speed, timeFactor * speed * 0.3);
     uv += drift;
 
-    // Two-octave combo: low-freq base shape + higher-freq wisps for cumulus detail.
+    // Combine the base shape with finer detail.
     float base = fbm(uv);
     float detail = fbm(uv * 2.8 + vec2(11.7, 5.3));
     float n = clamp(base + detail * 0.35 - 0.25, 0.0, 1.0);
 
-    // Billowy remap pushes mid-values up and gaps down -> fuller bodies.
+    // Remap density values to keep cloud gaps distinct.
     n = smoothstep(0.15, 0.85, n);
 
-    // Sharper alpha transition for crisper edges.
+    // Coverage controls the alpha threshold.
     float threshold = 1.0 - coverage;
     float alpha = smoothstep(threshold - 0.05, threshold + 0.08, n);
 
-    // Density-based two-tone colour: bright top, soft blue-gray underbelly.
+    // Use density to vary the cloud shading.
     float density = smoothstep(threshold, threshold + 0.35, n);
     vec3 shadowColor = cloudColor * vec3(0.70, 0.75, 0.85);
     vec3 color = mix(shadowColor, cloudColor, density);
 
-    // Tighter horizon fade so more clouds stay visible.
+    // Fade the lower edge near the horizon.
     float horizonFade = smoothstep(-0.05, 0.15, dir.y);
     alpha *= horizonFade;
 
