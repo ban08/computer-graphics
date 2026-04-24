@@ -1,5 +1,6 @@
 import { CGFscene, CGFcamera, CGFaxis } from "../lib/CGF.js";
 import { MySky } from "./elements/part1/MySky.js";
+import { MyClouds } from "./elements/part1/MyClouds.js";
 
 /**
  * MyScene
@@ -27,9 +28,17 @@ export class MyScene extends CGFscene {
 		// Initialize scene objects
 		this.axis = new CGFaxis(this);
 		this.sky = new MySky(this);
+		this.clouds = new MyClouds(this);
+
+		// Time-driven shader animation (clouds, future grass/arrows)
+		this.setUpdatePeriod(50);
 
 		// Objects connected to MyInterface
     	this.displayAxis = true;
+  	}
+
+  	update(t) {
+		this.clouds.update(t);
   	}
 
   	initLights() {
@@ -80,6 +89,7 @@ export class MyScene extends CGFscene {
 		// BEGIN Primitive drawing section
 
 		this.sky.display();
+		this.clouds.display();
 
 		// END Primitive drawing section
   	}
