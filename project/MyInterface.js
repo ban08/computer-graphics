@@ -12,6 +12,10 @@ export class MyInterface extends CGFinterface {
 
         this.gui.add(this.scene, 'displayAxis').name('Display Axis');
 
+        const sun = this.gui.addFolder('Sun');
+        sun.add(this.scene.sun, 'visible').name('Visible');
+        sun.open();
+
         const clouds = this.gui.addFolder('Clouds');
         clouds.add(this.scene.clouds, 'visible').name('Visible');
         clouds.add(this.scene.clouds, 'coverage', 0, 1, 0.01).name('Coverage');

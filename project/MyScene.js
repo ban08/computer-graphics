@@ -1,6 +1,7 @@
 import { CGFscene, CGFcamera, CGFaxis } from "../lib/CGF.js";
 import { MySky } from "./elements/part1/MySky.js";
 import { MyClouds } from "./elements/part1/MyClouds.js";
+import { MySun } from "./elements/part1/MySun.js";
 import { MyTerrain } from "./elements/part2/MyTerrain.js";
 
 export class MyScene extends CGFscene {
@@ -24,6 +25,7 @@ export class MyScene extends CGFscene {
 		this.axis = new CGFaxis(this);
 		this.sky = new MySky(this);
 		this.clouds = new MyClouds(this);
+		this.sun = new MySun(this);
 		this.terrain = new MyTerrain(this);
 
 		this.setUpdatePeriod(50);
@@ -74,6 +76,7 @@ export class MyScene extends CGFscene {
 
 		this.sky.display();
 		this.clouds.display();
+		this.sun.display();
 		this.terrain.display();
   	}
 }
