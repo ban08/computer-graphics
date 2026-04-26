@@ -14,6 +14,8 @@ export class MyInterface extends CGFinterface {
 
         const sun = this.gui.addFolder('Sun');
         sun.add(this.scene.sun, 'visible').name('Visible');
+        sun.add(this.scene.sun, 'speed', 0, 0.001, 0.00001).name('Velocity');
+        sun.add(this.scene.sun, 'arc', 0, 25, 1).name('Arc radius');
         sun.open();
 
         const clouds = this.gui.addFolder('Clouds');

@@ -15,6 +15,12 @@ export class MySun extends CGFobject {
         this.y = 20;
         this.z = 10;
 
+      
+        this.speed = 0.0001;
+        this.arc= 20;
+        this.sunX = this.x;
+        this.sunY = this.y;
+
         this.sun = new MySphere(scene, this.radius, 20, 20);
                 
         this.shader = new CGFshader(
@@ -31,11 +37,15 @@ export class MySun extends CGFobject {
 
         this.visible = true;
     }
-
+    update(t) {
+        var angle = t * this.speed;
+        this.sunX = Math.cos(angle) * this.arc;
+        this.sunY = Math.sin(angle) * this.arc;
+    }
     display() {
         
         this.scene.pushMatrix();
-        this.scene.translate(this.x, this.y, this.z);
+        this.scene.translate(this.sunX, this.sunY, this.z);
         this.scene.setActiveShader(this.shader);
         this.appearance.apply();
         this.sun.display();

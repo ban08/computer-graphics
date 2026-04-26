@@ -35,6 +35,7 @@ export class MyScene extends CGFscene {
 
   	update(t) {
 		this.clouds.update(t);
+		this.sun.update(t);		
   	}
 
   	initLights() {
