@@ -1,4 +1,4 @@
-import { CGFobject, CGFappearance } from '../../../lib/CGF.js';
+import { CGFobject, CGFappearance, CGFshader } from '../../../lib/CGF.js';
 import { MySphere } from '../../primitives/MySphere.js';
 
 /**
@@ -16,7 +16,12 @@ export class MySun extends CGFobject {
         this.z = 10;
 
         this.sun = new MySphere(scene, this.radius, 20, 20);
-  
+                
+        this.shader = new CGFshader(
+            scene.gl,
+            "shaders/sun/sun.vert",
+            "shaders/sun/sun.frag"
+        );
         this.appearance = new CGFappearance(scene);
         this.appearance.setAmbient(1, 1, 0, 1);
         this.appearance.setDiffuse(1, 1, 0, 1);
@@ -31,8 +36,10 @@ export class MySun extends CGFobject {
         
         this.scene.pushMatrix();
         this.scene.translate(this.x, this.y, this.z);
+        this.scene.setActiveShader(this.shader);
         this.appearance.apply();
         this.sun.display();
+        this.scene.setActiveShader(this.scene.defaultShader); 
         this.scene.popMatrix();
     }
 
