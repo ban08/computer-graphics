@@ -43,6 +43,7 @@ export class MySun extends CGFobject {
         this.sunY = Math.sin(angle) * this.arc;
     }
     display() {
+        if (!this.visible) return;
         
         this.scene.pushMatrix();
         this.scene.translate(this.sunX, this.sunY, this.z);
