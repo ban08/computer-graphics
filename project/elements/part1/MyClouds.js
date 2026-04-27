@@ -1,6 +1,14 @@
 import { CGFobject, CGFshader } from '../../../lib/CGF.js';
 import { MyReverseSphere } from '../../primitives/MyReverseSphere.js';
 
+/**
+ * MyClouds
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param radius - Radius of the cloud sphere
+ * @param slices - Number of horizontal cloud sphere subdivisions
+ * @param stacks - Number of vertical cloud sphere subdivisions
+ */
 export class MyClouds extends CGFobject {
     constructor(scene, radius = 30, slices = 60, stacks = 30) {
         super(scene);

@@ -4,6 +4,9 @@ import { CGFobject } from '../../lib/CGF.js';
  * MySphere
  * @constructor
  * @param scene - Reference to MyScene object
+ * @param radius - Radius of the sphere
+ * @param slices - Number of horizontal sphere subdivisions
+ * @param stacks - Number of vertical sphere subdivisions
  */
 export class MySphere extends CGFobject {
 	constructor(scene, radius, slices, stacks) {

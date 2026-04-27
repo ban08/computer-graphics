@@ -1,5 +1,15 @@
 import { CGFobject } from '../../lib/CGF.js';
 
+/**
+ * MyPlane
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param nrDivs - Number of subdivisions in both directions of the plane
+ * @param minS - Minimum S texture coordinate
+ * @param maxS - Maximum S texture coordinate
+ * @param minT - Minimum T texture coordinate
+ * @param maxT - Maximum T texture coordinate
+ */
 export class MyPlane extends CGFobject {
     constructor(scene, nrDivs, minS, maxS, minT, maxT) {
         super(scene);

@@ -9,6 +9,13 @@ const SHARED_FRAG_UNIFORMS = {
     ambient:   0.35,
 };
 
+/**
+ * MyTerrain
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param size - Side length of the terrain plane
+ * @param divisions - Number of terrain plane subdivisions
+ */
 export class MyTerrain extends CGFobject {
     constructor(scene, size = 64, divisions = 128) {
         super(scene);

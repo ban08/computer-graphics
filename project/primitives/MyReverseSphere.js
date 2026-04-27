@@ -4,6 +4,9 @@ import { CGFobject } from '../../lib/CGF.js';
  * MyReverseSphere
  * @constructor
  * @param scene - Reference to MyScene object
+ * @param radius - Radius of the reverse sphere
+ * @param slices - Number of horizontal reverse sphere subdivisions
+ * @param stacks - Number of vertical reverse sphere subdivisions
  */
 export class MyReverseSphere extends CGFobject {
 	constructor(scene, radius, slices, stacks) {
