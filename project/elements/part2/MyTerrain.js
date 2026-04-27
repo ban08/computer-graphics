@@ -66,6 +66,19 @@ export class MyTerrain extends CGFobject {
         });
     }
 
+    updateSunDir(x, y, z) {
+        const ox = x;
+        const oy = z;
+        const oz = y;
+
+        const len = Math.sqrt(ox*ox + oy*oy + oz*oz) || 1;
+        const dir = [ox/len, oy/len, oz/len];
+
+        this.heightmapShader.setUniformsValues({ sunDir: dir });
+        this.proceduralShader.setUniformsValues({ sunDir: dir });
+    }
+
+
     randomizeSeed() {
         this.seed = [Math.random() * 1000, Math.random() * 1000];
     }

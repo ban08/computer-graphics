@@ -36,11 +36,16 @@ export class MyScene extends CGFscene {
   	update(t) {
 		this.clouds.update(t);
 		this.sun.update(t);		
+		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 1);
+        this.lights[0].update();
+        this.terrain.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
   	}
 
   	initLights() {
     	this.lights[0].setPosition(15, 2, 5, 1);
-		this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
+		this.lights[0].setDiffuse(1.0, 1.0, 0.9, 1.0);
+        this.lights[0].setSpecular(0.8, 0.8, 0.6, 1.0);
+        this.lights[0].setAmbient(0.05, 0.05, 0.05, 1.0);
 		this.lights[0].enable();
 		this.lights[0].update();
   	}

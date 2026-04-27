@@ -23,11 +23,14 @@ void main() {
     } else {
         base = mix(midColor, highColor, smoothstep(0.5, 1.0, vHeight));
     }
-
+    
     // Basic diffuse lighting in object space.
     vec3 n = normalize(vNormal);
-    float lambert = max(dot(n, normalize(sunDir)), 0.0);
-    float lighting = ambient + (1.0 - ambient) * lambert;
+    vec3 s = normalize(sunDir);
+
+    float aboveHorizon = clamp(s.y * 3.0, 0.0, 1.0);
+    float lambert = max(dot(n, s), 0.0);
+    float lighting = ambient + (1.0 - ambient) * lambert * aboveHorizon;
 
     gl_FragColor = vec4(base * lighting, 1.0);
 }
