@@ -1,4 +1,4 @@
-import { CGFobject, CGFappearance } from '../../../lib/CGF.js';
+import { CGFobject, CGFshader } from '../../../lib/CGF.js';
 import { MyReverseSphere } from '../../primitives/MyReverseSphere.js';
 
 /**
@@ -12,17 +12,23 @@ export class MySky extends CGFobject {
 
         this.reverseSphere = new MyReverseSphere(scene, 30, 30, 30);
 
-        this.appearance = new CGFappearance(scene);
-        this.appearance.setAmbient(0.25, 0.4, 0.45, 1);
-        this.appearance.setDiffuse(0, 0, 0, 1);
-        this.appearance.setSpecular(0, 0, 0, 1);
-        this.appearance.setEmission(0.25, 0.4, 0.45, 1);
-        this.appearance.setShininess(1);
+        this.shader = new CGFshader(
+            scene.gl,
+            "shaders/sky/sky.vert",
+            "shaders/sky/sky.frag"
+        );
+
+        this.shader.setUniformsValues({sunDir: [0.0, 1.0, 0.0]});
+    }
+
+    updateSunDir(x, y, z) {
+        const len = Math.sqrt(x*x + y*y + z*z) || 1;
+        this.shader.setUniformsValues({sunDir: [x/len, y/len, z/len]});
     }
 
     display() {
-        this.appearance.apply();
-
+        this.scene.setActiveShader(this.shader);
         this.reverseSphere.display();
+        this.scene.setActiveShader(this.scene.defaultShader);
     }
 }

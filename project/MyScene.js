@@ -38,6 +38,7 @@ export class MyScene extends CGFscene {
 		this.sun.update(t);		
 		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 1);
         this.lights[0].update();
+        this.sky.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
         this.terrain.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
   	}
 
@@ -55,8 +56,8 @@ export class MyScene extends CGFscene {
       		0.4,
       		0.1,
       		500,
-      		vec3.fromValues(15, 15, 15),
-      		vec3.fromValues(0, 0, 0)
+      		vec3.fromValues(15, 5.5	, 15),
+      		vec3.fromValues(12.5, 5, 12.5)
     	);
   	}
 
