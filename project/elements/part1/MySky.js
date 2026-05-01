@@ -1,5 +1,5 @@
 import { CGFobject, CGFshader } from '../../../lib/CGF.js';
-import { MyReverseSphere } from '../../primitives/MyReverseSphere.js';
+import { MyReverseHalfSphere } from '../../primitives/MyReverseHalfSphere.js';
 
 /**
  * MySky
@@ -10,7 +10,7 @@ export class MySky extends CGFobject {
     constructor(scene) {
         super(scene);
 
-        this.reverseSphere = new MyReverseSphere(scene, 30, 30, 30);
+        this.reverseSphere = new MyReverseHalfSphere(scene, 30, 30, 30);
 
         this.shader = new CGFshader(
             scene.gl,
