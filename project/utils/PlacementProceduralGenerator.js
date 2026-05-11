@@ -1,5 +1,13 @@
 import { generatePoissonDiskSample } from './PoissonDiskSampler.js';
 
+/**
+ * PlacementGenerator
+ * @constructor
+ * @param centerX - X coordinate of the placement world center
+ * @param centerZ - Z coordinate of the placement world center
+ * @param worldRadius - Radius of the placement world
+ * @param getHeightAt - Optional function that returns terrain height at (x, z)
+ */
 export class PlacementGenerator {
     constructor(centerX, centerZ, worldRadius, getHeightAt = null) {
         this.centerX = centerX;

@@ -1,3 +1,15 @@
+/**
+ * Generates 2D Poisson Disk sample points inside a circular domain using
+ * Bridson's algorithm, enforcing a minimum distance between samples.
+ * Algorithm reference links in project/README.md.
+ * 
+ * @param centerX - X coordinate of the circular domain center
+ * @param centerZ - Z coordinate of the circular domain center
+ * @param boundsRadius - Radius of the circular domain
+ * @param radius - Minimum distance between generated samples
+ * @param k - Maximum number of candidate attempts per active point
+ * @returns Returns generated sample points array {x, z}[]
+ */
 export function generatePoissonDiskSample(centerX, centerZ, boundsRadius, radius, k = 10) {
     const cellSize = radius / Math.sqrt(2);
     const minX = centerX - boundsRadius;
