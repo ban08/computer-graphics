@@ -1,9 +1,9 @@
-export function generatePoissonDiskSample(centerX, centerZ, worldRadius, radius, k = 10) {
+export function generatePoissonDiskSample(centerX, centerZ, boundsRadius, radius, k = 10) {
     const cellSize = radius / Math.sqrt(2);
-    const minX = centerX - worldRadius;
-    const maxX = centerX + worldRadius;
-    const minZ = centerZ - worldRadius;
-    const maxZ = centerZ + worldRadius;
+    const minX = centerX - boundsRadius;
+    const maxX = centerX + boundsRadius;
+    const minZ = centerZ - boundsRadius;
+    const maxZ = centerZ + boundsRadius;
 
     const sample = [];
     const active = [];
@@ -32,7 +32,7 @@ export function generatePoissonDiskSample(centerX, centerZ, worldRadius, radius,
         const dxCenter = x - centerX;
         const dzCenter = z - centerZ;
 
-        if (dxCenter * dxCenter + dzCenter * dzCenter > worldRadius * worldRadius) return false;
+        if (dxCenter * dxCenter + dzCenter * dzCenter > boundsRadius * boundsRadius) return false;
 
         const gx = Math.floor((x - minX) / cellSize);
         const gz = Math.floor((z - minZ) / cellSize);
