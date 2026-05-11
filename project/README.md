@@ -44,3 +44,8 @@
 | Filipe Camacho             | 202208040 | up202208040@up.pt |
 | Yago Sentieiro Alba        | 202306314 | up202306314@up.pt |
 | Sara Marques Ribeiro       | 202305327 | up202305327@up.pt |
+
+### References
+
+- https://www.jasondavies.com/poisson-disc/
+- https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
