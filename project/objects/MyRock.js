@@ -5,9 +5,13 @@ import { MySphere } from '../primitives/MySphere.js';
  * MyRock
  * @constructor
  * @param scene - Reference to MyScene object
- * @param radius - Radius of the sphere
- * @param slices - Number of horizontal sphere subdivisions
- * @param stacks - Number of vertical sphere subdivisions
+ * @param seed - Seed used for deterministic pseudo-random deformation
+ * @param color - Rock color as [r, g, b, a]
+ * @param roughness - Maximum deformation intensity
+ * @param scale - Non-uniform scaling factors as [sx, sy, sz]
+ * @param radius - Radius of the baseline sphere
+ * @param slices - Number of horizontal baseline sphere subdivisions
+ * @param stacks - Number of vertical baseline sphere subdivisions
  */
 export class MyRock extends CGFobject {
     constructor(scene, seed, color, roughness, scale, radius, slices, stacks) {
