@@ -34,11 +34,12 @@ export class MyScene extends CGFscene {
   	}
 
   	update(t) {
-		this.clouds.update(t);
 		this.sun.update(t);		
 		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 1);
         this.lights[0].update();
         this.sky.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
+        this.clouds.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
+		this.clouds.update(t);
         this.terrain.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
   	}
 
@@ -82,8 +83,8 @@ export class MyScene extends CGFscene {
 		this.setDefaultAppearance();
 
 		this.sky.display();
-		this.clouds.display();
 		this.sun.display();
+		this.clouds.display();
 		this.terrain.display();
   	}
 }

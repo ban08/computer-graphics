@@ -10,10 +10,13 @@ import { MyReverseSphere } from '../../primitives/MyReverseSphere.js';
  * @param stacks - Number of vertical cloud sphere subdivisions
  */
 export class MyClouds extends CGFobject {
-    constructor(scene, radius = 30, slices = 60, stacks = 30) {
+    constructor(scene, radius = 120, slices = 90, stacks = 36) {
         super(scene);
 
+        this.radius = radius;
         this.sphere = new MyReverseSphere(scene, radius, slices, stacks);
+        this.curvature = 0.22;
+        this.edgeDrop = 16.0;
 
         this.shader = new CGFshader(
             scene.gl,
@@ -21,24 +24,36 @@ export class MyClouds extends CGFobject {
             "shaders/clouds/clouds.frag"
         );
 
-        this.coverage = 0.65;
-        this.speed = 0.02;
+        this.amount = 0.65;
+        this.driftSpeed = 0.02;
+        this.altitude = 0.48;
+        this.horizonFade = 0.14;
         this.visible = true;
 
         this.shader.setUniformsValues({
             timeFactor: 0,
-            coverage: this.coverage,
-            speed: this.speed,
+            coverage: this.amount,
+            speed: this.driftSpeed,
+            cloudBase: this.altitude,
+            cloudSoftness: this.horizonFade,
             cloudColor: [1.0, 1.0, 1.0],
+            sunDir: [0.4, 0.6, 0.7],
         });
+    }
+
+    updateSunDir(x, y, z) {
+        const len = Math.sqrt(x*x + y*y + z*z) || 1;
+        this.shader.setUniformsValues({ sunDir: [x/len, y/len, z/len] });
     }
 
     update(t) {
         // Limit the time uniform to avoid precision loss in the shader.
         this.shader.setUniformsValues({
             timeFactor: (t / 100.0) % 10000.0,
-            coverage: this.coverage,
-            speed: this.speed,
+            coverage: this.amount,
+            speed: this.driftSpeed,
+            cloudBase: this.altitude,
+            cloudSoftness: this.horizonFade,
         });
     }
 
@@ -53,7 +68,11 @@ export class MyClouds extends CGFobject {
         gl.depthMask(false);
 
         this.scene.setActiveShader(this.shader);
+        this.scene.pushMatrix();
+        this.scene.translate(0.0, this.radius * this.curvature - this.edgeDrop, 0.0);
+        this.scene.scale(1.0, this.curvature, 1.0);
         this.sphere.display();
+        this.scene.popMatrix();
         this.scene.setActiveShader(this.scene.defaultShader);
 
         gl.depthMask(true);
