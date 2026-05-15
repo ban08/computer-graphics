@@ -40,7 +40,11 @@ float fbm(vec2 p) {
 void main() {
     vec3 dir = normalize(vLocalPos);
 
-    if (dir.y < -0.05) discard;
+    // Keep clouds in the upper sky so they do not appear to touch the terrain.
+    const float cloudBase = 0.32;
+    const float cloudFade = 0.18;
+
+    if (dir.y < cloudBase - cloudFade) discard;
 
     // Project the dome direction onto the horizontal plane.
     vec2 uv = dir.xz * 3.0;
@@ -64,9 +68,9 @@ void main() {
     vec3 shadowColor = cloudColor * vec3(0.70, 0.75, 0.85);
     vec3 color = mix(shadowColor, cloudColor, density);
 
-    // Fade the lower edge near the horizon.
-    float horizonFade = smoothstep(-0.05, 0.15, dir.y);
-    alpha *= horizonFade;
+    // Fade the lower edge well above the horizon for a more natural cloud layer.
+    float altitudeFade = smoothstep(cloudBase - cloudFade, cloudBase + cloudFade, dir.y);
+    alpha *= altitudeFade;
 
     gl_FragColor = vec4(color, alpha);
 }
