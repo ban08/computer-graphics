@@ -39,8 +39,8 @@ export class MyTerrain extends CGFobject {
         );
 
         this.mode = 'procedural';
-        this.heightScale = 3.0;
-        this.frequency = 0.06;
+        this.heightScale = 5.2;
+        this.frequency = 0.045;
         this.seed = [12.34, 56.78];
         this.visible = true;
 

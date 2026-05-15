@@ -27,7 +27,7 @@ export class MyInterface extends CGFinterface {
         const terrain = this.gui.addFolder('Terrain');
         terrain.add(this.scene.terrain, 'visible').name('Visible');
         terrain.add(this.scene.terrain, 'mode', ['heightmap', 'procedural']).name('Mode');
-        terrain.add(this.scene.terrain, 'heightScale', 0, 8, 0.1).name('Height scale');
+        terrain.add(this.scene.terrain, 'heightScale', 0, 12, 0.1).name('Height scale');
         terrain.add(this.scene.terrain, 'frequency', 0.01, 0.2, 0.001).name('Procedural freq');
         terrain.add(this.scene.terrain, 'randomizeSeed').name('Randomize seed');
         terrain.open();

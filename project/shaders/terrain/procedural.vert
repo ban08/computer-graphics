@@ -46,8 +46,12 @@ float terrainHeight(vec2 worldXY) {
     vec2 q = worldXY * frequency + seed;
     vec2 warp = vec2(gnoise(q + vec2(0.0, 0.0)),
                      gnoise(q + vec2(5.2, 1.3)));
-    float n = fbm4(q + 0.5 * warp);
-    return n * 0.5 + 0.5;
+
+    float hills = fbm4(q * 0.72 + 0.75 * warp);
+    float detail = fbm4(q * 2.4 + vec2(9.1, 4.7));
+    float h = 0.5 + hills * 0.78 + detail * 0.16;
+
+    return smoothstep(0.08, 0.92, clamp(h, 0.0, 1.0));
 }
 
 void main() {
