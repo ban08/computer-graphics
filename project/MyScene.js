@@ -38,6 +38,10 @@ export class MyScene extends CGFscene {
   	update(t) {
 		this.sun.update(t);		
 		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 0);
+		const sunAmount = Math.max(0.0, Math.min(this.sun.sunY / 4.0, 1.0));
+		this.lights[0].setAmbient(0.28 * sunAmount, 0.25 * sunAmount, 0.18 * sunAmount, 1.0);
+		this.lights[0].setDiffuse(1.25 * sunAmount, 1.15 * sunAmount, 0.85 * sunAmount, 1.0);
+        this.lights[0].setSpecular(1.0 * sunAmount, 0.9 * sunAmount, 0.55 * sunAmount, 1.0);
         this.lights[0].update();
         this.sky.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
         this.clouds.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
@@ -47,11 +51,18 @@ export class MyScene extends CGFscene {
 
   	initLights() {
     	this.lights[0].setPosition(15, 2, 5, 1);
-		this.lights[0].setDiffuse(1.0, 1.0, 0.9, 1.0);
-        this.lights[0].setSpecular(0.8, 0.8, 0.6, 1.0);
-        this.lights[0].setAmbient(0.05, 0.05, 0.05, 1.0);
+		this.lights[0].setDiffuse(1.25, 1.15, 0.85, 1.0);
+        this.lights[0].setSpecular(1.0, 0.9, 0.55, 1.0);
+        this.lights[0].setAmbient(0.28, 0.25, 0.18, 1.0);
 		this.lights[0].enable();
 		this.lights[0].update();
+
+		this.lights[1].setPosition(0, -1, 0, 0);
+		this.lights[1].setDiffuse(0.38, 0.44, 0.52, 1.0);
+        this.lights[1].setSpecular(0.0, 0.0, 0.0, 1.0);
+        this.lights[1].setAmbient(0.30, 0.34, 0.42, 1.0);
+		this.lights[1].enable();
+		this.lights[1].update();
   	}
 
   	initCameras() {
@@ -79,6 +90,9 @@ export class MyScene extends CGFscene {
 		this.loadIdentity();
 
 		this.applyViewMatrix();
+
+		this.lights[0].update();
+		this.lights[1].update();
 
 		if (this.displayAxis) this.axis.display();
 

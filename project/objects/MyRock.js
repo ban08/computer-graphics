@@ -28,10 +28,10 @@ export class MyRock extends CGFobject {
         this.sphere = new MySphere(scene, this.radius, this.slices, this.stacks);
 
         this.material = new CGFappearance(scene);
-        this.material.setAmbient(this.color[0] * 0.45, this.color[1] * 0.45, this.color[2] * 0.45, this.color[3]);
-        this.material.setDiffuse(this.color[0], this.color[1], this.color[2], this.color[3]);
-        this.material.setSpecular(0.08, 0.08, 0.08, 1.0);
-        this.material.setShininess(8.0);
+        this.material.setAmbient(this.color[0] * 0.72, this.color[1] * 0.72, this.color[2] * 0.72, this.color[3]);
+        this.material.setDiffuse(Math.min(this.color[0] * 1.18, 1.0), Math.min(this.color[1] * 1.18, 1.0), Math.min(this.color[2] * 1.18, 1.0), this.color[3]);
+        this.material.setSpecular(0.16, 0.15, 0.13, 1.0);
+        this.material.setShininess(18.0);
 
         this.deform();
     }

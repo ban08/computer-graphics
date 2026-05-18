@@ -58,7 +58,7 @@ export class MyScatterElements extends CGFobject {
         );
 
         this.placements = generator.generatePlacements(
-            4.0,
+            6.0,
             10,
             keepAwayFromCenter,
             createRockPlacement

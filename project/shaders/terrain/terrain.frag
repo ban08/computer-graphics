@@ -73,9 +73,10 @@ void main() {
     // Basic diffuse lighting in object space.
     vec3 s = normalize(sunDir);
 
-    float aboveHorizon = clamp(s.y * 3.0, 0.0, 1.0);
+    float aboveHorizon = smoothstep(-0.04, 0.24, s.z);
     float lambert = max(dot(n, s), 0.0);
-    float lighting = ambient + (1.0 - ambient) * lambert * aboveHorizon;
+    float skyWrap = max(s.z, 0.0) * 0.16;
+    float lighting = ambient + (1.02 - ambient) * (lambert + skyWrap) * aboveHorizon;
     vec3 litColor = base * lighting;
 
     float distanceHaze = smoothstep(maxRadius * 0.48, maxRadius, vRadial);

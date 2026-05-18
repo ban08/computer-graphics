@@ -32,10 +32,10 @@ export class MySun extends CGFobject {
             "shaders/sun/sun.frag"
         );
         this.appearance = new CGFappearance(scene);
-        this.appearance.setAmbient(1, 1, 0, 1);
-        this.appearance.setDiffuse(1, 1, 0, 1);
+        this.appearance.setAmbient(1, 0.92, 0.38, 1);
+        this.appearance.setDiffuse(1, 0.86, 0.18, 1);
         this.appearance.setSpecular(0, 0, 0, 1);
-        this.appearance.setEmission(1, 1, 0, 1);
+        this.appearance.setEmission(1, 0.82, 0.16, 1);
         this.appearance.setShininess(1);
 
         this.visible = true;

@@ -44,7 +44,7 @@ export class MyTerrain extends CGFobject {
             midColor: [0.30, 0.49, 0.20],
             highColor: [0.66, 0.62, 0.36],
             sunDir: [0.4, 0.4, 0.85],
-            ambient: 0.35,
+            ambient: 0.42,
             hazeColor: [0.74, 0.82, 0.84],
         });
 
