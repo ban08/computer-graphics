@@ -1,0 +1,80 @@
+import { CGFobject } from '../../../lib/CGF.js';
+import { MyRock } from '../../objects/MyRock.js';
+import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js';
+
+/**
+ * MyScatterElements
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param terrain - Terrain used to place objects at the correct height and radius
+ */
+export class MyScatterElements extends CGFobject {
+    constructor(scene, terrain) {
+        super(scene);
+
+        this.terrain = terrain;
+        this.placements = [];
+
+        this.generateRocks();
+    }
+
+    randomRange(min, max) {
+        return min + Math.random() * (max - min);
+    }
+
+    generateRocks() {
+        const keepAwayFromCenter = (x, z) => Math.sqrt(x * x + z * z) > 3.0;
+
+        const createRockPlacement = (placement) => {
+            const scale = [
+                this.randomRange(0.20, 0.75),
+                this.randomRange(0.10, 0.35),
+                this.randomRange(0.20, 0.75),
+            ];
+
+            return {
+                x: placement.x,
+                y: placement.y,
+                z: placement.z,
+                rotation: this.randomRange(0, Math.PI * 2),
+                rock: new MyRock(
+                    this.scene,
+                    null,
+                    [0.34, 0.32, 0.29, 1.0],
+                    0.25,
+                    scale,
+                    1.0,
+                    14,
+                    8
+                ),
+            };
+        };
+
+        const generator = new PlacementGenerator(
+            0,
+            0,
+            this.terrain.maxRadius * 0.95,
+            (x, z) => this.terrain.getHeightAt(x, z)
+        );
+
+        this.placements = generator.generatePlacements(
+            4.0,
+            10,
+            keepAwayFromCenter,
+            createRockPlacement
+        );
+    }
+
+    display() {
+        for (const placement of this.placements) {
+            this.scene.pushMatrix();
+
+            this.scene.translate(placement.x, placement.y, placement.z);
+            this.scene.rotate(placement.rotation, 0, 1, 0);
+
+            placement.rock.display();
+            
+            this.scene.popMatrix();
+        }
+    }
+}

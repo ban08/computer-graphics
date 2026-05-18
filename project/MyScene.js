@@ -3,6 +3,7 @@ import { MySky } from "./elements/part1/MySky.js";
 import { MyClouds } from "./elements/part1/MyClouds.js";
 import { MySun } from "./elements/part1/MySun.js";
 import { MyTerrain } from "./elements/part2/MyTerrain.js";
+import { MyScatterElements } from "./elements/part2/MyScatterElements.js";
 
 export class MyScene extends CGFscene {
   	constructor() {
@@ -27,6 +28,7 @@ export class MyScene extends CGFscene {
 		this.clouds = new MyClouds(this);
 		this.sun = new MySun(this);
 		this.terrain = new MyTerrain(this);
+		this.scatterElements = new MyScatterElements(this, this.terrain);
 
 		this.setUpdatePeriod(50);
 
@@ -86,5 +88,6 @@ export class MyScene extends CGFscene {
 		this.sun.display();
 		this.clouds.display();
 		this.terrain.display();
+		this.scatterElements.display();
   	}
 }

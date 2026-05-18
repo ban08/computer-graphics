@@ -72,7 +72,7 @@ export class MyRock extends CGFobject {
 
         for (let i = 0; i < v.length; i += 3) {
             let x = v[i];
-            let y = Math.max(v[i + 1], floorY);
+            let y = Math.max(v[i + 1], floorY) - floorY;
             let z = v[i + 2];
 
             const len = Math.sqrt(x * x + y * y + z * z);

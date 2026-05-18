@@ -28,15 +28,6 @@ export class MyInterface extends CGFinterface {
         clouds.add(this.scene.clouds, 'edgeDrop', 0, 30, 1).name('Edge drop');
         clouds.open();
 
-        const terrain = this.gui.addFolder('Terrain');
-        terrain.add(this.scene.terrain, 'visible').name('Visible');
-        terrain.add(this.scene.terrain, 'mode', ['heightmap', 'procedural']).name('Mode');
-        terrain.add(this.scene.terrain, 'heightScale', 0, 12, 0.1).name('Height scale');
-        terrain.add(this.scene.terrain, 'frequency', 0.01, 0.2, 0.001).name('Procedural freq');
-        terrain.add(this.scene.terrain, 'hazeStrength', 0, 0.6, 0.01).name('Terrain haze');
-        terrain.add(this.scene.terrain, 'randomizeSeed').name('Randomize seed');
-        terrain.open();
-
         return true;
     }
 }
