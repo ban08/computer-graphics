@@ -37,7 +37,7 @@ export class MyScene extends CGFscene {
 
   	update(t) {
 		this.sun.update(t);		
-		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 1);
+		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 0);
         this.lights[0].update();
         this.sky.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
         this.clouds.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
