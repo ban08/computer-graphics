@@ -11,15 +11,18 @@ export class MySun extends CGFobject {
         super(scene);
 
         this.radius = 1.5;
-        this.x = 10;
-        this.y = 20;
-        this.z = 10;
-
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
       
         this.speed = 0.0001;
-        this.arc= 20;
+        this.arc = 30;
         this.sunX = this.x;
         this.sunY = this.y;
+
+        this.moving = true;
+        this.startTime = null;
+        this.timeOffset = 0;
 
         this.sun = new MySphere(scene, this.radius, 20, 20);
                 
@@ -37,11 +40,21 @@ export class MySun extends CGFobject {
 
         this.visible = true;
     }
+
     update(t) {
-        var angle = t * this.speed;
+        if (!this.moving) return;
+        
+        if (this.startTime === null) {
+            this.startTime = t;
+        }
+
+        var time = t - this.startTime + this.timeOffset;
+        var angle = time  * this.speed;
+
         this.sunX = Math.cos(angle) * this.arc;
         this.sunY = Math.sin(angle) * this.arc;
     }
+
     display() {
         if (!this.visible) return;
         
@@ -53,5 +66,4 @@ export class MySun extends CGFobject {
         this.scene.setActiveShader(this.scene.defaultShader); 
         this.scene.popMatrix();
     }
-
 }

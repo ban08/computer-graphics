@@ -27,8 +27,10 @@ export class MySky extends CGFobject {
     }
 
     display() {
+        this.scene.gl.depthMask(false);
         this.scene.setActiveShader(this.shader);
         this.reverseSphere.display();
         this.scene.setActiveShader(this.scene.defaultShader);
+        this.scene.gl.depthMask(true);
     }
 }
