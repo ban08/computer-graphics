@@ -12,6 +12,7 @@ uniform float texelSize;
 varying float vHeight;
 varying vec3 vNormal;
 varying float vRadial;
+varying vec2 vWorldXY;
 
 float sampleHeight(vec2 uv) {
     return texture2D(uSampler2, uv).r;
@@ -23,6 +24,8 @@ float terrainH(vec2 uv) {
 
 void main() {
     float h = terrainH(aTextureCoord);
+    vec2 worldXY = aVertexPosition.xy * terrainSize;
+    vWorldXY = worldXY;
     vHeight = h;
 
     vec3 pos = aVertexPosition;
@@ -30,7 +33,7 @@ void main() {
     pos.y *= terrainSize;
     pos.z = h * heightScale;
 
-    vRadial = length(aVertexPosition.xy * terrainSize);
+    vRadial = length(worldXY);
 
     // Estimate the normal from neighboring height samples.
     float hL = terrainH(aTextureCoord - vec2(texelSize, 0.0)) * heightScale;

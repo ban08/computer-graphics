@@ -2,11 +2,12 @@ import { CGFobject, CGFtexture, CGFshader } from '../../../lib/CGF.js';
 import { MyPlane } from '../../primitives/MyPlane.js';
 
 const SHARED_FRAG_UNIFORMS = {
-    lowColor:  [0.18, 0.30, 0.13],
-    midColor:  [0.35, 0.50, 0.22],
-    highColor: [0.65, 0.65, 0.40],
+    lowColor:  [0.12, 0.34, 0.12],
+    midColor:  [0.30, 0.49, 0.20],
+    highColor: [0.66, 0.62, 0.36],
     sunDir:    [0.4, 0.4, 0.85],
     ambient:   0.35,
+    hazeColor: [0.74, 0.82, 0.84],
 };
 
 /**
@@ -39,9 +40,10 @@ export class MyTerrain extends CGFobject {
         );
 
         this.mode = 'procedural';
-        this.heightScale = 3.0;
-        this.frequency = 0.06;
+        this.heightScale = 5.2;
+        this.frequency = 0.045;
         this.seed = [12.34, 56.78];
+        this.hazeStrength = 0.22;
         this.visible = true;
 
         // The plane extends past this radius, so the shader defines the edge.
@@ -51,8 +53,9 @@ export class MyTerrain extends CGFobject {
             uSampler2: 1,
             terrainSize: this.size,
             heightScale: this.heightScale,
-            texelSize: 1.0 / 256.0,
+            texelSize: 1.0 / 204.0,
             maxRadius: this.maxRadius,
+            hazeStrength: this.hazeStrength,
             ...SHARED_FRAG_UNIFORMS,
         });
 
@@ -62,6 +65,7 @@ export class MyTerrain extends CGFobject {
             frequency: this.frequency,
             seed: this.seed,
             maxRadius: this.maxRadius,
+            hazeStrength: this.hazeStrength,
             ...SHARED_FRAG_UNIFORMS,
         });
     }
@@ -91,6 +95,7 @@ export class MyTerrain extends CGFobject {
             this.heightmap.bind(1);
             this.heightmapShader.setUniformsValues({
                 heightScale: this.heightScale,
+                hazeStrength: this.hazeStrength,
             });
             shader = this.heightmapShader;
         } else {
@@ -98,6 +103,7 @@ export class MyTerrain extends CGFobject {
                 heightScale: this.heightScale,
                 frequency: this.frequency,
                 seed: this.seed,
+                hazeStrength: this.hazeStrength,
             });
             shader = this.proceduralShader;
         }

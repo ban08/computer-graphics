@@ -11,6 +11,7 @@ uniform vec2 seed;
 varying float vHeight;
 varying vec3 vNormal;
 varying float vRadial;
+varying vec2 vWorldXY;
 
 vec2 hash22(vec2 p) {
     vec2 q = vec2(dot(p, vec2(127.1, 311.7)),
@@ -44,16 +45,23 @@ float fbm4(vec2 p) {
 // Return the procedural height at a world-space position.
 float terrainHeight(vec2 worldXY) {
     vec2 q = worldXY * frequency + seed;
-    vec2 warp = vec2(gnoise(q + vec2(0.0, 0.0)),
-                     gnoise(q + vec2(5.2, 1.3)));
-    float n = fbm4(q + 0.5 * warp);
-    return n * 0.5 + 0.5;
+    vec2 warp = vec2(gnoise(q * 0.36 + vec2(0.0, 0.0)),
+                     gnoise(q * 0.36 + vec2(5.2, 1.3)));
+
+    float macroHills = fbm4(q * 0.42 + 0.65 * warp);
+    float rolling = fbm4(q * 1.05 + 0.35 * warp + vec2(9.1, 4.7));
+    float surfaceDetail = fbm4(q * 3.20 + vec2(21.4, 8.6));
+    float h = 0.5 + macroHills * 0.62 + rolling * 0.28 + surfaceDetail * 0.07;
+
+    h = smoothstep(0.10, 0.90, clamp(h, 0.0, 1.0));
+    return h * h * (3.0 - 2.0 * h);
 }
 
 void main() {
     vec2 worldXY = aVertexPosition.xy * terrainSize;
 
     float h = terrainHeight(worldXY);
+    vWorldXY = worldXY;
     vHeight = h;
     vRadial = length(worldXY);
 
