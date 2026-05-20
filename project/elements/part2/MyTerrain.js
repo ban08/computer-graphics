@@ -267,6 +267,16 @@ export class MyTerrain extends CGFobject {
         return this.getProceduralTerrainHeightAt(x, z);
     }
 
+    // Low-frequency FBM dryness scalar in [0, 1], biased toward green
+    // (most of the FBM range maps to 0 dryness). Sampled by MyGrassField
+    // so dry blade patches drift across the prairie in a coherent way.
+    getDrynessAt(x, z) {
+        const qx = x * 0.085 + 3.4;
+        const qy = -z * 0.085 + 7.1;
+        const v = this.fbm4(qx, qy);
+        return this.smoothstep(-0.05, 0.32, v);
+    }
+
     display() {
         this.scene.setActiveShader(this.shader);
 

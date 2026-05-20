@@ -30,6 +30,13 @@ export class MyInterface extends CGFinterface {
         clouds.add(this.scene.clouds, 'edgeDrop', 0, 30, 1).name('Edge drop');
         clouds.open();
 
+        const grass = this.gui.addFolder('Grass');
+        grass.add(this.scene.grass, 'visible').name('Visible');
+        grass.add(this.scene.grass, 'windStrength', 0, 0.5, 0.01).name('Wind strength');
+        grass.add(this.scene.grass, 'windSpeed', 0, 3, 0.05).name('Wind speed');
+        grass.add(this.scene.grass, 'windAngleDeg', 0, 360, 1).name('Wind angle');
+        grass.open();
+
         return true;
     }
 }
