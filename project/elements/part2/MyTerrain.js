@@ -1,4 +1,4 @@
-import { CGFobject, CGFshader } from '../../../lib/CGF.js';
+import { CGFobject, CGFshader, CGFtexture } from '../../../lib/CGF.js';
 import { MyPlane } from '../../primitives/MyPlane.js';
 
 /**
@@ -27,7 +27,8 @@ export class MyTerrain extends CGFobject {
 
         this.proceduralHeights = [];
         this.proceduralStep = this.size / this.divisions;
-        
+        this.texture = new CGFtexture(scene, '/project/textures/terrainTexture.jpg');
+
         this.plane = new MyPlane(scene, this.divisions, 0, 1, 0, 1);
 
         this.shader = new CGFshader(
@@ -46,8 +47,9 @@ export class MyTerrain extends CGFobject {
             sunDir: [0.4, 0.4, 0.85],
             ambient: 0.42,
             hazeColor: [0.74, 0.82, 0.84],
+            terrainTex: 0 
         });
-
+        
         this.buildProceduralTerrain();
     }
 
@@ -269,7 +271,7 @@ export class MyTerrain extends CGFobject {
 
     display() {
         this.scene.setActiveShader(this.shader);
-
+        this.texture.bind(0);
         this.scene.pushMatrix();
 
         this.scene.rotate(-Math.PI / 2, 1, 0, 0);

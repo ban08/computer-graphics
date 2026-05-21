@@ -6,6 +6,7 @@ varying float vHeight;
 varying vec3 vNormal;
 varying float vRadial;
 varying vec2 vWorldXY;
+varying vec2 vTexCoord;
 
 uniform vec3 lowColor;
 uniform vec3 midColor;
@@ -15,6 +16,7 @@ uniform float ambient;
 uniform float maxRadius;
 uniform vec3 hazeColor;
 uniform float hazeStrength;
+uniform sampler2D terrainTex;
 
 float hash(vec2 p) {
     p = fract(p * vec2(127.1, 311.7));
@@ -69,6 +71,9 @@ void main() {
     base = mix(base, dryGrass, dryPatch * 0.28);
     base *= 0.92 + fineVariation * 0.14;
     base *= mix(1.0, 0.72, smoothstep(0.12, 0.52, slope));
+
+    vec3 texColor = texture2D(terrainTex, vTexCoord).rgb;
+    base = mix(base, texColor, 0.35);
 
     // Basic diffuse lighting in object space.
     vec3 s = normalize(sunDir);

@@ -4,6 +4,7 @@ import { MyClouds } from "./elements/part1/MyClouds.js";
 import { MySun } from "./elements/part1/MySun.js";
 import { MyTerrain } from "./elements/part2/MyTerrain.js";
 import { MyScatterElements } from "./elements/part2/MyScatterElements.js";
+import { MyGrassField } from "./objects/MyGrassField.js";
 
 export class MyScene extends CGFscene {
   	constructor() {
@@ -30,7 +31,7 @@ export class MyScene extends CGFscene {
 		this.sun = new MySun(this);
 		this.terrain = new MyTerrain(this);
 		this.scatterElements = new MyScatterElements(this, this.terrain);
-
+		this.grassField = new MyGrassField(this, this.terrain, 80);
 		this.setUpdatePeriod(50);
 
     	this.displayAxis = true;
@@ -48,6 +49,7 @@ export class MyScene extends CGFscene {
         this.clouds.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
 		this.clouds.update(t);
         this.terrain.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
+		this.grassField.update(t);
   	}
 
   	initLights() {
@@ -104,5 +106,6 @@ export class MyScene extends CGFscene {
 		this.clouds.display();
 		this.terrain.display();
 		this.scatterElements.display();
+		this.grassField.display();
   	}
 }
