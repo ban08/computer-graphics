@@ -23,6 +23,7 @@ export class MySphere extends CGFobject {
 		this.vertices = [];
 		this.indices = [];
         this.normals = [];
+        this.texCoords = [];
 
         var alphaAng = (360 * Math.PI / 180);
         var betaAng = (180 * Math.PI / 180);
@@ -43,6 +44,7 @@ export class MySphere extends CGFobject {
                 
                 this.vertices.push(this.radius * x, this.radius * y, this.radius * z);
                 this.normals.push(x, y, z);
+                this.texCoords.push(i / this.slices, j / this.stacks);
             }
         }
 

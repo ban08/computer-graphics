@@ -1,5 +1,6 @@
-import { CGFobject, CGFappearance } from '../../lib/CGF.js';
+import { CGFobject, CGFappearance,CGFtexture } from '../../lib/CGF.js';
 import { MySphere } from '../primitives/MySphere.js';
+
 
 /**
  * MyRock
@@ -32,6 +33,8 @@ export class MyRock extends CGFobject {
         this.material.setDiffuse(Math.min(this.color[0] * 1.18, 1.0), Math.min(this.color[1] * 1.18, 1.0), Math.min(this.color[2] * 1.18, 1.0), this.color[3]);
         this.material.setSpecular(0.16, 0.15, 0.13, 1.0);
         this.material.setShininess(18.0);
+        this.material.setTexture(new CGFtexture(scene, '/project/textures/rockTexture.png'));
+        this.material.setTextureWrap('REPEAT', 'REPEAT');
 
         this.deform();
     }
@@ -76,20 +79,23 @@ export class MyRock extends CGFobject {
             let z = v[i + 2];
 
             const len = Math.sqrt(x * x + y * y + z * z);
+            if (len < 0.0001) {
+                n[i]     = 0;
+                n[i + 1] = 1;
+                n[i + 2] = 0;
+            } else {
+                v[i + 1] = y;
 
-            v[i + 1] = y;
-
-            n[i] = x / len;
-            n[i + 1] = y / len;
-            n[i + 2] = z / len;
+                n[i] = x / len;
+                n[i + 1] = y / len;
+                n[i + 2] = z / len;
+            }
         }
 
         this.sphere.initGLBuffers();
     }
-
-    display() {
-        this.material.apply();
-        this.sphere.display();
-        this.scene.setDefaultAppearance();
-    }
+display() {
+    this.material.apply();
+    this.sphere.display();
+}
 }
