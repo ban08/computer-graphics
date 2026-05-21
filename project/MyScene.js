@@ -40,7 +40,7 @@ export class MyScene extends CGFscene {
   	update(t) {
 		this.sun.update(t);		
 		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 0);
-		const sunAmount = Math.max(0.0, Math.min(this.sun.sunY / 4.0, 1.0));
+		const sunAmount = Math.max(0.0, Math.min(this.sun.sunY / 10.0, 1.0));
 		this.lights[0].setAmbient(0.28 * sunAmount, 0.25 * sunAmount, 0.18 * sunAmount, 1.0);
 		this.lights[0].setDiffuse(1.25 * sunAmount, 1.15 * sunAmount, 0.85 * sunAmount, 1.0);
         this.lights[0].setSpecular(1.0 * sunAmount, 0.9 * sunAmount, 0.55 * sunAmount, 1.0);
