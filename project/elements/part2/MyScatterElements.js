@@ -1,4 +1,4 @@
-import { CGFobject } from '../../../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../../../lib/CGF.js';
 import { MyRock } from '../../objects/MyRock.js';
 import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js';
 
@@ -13,6 +13,11 @@ export class MyScatterElements extends CGFobject {
         super(scene);
 
         this.terrain = terrain;
+        this.rockTextures = [
+            new CGFtexture(scene, '/project/textures/rockTextureOne.png'),
+            new CGFtexture(scene, '/project/textures/rockTextureTwo.png'),
+            new CGFtexture(scene, '/project/textures/rockTextureThree.png'),
+        ];
         this.placements = [];
 
         this.generateRocks();
@@ -20,6 +25,10 @@ export class MyScatterElements extends CGFobject {
 
     randomRange(min, max) {
         return min + Math.random() * (max - min);
+    }
+
+    randomRockTexture() {
+        return this.rockTextures[Math.floor(Math.random() * this.rockTextures.length)];
     }
 
     generateRocks() {
@@ -45,7 +54,8 @@ export class MyScatterElements extends CGFobject {
                     scale,
                     1.0,
                     14,
-                    8
+                    8,
+                    this.randomRockTexture()
                 ),
             };
         };

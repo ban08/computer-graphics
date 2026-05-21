@@ -1,6 +1,5 @@
-import { CGFobject, CGFappearance,CGFtexture } from '../../lib/CGF.js';
+import { CGFobject, CGFappearance } from '../../lib/CGF.js';
 import { MySphere } from '../primitives/MySphere.js';
-
 
 /**
  * MyRock
@@ -13,9 +12,10 @@ import { MySphere } from '../primitives/MySphere.js';
  * @param radius - Radius of the baseline sphere
  * @param slices - Number of horizontal baseline sphere subdivisions
  * @param stacks - Number of vertical baseline sphere subdivisions
+ * @param texture - Optional texture applied to the rock material
  */
 export class MyRock extends CGFobject {
-    constructor(scene, seed, color, roughness, scale, radius, slices, stacks) {
+    constructor(scene, seed, color, roughness, scale, radius, slices, stacks, texture) {
         super(scene);
 
         this.seed = seed ?? Math.random() * 1000;
@@ -33,8 +33,10 @@ export class MyRock extends CGFobject {
         this.material.setDiffuse(Math.min(this.color[0] * 1.18, 1.0), Math.min(this.color[1] * 1.18, 1.0), Math.min(this.color[2] * 1.18, 1.0), this.color[3]);
         this.material.setSpecular(0.16, 0.15, 0.13, 1.0);
         this.material.setShininess(18.0);
-        this.material.setTexture(new CGFtexture(scene, '/project/textures/rockTexture.png'));
-        this.material.setTextureWrap('REPEAT', 'REPEAT');
+        if (texture) {
+            this.material.setTexture(texture);
+            this.material.setTextureWrap('REPEAT', 'REPEAT');
+        }
 
         this.deform();
     }
@@ -57,8 +59,11 @@ export class MyRock extends CGFobject {
             let z = v[i + 2];
 
             const index = i / 3;
+            const column = Math.floor(index / (this.stacks + 1));
+            const row = index % (this.stacks + 1);
+            const deformationIndex = (column % this.slices) * (this.stacks + 1) + row;
             const len = Math.sqrt(x * x + y * y + z * z);
-            const offset = (this.random(index) * 2 - 1) * this.roughness;
+            const offset = (this.random(deformationIndex) * 2 - 1) * this.roughness;
 
             x = (x + (x / len) * offset) * sx;
             y = (y + (y / len) * offset) * sy;
@@ -80,7 +85,7 @@ export class MyRock extends CGFobject {
 
             const len = Math.sqrt(x * x + y * y + z * z);
             if (len < 0.0001) {
-                n[i]     = 0;
+                n[i] = 0;
                 n[i + 1] = 1;
                 n[i + 2] = 0;
             } else {
@@ -94,8 +99,9 @@ export class MyRock extends CGFobject {
 
         this.sphere.initGLBuffers();
     }
-display() {
-    this.material.apply();
-    this.sphere.display();
-}
+
+    display() {
+        this.material.apply();
+        this.sphere.display();
+    }
 }
