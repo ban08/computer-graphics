@@ -23,6 +23,7 @@ export class MySphere extends CGFobject {
 		this.vertices = [];
 		this.indices = [];
         this.normals = [];
+        this.texCoords = [];
 
         var alphaAng = (360 * Math.PI / 180);
         var betaAng = (180 * Math.PI / 180);
@@ -30,7 +31,7 @@ export class MySphere extends CGFobject {
         var deltaAlpha = alphaAng / this.slices;
         var deltaBeta = betaAng / this.stacks;
 
-        for (var i = 0; i < this.slices; i++) {
+        for (var i = 0; i <= this.slices; i++) {
             var alpha = i * deltaAlpha;
 
             for (var j = 0; j <= this.stacks; j++) {
@@ -43,15 +44,14 @@ export class MySphere extends CGFobject {
                 
                 this.vertices.push(this.radius * x, this.radius * y, this.radius * z);
                 this.normals.push(x, y, z);
+                this.texCoords.push(i / this.slices, j / this.stacks);
             }
         }
 
         for (var i = 0; i < this.slices; i++) {
-            var nextI = (i + 1) % this.slices;
-
             for (var j = 0; j < this.stacks; j++) {
                 var current = i * (this.stacks + 1) + j;
-                var next = nextI * (this.stacks + 1) + j;
+                var next = (i + 1) * (this.stacks + 1) + j;
 
                 this.indices.push(current, current + 1, next);
                 this.indices.push(current + 1, next + 1, next);

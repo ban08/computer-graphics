@@ -13,7 +13,7 @@ export class MyScene extends CGFscene {
 
   	init(application) {
     	super.init(application);
-    
+
     	this.initCameras();
     	this.initLights();
 
@@ -23,6 +23,7 @@ export class MyScene extends CGFscene {
 		this.gl.enable(this.gl.DEPTH_TEST);
 		this.gl.enable(this.gl.CULL_FACE);
 		this.gl.depthFunc(this.gl.LEQUAL);
+		this.enableTextures(true);
 
 		this.axis = new CGFaxis(this);
 		this.sky = new MySky(this);
@@ -38,9 +39,9 @@ export class MyScene extends CGFscene {
   	}
 
   	update(t) {
-		this.sun.update(t);		
+		this.sun.update(t);
 		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 0);
-		const sunAmount = Math.max(0.0, Math.min(this.sun.sunY / 4.0, 1.0));
+		const sunAmount = Math.max(0.0, Math.min(this.sun.sunY / 10.0, 1.0));
 		this.lights[0].setAmbient(0.28 * sunAmount, 0.25 * sunAmount, 0.18 * sunAmount, 1.0);
 		this.lights[0].setDiffuse(1.25 * sunAmount, 1.15 * sunAmount, 0.85 * sunAmount, 1.0);
         this.lights[0].setSpecular(1.0 * sunAmount, 0.9 * sunAmount, 0.55 * sunAmount, 1.0);

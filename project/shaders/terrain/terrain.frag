@@ -6,6 +6,7 @@ varying float vHeight;
 varying vec3 vNormal;
 varying float vRadial;
 varying vec2 vWorldXY;
+varying vec2 vTexCoord;
 
 uniform vec3 lowColor;
 uniform vec3 midColor;
@@ -15,6 +16,7 @@ uniform float ambient;
 uniform float maxRadius;
 uniform vec3 hazeColor;
 uniform float hazeStrength;
+uniform sampler2D terrainTex;
 
 float hash(vec2 p) {
     p = fract(p * vec2(127.1, 311.7));
