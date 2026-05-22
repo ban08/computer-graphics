@@ -32,7 +32,12 @@ export class MyScatterElements extends CGFobject {
     }
 
     generateRocks() {
-        const keepAwayFromCenter = (x, z) => Math.sqrt(x * x + z * z) > 3.0;
+        const keepAwayFromCenter = (x, z) => {
+            const awayFromSceneCenter = Math.sqrt(x * x + z * z) > 3.0;
+            const awayFromStarterWagon = Math.hypot(x - 8.0, z - 6.2) > 5.7;
+
+            return awayFromSceneCenter && awayFromStarterWagon;
+        };
 
         const createRockPlacement = (placement) => {
             const scale = [
@@ -40,11 +45,13 @@ export class MyScatterElements extends CGFobject {
                 this.randomRange(0.10, 0.35),
                 this.randomRange(0.20, 0.75),
             ];
+            const horizontalRadius = Math.max(scale[0], scale[2]) * 1.25;
 
             return {
                 x: placement.x,
                 y: placement.y,
                 z: placement.z,
+                collisionRadius: horizontalRadius + 0.18,
                 rotation: this.randomRange(0, Math.PI * 2),
                 rock: new MyRock(
                     this.scene,
@@ -86,5 +93,14 @@ export class MyScatterElements extends CGFobject {
             
             this.scene.popMatrix();
         }
+    }
+
+    getCollisionObstacles() {
+        return this.placements.map((placement) => ({
+            x: placement.x,
+            z: placement.z,
+            radius: placement.collisionRadius,
+            type: 'rock',
+        }));
     }
 }
