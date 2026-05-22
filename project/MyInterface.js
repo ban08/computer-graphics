@@ -1,4 +1,4 @@
-import {CGFinterface, dat} from '../lib/CGF.js';
+import { CGFinterface, dat } from '../lib/CGF.js';
 
 export class MyInterface extends CGFinterface {
     constructor() {
@@ -23,12 +23,19 @@ export class MyInterface extends CGFinterface {
         const clouds = this.gui.addFolder('Clouds');
         clouds.add(this.scene.clouds, 'visible').name('Visible');
         clouds.add(this.scene.clouds, 'amount', 0, 1, 0.01).name('Amount');
-        clouds.add(this.scene.clouds, 'driftSpeed', 0, 0.08, 0.001).name('Wind drift');
-        clouds.add(this.scene.clouds, 'altitude', 0.35, 0.75, 0.01).name('Altitude');
-        clouds.add(this.scene.clouds, 'horizonFade', 0.06, 0.35, 0.01).name('Horizon fade');
-        clouds.add(this.scene.clouds, 'curvature', 0.12, 0.40, 0.01).name('Curvature');
-        clouds.add(this.scene.clouds, 'edgeDrop', 0, 30, 1).name('Edge drop');
         clouds.open();
+
+        const wind = this.gui.addFolder('Wind');
+        wind.add(this.scene.clouds, 'driftSpeed', 0, 0.05, 0.001).name('Speed');
+        wind.add(this.scene.clouds, 'windAngleDeg', 0, 360, 1).name('Direction');
+        wind.open();
+
+        const grass = this.gui.addFolder('Grass');
+        grass.add(this.scene.grass, 'visible').name('Visible');
+        grass.add(this.scene.grass, 'densityFactor', 1, 100, 1)
+            .name('Amount')
+            .onFinishChange(() => this.scene.grass.rebuild());
+        grass.open();
 
         return true;
     }

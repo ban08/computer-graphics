@@ -7,6 +7,7 @@ varying vec3 vLocalPos;
 uniform float timeFactor;
 uniform float coverage;
 uniform float speed;
+uniform vec2 windDir;
 uniform float cloudBase;
 uniform float cloudSoftness;
 uniform vec3 cloudColor;
@@ -52,7 +53,9 @@ void main() {
 
     // Project the dome direction onto the horizontal plane.
     vec2 uv = dir.xz * 3.2;
-    vec2 drift = vec2(timeFactor * speed, timeFactor * speed * 0.3);
+    vec2 wind = normalize(windDir);
+    vec2 crossWind = vec2(-wind.y, wind.x);
+    vec2 drift = wind * timeFactor * speed + crossWind * timeFactor * speed * 0.18;
     uv += drift;
 
     // Layered 2D noise: large masses, medium cuts, and fine edge erosion.

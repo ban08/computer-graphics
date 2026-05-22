@@ -4,7 +4,7 @@ import { MyClouds } from "./elements/part1/MyClouds.js";
 import { MySun } from "./elements/part1/MySun.js";
 import { MyTerrain } from "./elements/part2/MyTerrain.js";
 import { MyScatterElements } from "./elements/part2/MyScatterElements.js";
-import { MyGrassField } from "./objects/MyGrassField.js";
+import { MyGrassField } from "./elements/part3/MyGrassField.js";
 
 export class MyScene extends CGFscene {
   	constructor() {
@@ -13,7 +13,7 @@ export class MyScene extends CGFscene {
 
   	init(application) {
     	super.init(application);
-    
+
     	this.initCameras();
     	this.initLights();
 
@@ -23,7 +23,7 @@ export class MyScene extends CGFscene {
 		this.gl.enable(this.gl.DEPTH_TEST);
 		this.gl.enable(this.gl.CULL_FACE);
 		this.gl.depthFunc(this.gl.LEQUAL);
-		this.enableTextures(true); 
+		this.enableTextures(true);
 
 		this.axis = new CGFaxis(this);
 		this.sky = new MySky(this);
@@ -31,14 +31,15 @@ export class MyScene extends CGFscene {
 		this.sun = new MySun(this);
 		this.terrain = new MyTerrain(this);
 		this.scatterElements = new MyScatterElements(this, this.terrain);
-		this.grassField = new MyGrassField(this, this.terrain, 80);
+		this.grass = new MyGrassField(this, this.terrain);
+
 		this.setUpdatePeriod(50);
 
     	this.displayAxis = true;
   	}
 
   	update(t) {
-		this.sun.update(t);		
+		this.sun.update(t);
 		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 0);
 		const sunAmount = Math.max(0.0, Math.min(this.sun.sunY / 10.0, 1.0));
 		this.lights[0].setAmbient(0.28 * sunAmount, 0.25 * sunAmount, 0.18 * sunAmount, 1.0);
@@ -49,7 +50,8 @@ export class MyScene extends CGFscene {
         this.clouds.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
 		this.clouds.update(t);
         this.terrain.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
-		this.grassField.update(t);
+        this.grass.update(t, this.clouds);
+        this.grass.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
   	}
 
   	initLights() {
@@ -105,7 +107,7 @@ export class MyScene extends CGFscene {
 		this.sun.display();
 		this.clouds.display();
 		this.terrain.display();
+		this.grass.display();
 		this.scatterElements.display();
-		this.grassField.display();
   	}
 }

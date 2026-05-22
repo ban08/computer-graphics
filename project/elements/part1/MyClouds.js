@@ -25,15 +25,18 @@ export class MyClouds extends CGFobject {
         );
 
         this.amount = 0.65;
-        this.driftSpeed = 0.02;
+        this.driftSpeed = 0.005;
+        this.windAngleDeg = 35;
         this.altitude = 0.48;
         this.horizonFade = 0.14;
         this.visible = true;
 
+        const wind = this.getWindVector();
         this.shader.setUniformsValues({
             timeFactor: 0,
             coverage: this.amount,
             speed: this.driftSpeed,
+            windDir: wind,
             cloudBase: this.altitude,
             cloudSoftness: this.horizonFade,
             cloudColor: [1.0, 1.0, 1.0],
@@ -46,12 +49,18 @@ export class MyClouds extends CGFobject {
         this.shader.setUniformsValues({ sunDir: [x/len, y/len, z/len] });
     }
 
+    getWindVector() {
+        const rad = this.windAngleDeg * Math.PI / 180.0;
+        return [Math.cos(rad), Math.sin(rad)];
+    }
+
     update(t) {
         // Limit the time uniform to avoid precision loss in the shader.
         this.shader.setUniformsValues({
             timeFactor: (t / 100.0) % 10000.0,
             coverage: this.amount,
             speed: this.driftSpeed,
+            windDir: this.getWindVector(),
             cloudBase: this.altitude,
             cloudSoftness: this.horizonFade,
         });

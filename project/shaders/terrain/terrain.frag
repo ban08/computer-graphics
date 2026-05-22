@@ -66,14 +66,24 @@ void main() {
     float lowMoisture = (1.0 - smoothstep(0.18, 0.48, vHeight)) * (1.0 - slope * 0.55);
 
     vec3 moistGreen = vec3(0.07, 0.24, 0.08);
-    vec3 dryGrass = vec3(0.49, 0.45, 0.22);
+    vec3 dryGrass = vec3(0.66, 0.50, 0.18);
     base = mix(base, moistGreen, clamp(lowMoisture, 0.0, 1.0) * 0.20);
-    base = mix(base, dryGrass, dryPatch * 0.28);
+    base = mix(base, dryGrass, dryPatch * 0.46);
     base *= 0.92 + fineVariation * 0.14;
     base *= mix(1.0, 0.72, smoothstep(0.12, 0.52, slope));
 
-    vec3 texColor = texture2D(terrainTex, vTexCoord).rgb;
-    base = mix(base, texColor, 0.35);
+    // Low-cost grass underpaint. The 3D blades supply silhouettes and wind;
+    // this shader noise fills the gaps so the ground reads as a continuous
+    // grassy field instead of isolated spikes.
+    float bladeRows = vnoise(vec2(vWorldXY.x * 3.4 + broadVariation * 4.0, vWorldXY.y * 15.0));
+    float grassFibers = smoothstep(0.50, 0.92, bladeRows) * (1.0 - dryPatch * 0.65);
+    float grassGrain = fbm3(vWorldXY * 1.8 + vec2(8.1, 4.6));
+    vec3 darkFiber = vec3(0.07, 0.23, 0.07);
+    vec3 lightFiber = vec3(0.48, 0.58, 0.16);
+    vec3 dryFiber = vec3(0.78, 0.62, 0.22);
+    vec3 fiberColor = mix(darkFiber, lightFiber, grassGrain);
+    fiberColor = mix(fiberColor, dryFiber, dryPatch * 0.58);
+    base = mix(base, fiberColor, 0.16 + grassFibers * 0.22);
 
     // Basic diffuse lighting in object space.
     vec3 s = normalize(sunDir);
