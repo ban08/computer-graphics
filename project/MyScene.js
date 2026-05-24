@@ -28,8 +28,8 @@ export class MyScene extends CGFscene {
 
 		this.axis = new CGFaxis(this);
 		this.sky = new MySky(this);
-		this.clouds = new MyClouds(this);
 		this.sun = new MySun(this);
+		this.clouds = new MyClouds(this);
 		this.terrain = new MyTerrain(this);
 		this.scatterElements = new MyScatterElements(this, this.terrain);
 		this.grass = new MyGrass(this, this.terrain);
@@ -103,16 +103,16 @@ export class MyScene extends CGFscene {
 		this.lights[0].update();
 		this.lights[1].update();
 
-		if (this.displayAxis) this.axis.display();
+		//if (this.displayAxis) this.axis.display();
 
 		this.setDefaultAppearance();
 
 		this.sky.display();
 		this.sun.display();
 		this.clouds.display();
-		this.terrain.display();
-		this.grass.display();
-		this.scatterElements.display();
-		this.wagon.display();
+		//this.terrain.display();
+		//this.grass.display();
+		//this.scatterElements.display();
+		//this.wagon.display();
   	}
 }
