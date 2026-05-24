@@ -278,7 +278,17 @@ export class MyTerrain extends CGFobject {
         const v = this.fbm4(qx, qy);
         return this.smoothstep(-0.05, 0.32, v);
     }
+    getPathCenterXAt(z) {
+        const mappedY = -z; 
+        return Math.sin(mappedY * 0.15) * 8.0 + Math.cos(mappedY * 0.05) * 4.0;
+    }
 
+    isPointOnPath(x, z) {
+        const pathX = this.getPathCenterXAt(z);
+        const distanceToPath = Math.abs(x - pathX);
+        
+        return distanceToPath < 2.5; 
+    }
     display() {
         this.scene.setActiveShader(this.shader);
         this.texture.bind(0);

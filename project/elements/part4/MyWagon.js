@@ -28,8 +28,8 @@ export class MyWagon extends CGFobject {
         super(scene);
 
         this.terrain = terrain;
-        this.x = options.x ?? 8.0;
-        this.z = options.z ?? 6.2;
+        this.x = options.x ?? -0.5;
+        this.z = options.z ?? 4.0;
         this.rotation = options.rotation ?? -Math.PI / 4;
         this.scaleFactor = options.scale ?? 0.78;
         this.wheelCenterY = 0.62;
