@@ -35,8 +35,8 @@ export class MyScatterElements extends CGFobject {
         const keepAwayFromCenter = (x, z) => {
             const awayFromSceneCenter = Math.sqrt(x * x + z * z) > 3.0;
             const awayFromStarterWagon = Math.hypot(x - 8.0, z - 6.2) > 5.7;
-
-            return awayFromSceneCenter && awayFromStarterWagon;
+            const awayFromPathway = !this.terrain.isPointOnPath(x, z);
+            return awayFromSceneCenter && awayFromStarterWagon && awayFromPathway;
         };
 
         const createRockPlacement = (placement) => {

@@ -93,7 +93,7 @@ void main() {
     float pathNoise = vnoise(vWorldXY * 1.2);
     dirtColor *= 0.88 + pathNoise * 0.18;
 
-    float pathMask = 1.0 - smoothstep(0.7, 1.2, distanceToPath);
+    float pathMask = 1.0 - smoothstep(1.7, 2.2, distanceToPath);
     base = mix(base, dirtColor, pathMask);
 
     // Basic diffuse lighting in object space.
