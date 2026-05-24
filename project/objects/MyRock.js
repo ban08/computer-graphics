@@ -103,6 +103,9 @@ export class MyRock extends CGFobject {
 
     display() {
         this.material.apply();
+
         this.sphere.display();
+
+        this.scene.setDefaultAppearance();
     }
 }

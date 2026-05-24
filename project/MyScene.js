@@ -4,6 +4,7 @@ import { MyClouds } from "./elements/part1/MyClouds.js";
 import { MySun } from "./elements/part1/MySun.js";
 import { MyTerrain } from "./elements/part2/MyTerrain.js";
 import { MyScatterElements } from "./elements/part2/MyScatterElements.js";
+import { MyFlowers } from "./elements/part3/MyFlowers.js";
 import { MyGrass } from "./elements/part3/MyGrass.js";
 import { MyWagon } from "./elements/part4/MyWagon.js";
 
@@ -32,6 +33,7 @@ export class MyScene extends CGFscene {
 		this.clouds = new MyClouds(this);
 		this.terrain = new MyTerrain(this);
 		this.scatterElements = new MyScatterElements(this, this.terrain);
+		this.flowers = new MyFlowers(this, this.terrain);
 		this.grass = new MyGrass(this, this.terrain);
 		this.wagon = new MyWagon(this, this.terrain, {
 			obstacles: this.scatterElements.getCollisionObstacles(),
@@ -79,8 +81,8 @@ export class MyScene extends CGFscene {
       		0.4,
       		0.1,
       		500,
-      		vec3.fromValues(15, 5.5	, 15),
-      		vec3.fromValues(12.5, 5, 12.5)
+      		vec3.fromValues(15, 5.5, 15),
+      		vec3.fromValues(0, 5, 0)
     	);
   	}
 
@@ -111,8 +113,9 @@ export class MyScene extends CGFscene {
 		this.sun.display();
 		this.clouds.display();
 		this.terrain.display();
-		this.grass.display();
 		this.scatterElements.display();
+		this.flowers.display();
+		this.grass.display();
 		this.wagon.display();
   	}
 }
