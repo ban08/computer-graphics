@@ -140,8 +140,9 @@ export class MyGrass {
             0, 0, this.fieldRadius
         );
 
-        const keepAwayFromCenter = (x, z) =>
-            Math.sqrt(x * x + z * z) > this.excludePathRadius;
+            const keepAwayFromCenter = (x, z) => {
+            return Math.sqrt(x * x + z * z) > this.excludePathRadius && !this.terrain.isPointOnPath(x, z);
+        };
 
         const tuftAnchors = generator.generatePoints(effectiveSpacing, 20);
         this.shuffleTuftAnchors(tuftAnchors);
