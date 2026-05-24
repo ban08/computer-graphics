@@ -85,6 +85,17 @@ void main() {
     fiberColor = mix(fiberColor, dryFiber, dryPatch * 0.58);
     base = mix(base, fiberColor, 0.16 + grassFibers * 0.22);
 
+    //pathway
+    float pathCenterX = sin(vWorldXY.y * 0.15) * 8.0 + cos(vWorldXY.y * 0.05) * 4.0;
+    float distanceToPath = abs(vWorldXY.x - pathCenterX);
+    
+    vec3 dirtColor = vec3(0.38, 0.28, 0.18);
+    float pathNoise = vnoise(vWorldXY * 1.2);
+    dirtColor *= 0.88 + pathNoise * 0.18;
+
+    float pathMask = 1.0 - smoothstep(0.7, 1.2, distanceToPath);
+    base = mix(base, dirtColor, pathMask);
+
     // Basic diffuse lighting in object space.
     vec3 s = normalize(sunDir);
 
