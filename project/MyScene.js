@@ -4,7 +4,7 @@ import { MyClouds } from "./elements/part1/MyClouds.js";
 import { MySun } from "./elements/part1/MySun.js";
 import { MyTerrain } from "./elements/part2/MyTerrain.js";
 import { MyScatterElements } from "./elements/part2/MyScatterElements.js";
-import { MyGrassField } from "./elements/part3/MyGrassField.js";
+import { MyGrass } from "./elements/part3/MyGrass.js";
 import { MyWagon } from "./elements/part4/MyWagon.js";
 
 export class MyScene extends CGFscene {
@@ -32,7 +32,7 @@ export class MyScene extends CGFscene {
 		this.sun = new MySun(this);
 		this.terrain = new MyTerrain(this);
 		this.scatterElements = new MyScatterElements(this, this.terrain);
-		this.grass = new MyGrassField(this, this.terrain);
+		this.grass = new MyGrass(this, this.terrain);
 		this.wagon = new MyWagon(this, this.terrain, {
 			obstacles: this.scatterElements.getCollisionObstacles(),
 		});

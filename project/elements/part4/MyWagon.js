@@ -100,7 +100,7 @@ export class MyWagon extends CGFobject {
         // OBJ-loaded mule body — per spec ("Horses/mules should be imported
         // in OBJ format"). Extra mane and tail tuft are layered on top in
         // displayMule to enrich the silhouette.
-        this.mule = new CGFobjModel(scene, '/project/objects/mule.obj');
+        this.mule = new CGFobjModel(scene, '/project/assets/mule.obj');
     }
 
     createMaterials() {

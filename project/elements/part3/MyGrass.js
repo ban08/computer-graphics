@@ -50,7 +50,7 @@ class GrassMeshChunk extends CGFobject {
 }
 
 /**
- * MyGrassField
+ * MyGrass
  *
  * Irregular prairie grass built from one Poisson-disc candidate field.
  * A cheap CPU-side density mask turns candidates into dense green patches,
@@ -63,7 +63,7 @@ class GrassMeshChunk extends CGFobject {
  * @param terrain - Terrain used for blade height snapping and dryness sampling
  * @param opts    - Optional override map
  */
-export class MyGrassField {
+export class MyGrass {
     constructor(scene, terrain, opts = {}) {
         this.scene = scene;
         this.terrain = terrain;

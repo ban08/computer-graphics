@@ -24,7 +24,7 @@ export class MyGrassBlade {
 
     /**
      * Builds one transformed blade (2 triangles) into the given flat arrays.
-     * Used by MyGrassField during VBO baking, with no per-blade allocations.
+     * Used by MyGrass during VBO baking, with no per-blade allocations.
      */
     build(rootX, rootY, rootZ, rotY, widthScale, heightScale, dryness, toneSeed, out) {
         const halfBase = this.width * widthScale * 0.5;

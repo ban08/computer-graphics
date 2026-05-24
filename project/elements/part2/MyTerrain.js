@@ -270,7 +270,7 @@ export class MyTerrain extends CGFobject {
     }
 
     // Low-frequency FBM dryness scalar in [0, 1], biased toward green
-    // (most of the FBM range maps to 0 dryness). Sampled by MyGrassField
+    // (most of the FBM range maps to 0 dryness). Sampled by MyGrass
     // so dry blade patches drift across the prairie in a coherent way.
     getDrynessAt(x, z) {
         const qx = x * 0.085 + 3.4;
