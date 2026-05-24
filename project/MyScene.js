@@ -58,6 +58,7 @@ export class MyScene extends CGFscene {
         this.terrain.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
         this.grass.update(t, this.clouds);
         this.grass.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
+        this.wagon.update(t, this.gui);
   	}
 
   	initLights() {

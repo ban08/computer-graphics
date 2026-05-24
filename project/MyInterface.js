@@ -5,8 +5,29 @@ export class MyInterface extends CGFinterface {
         super();
     }
 
+    // initkeys similar to the keyboard events example!
+    initKeys() {
+        this.scene.gui = this;
+        this.processKeyboard = function() {};
+        this.activeKeys = {};
+    }
+
+    processKeyDown(event) {
+        this.activeKeys[event.code] = true;
+    }
+
+    processKeyUp(event) {
+        this.activeKeys[event.code] = false;
+    }
+
+    isKeyPressed(keyCode) {
+        return this.activeKeys[keyCode] || false;
+    }
+
     init(application) {
         super.init(application);
+
+        this.initKeys();
 
         this.gui = new dat.GUI();
 

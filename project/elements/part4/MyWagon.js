@@ -53,6 +53,19 @@ export class MyWagon extends CGFobject {
         this.collisionObstacles = options.obstacles ?? [];
         this.staticCollisionMargin = 0.24;
 
+        // movement related vars
+        this.speed = 0.0;
+        this.maxSpeed = 4.0;
+        this.acceleration = 2.6;
+        this.brakeDeceleration = 4.2;
+        this.coastingDeceleration = 0.35;
+        this.steerAngle = 0.0;
+        this.maxSteerAngle = 0.55;
+        this.steerSpeed = 1.6;
+        this.steerReturnSpeed = 1.9;
+        this.turnRateFactor = 2.4;
+        this.lastUpdateTime = null;
+
         // --- Bed/cover key dimensions (single source of truth) -------------
         this.bedHalfWidth = 0.85;
         this.wallThickness = 0.10;
@@ -331,6 +344,62 @@ export class MyWagon extends CGFobject {
 
         // Hooves: compact dark-brown squares.
         this.hoofWrap = new MyTexturedBox(this.scene, this.hoofWidth, this.hoofHeight, this.hoofDepth, 0.12);
+    }
+
+    // movement related funcs
+    update(t, input) {
+        if (this.lastUpdateTime === null) {
+            this.lastUpdateTime = t;
+            return;
+        }
+
+        const dt = this.clamp((t - this.lastUpdateTime) / 1000.0, 0.0, 0.10);
+        this.lastUpdateTime = t;
+        if (dt <= 0) return;
+
+        const accelerating = this.isInputPressed(input, 'KeyW');
+        const braking = this.isInputPressed(input, 'KeyS');
+        const steeringLeft = this.isInputPressed(input, 'KeyA');
+        const steeringRight = this.isInputPressed(input, 'KeyD');
+
+        if (accelerating) this.speed += this.acceleration * dt;
+        if (braking) this.speed -= this.brakeDeceleration * dt;
+        if (!accelerating && !braking) this.speed = this.approachZero(this.speed, this.coastingDeceleration * dt);
+        this.speed = this.clamp(this.speed, 0.0, this.maxSpeed);
+
+        const steerInput = (steeringLeft ? 1 : 0) - (steeringRight ? 1 : 0);
+        if (steerInput !== 0) {
+            this.steerAngle += steerInput * this.steerSpeed * dt;
+        } else {
+            this.steerAngle = this.approachZero(this.steerAngle, this.steerReturnSpeed * dt);
+        }
+        this.steerAngle = this.clamp(this.steerAngle, -this.maxSteerAngle, this.maxSteerAngle);
+
+        if (this.speed <= 0.001) {
+            this.speed = 0.0;
+            return;
+        }
+
+        const distance = this.speed * dt;
+        const turnRate = (this.speed / this.turnRateFactor) * Math.tan(this.steerAngle);
+        const nextRotation = this.rotation + turnRate * dt;
+        const nextX = this.x + Math.sin(nextRotation) * distance;
+        const nextZ = this.z + Math.cos(nextRotation) * distance;
+
+        this.rotation = nextRotation;
+        this.x = nextX;
+        this.z = nextZ;
+    }
+
+    isInputPressed(input, keyCode) {
+        if (!input) return false;
+        return input.isKeyPressed(keyCode);
+    }
+
+    approachZero(value, maxDelta) {
+        if (value > maxDelta) return value - maxDelta;
+        if (value < -maxDelta) return value + maxDelta;
+        return 0.0;
     }
 
     getTerrainPose() {
