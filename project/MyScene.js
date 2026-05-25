@@ -142,8 +142,7 @@ export class MyScene extends CGFscene {
 		this.scatterElements.display();
 		this.flowers.display();
 		this.grass.display();
-		this.wagon.display();
-		this.hayBales.display();
-  	
+		//this.wagon.display();
+		//this.hayBales.display();
 	}
 }
