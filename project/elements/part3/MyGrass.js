@@ -77,7 +77,6 @@ export class MyGrass {
         this.densityFactor = opts.densityFactor ?? 10.0;
         this.bladeScale = opts.bladeScale ?? 1.0;
         this.colorVariation = opts.colorVariation ?? 1.0;
-        this.excludePathRadius = opts.excludePathRadius ?? 1.2;
         this.fieldRadius = (opts.fieldRadius ?? terrain.maxRadius) * 0.97;
         this.maxBlades = opts.maxBlades ?? 125000;
 
@@ -140,10 +139,6 @@ export class MyGrass {
             0, 0, this.fieldRadius
         );
 
-            const keepAwayFromCenter = (x, z) => {
-            return Math.sqrt(x * x + z * z) > this.excludePathRadius && !this.terrain.isPointOnPath(x, z);
-        };
-
         const tuftAnchors = generator.generatePoints(effectiveSpacing, 20);
         this.shuffleTuftAnchors(tuftAnchors);
 
@@ -160,7 +155,7 @@ export class MyGrass {
 
         for (let i = 0; i < tuftAnchors.length; i++) {
             const p = tuftAnchors[i];
-            if (!keepAwayFromCenter(p.x, p.z)) continue;
+            if (this.terrain.isPointOnPath(p.x, p.z)) continue;
 
             const dryness = this.terrain.getDrynessAt
                 ? this.terrain.getDrynessAt(p.x, p.z)
@@ -183,7 +178,7 @@ export class MyGrass {
                 const x = p.x + Math.cos(offsetAngle) * offsetRadius;
                 const z = p.z + Math.sin(offsetAngle) * offsetRadius;
 
-                if (!keepAwayFromCenter(x, z)) continue;
+                if (this.terrain.isPointOnPath(x, z)) continue;
                 if (x * x + z * z > this.fieldRadius * this.fieldRadius) continue;
 
                 const localDryness = this.clamp(

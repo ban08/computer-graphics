@@ -40,13 +40,12 @@ export class MyHayBales extends CGFobject {
    generateBalePlacements() {
     this.placements = [];
 
-    const keepAwayFromCenter = (x, z) => {
-        const awayFromSceneCenter = Math.sqrt(x * x + z * z) > 4.0;
-        const awayFromStarterWagon = Math.hypot(x - 8.0, z - 6.2) > 6.0;
+    const isValidPlacement = (x, z) => {
+        const awayFromStarterWagon = Math.hypot(x - 2.0, z - 21.0) > 6.0;
         const awayFromPathway = !this.terrain.isPointOnPath(x, z);
         
-    if (!awayFromSceneCenter || !awayFromStarterWagon || !awayFromPathway) {
-                return false;
+    if (!awayFromStarterWagon || !awayFromPathway) {
+        return false;
     }
  
     if (this.rocks && this.rocks.placements) {
@@ -84,7 +83,7 @@ export class MyHayBales extends CGFobject {
         const x = radius * Math.cos(angle);
         const z = radius * Math.sin(angle);
 
-        if (!keepAwayFromCenter(x, z)) continue;
+        if (!isValidPlacement(x, z)) continue;
 
    
         let tooCloseToOthers = false;
