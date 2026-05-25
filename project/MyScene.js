@@ -65,6 +65,7 @@ export class MyScene extends CGFscene {
         this.grass.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
 
         this.wagon.update(t, this.gui);
+		this.hayBales.update(t);
 		
 		if (this.cameraType == 'Follow Wagon') this.setChaseCamera();
   	}
