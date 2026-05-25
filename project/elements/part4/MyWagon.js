@@ -1,5 +1,4 @@
 import { CGFobject, CGFappearance, CGFtexture } from '../../../lib/CGF.js';
-import { CGFobjModel } from '../../../lib/extra/CGFobjModel.js';
 import { MyTexturedBox } from '../../primitives/MyTexturedBox.js';
 import { MyCappedCylinder } from '../../primitives/MyCappedCylinder.js';
 import { MyTorus } from '../../primitives/MyTorus.js';
@@ -7,14 +6,14 @@ import { MyRoundedCoverShell } from '../../primitives/MyRoundedCoverShell.js';
 import { MyRoundedCoverEndPanel } from '../../primitives/MyRoundedCoverEndPanel.js';
 import { MyArchBow } from '../../primitives/MyArchBow.js';
 import { MySphere } from '../../primitives/MySphere.js';
+import { MyGroupedMule } from '../../objects/MyGroupedMule.js';
 import {MyHayBale} from '../../objects/MyHayBale.js';
 
 /**
  * Hierarchical prairie schooner pulled by two mules.
  *
- * Pure visual model — no input, gameplay, or animation. Wheel rotation,
- * steering and rope/wind movement are out of scope here and live in the
- * gameplay layer once that exists.
+ * Hierarchical visual model with its own movement state. Gameplay actions
+ * such as bale pickup/drop live outside this class.
  *
  * Local frame conventions
  * -----------------------
@@ -65,6 +64,8 @@ export class MyWagon extends CGFobject {
         this.steerSpeed = 1.6;
         this.steerReturnSpeed = 1.9;
         this.turnRateFactor = 2.4;
+        this.wheelSpinAngle = 0.0;
+        this.gaitPhase = 0.0;
         this.lastUpdateTime = null;
 
         // --- Bed/cover key dimensions (single source of truth) -------------
@@ -114,7 +115,7 @@ export class MyWagon extends CGFobject {
         // OBJ-loaded mule body — per spec ("Horses/mules should be imported
         // in OBJ format"). Extra mane and tail tuft are layered on top in
         // displayMule to enrich the silhouette.
-        this.mule = new CGFobjModel(scene, '/project/assets/mule.obj');
+        this.mule = new MyGroupedMule(scene, '/project/assets/mule.obj');
     }
 
     createMaterials() {
@@ -374,6 +375,10 @@ export class MyWagon extends CGFobject {
         }
 
         const distance = this.speed * dt;
+        const wheelWorldRadius = Math.max(this.wheelOuterRadius * this.scaleFactor, 0.0001);
+        this.wheelSpinAngle = (this.wheelSpinAngle + distance / wheelWorldRadius) % (Math.PI * 2);
+        this.gaitPhase = (this.gaitPhase + (distance / Math.max(this.scaleFactor, 0.0001)) * 3.2) % (Math.PI * 2);
+
         const turnRate = (this.speed / this.turnRateFactor) * Math.tan(this.steerAngle);
         const nextRotation = this.rotation + turnRate * dt;
         const nextX = this.x + Math.sin(nextRotation) * distance;
@@ -435,7 +440,7 @@ export class MyWagon extends CGFobject {
 
         const hoofHalfX = this.hoofWidth * 0.5 + 0.045;
         const hoofHalfZ = this.hoofDepth * 0.5 + 0.045;
-        const hoofBottomY = this.hoofCenterY - this.hoofHeight * 0.5 - 0.035;
+        const hoofBottomY = this.hoofCenterY - this.hoofHeight * 0.5;
         const hoofSampleOffsets = [
             { x: 0, z: 0 },
             { x: -hoofHalfX, z: -hoofHalfZ },
@@ -444,13 +449,19 @@ export class MyWagon extends CGFobject {
             { x: hoofHalfX, z: hoofHalfZ },
         ];
         const hoofPoints = [];
+        const lead = this.getMuleLeadTransform(muleX);
+        const c = Math.cos(lead.yaw);
+        const s = Math.sin(lead.yaw);
 
         for (const hoof of this.muleHoofCenters) {
             for (const offset of hoofSampleOffsets) {
+                const hoofX = (hoof.x + offset.x) * this.muleScale;
+                const hoofZ = (hoof.z + offset.z) * this.muleScale;
+
                 hoofPoints.push({
-                    x: muleX + (hoof.x + offset.x) * this.muleScale,
+                    x: lead.x + hoofX * c + hoofZ * s,
                     y: hoofBottomY * this.muleScale,
-                    z: this.muleZ + (hoof.z + offset.z) * this.muleScale,
+                    z: lead.z - hoofX * s + hoofZ * c,
                 });
             }
         }
@@ -469,7 +480,7 @@ export class MyWagon extends CGFobject {
         }
 
         const averageDiff = terrainSum / hoofPoints.length - planeSum / hoofPoints.length;
-        const terrainClearance = 0.10;
+        const terrainClearance = 0.012;
         const verticalOffsetScale = this.scaleFactor * Math.max(
             0.25,
             Math.cos(pose.roll) * Math.cos(pose.pitch)
@@ -613,6 +624,63 @@ export class MyWagon extends CGFobject {
         return Math.max(min, Math.min(max, value));
     }
 
+    getGaitIntensity() {
+        if (this.speed <= 0.001) return 0.0;
+
+        const speedRatio = this.clamp(this.speed / Math.max(this.maxSpeed, 0.0001), 0.0, 1.0);
+        return this.clamp(0.30 + speedRatio * 0.70, 0.0, 1.0);
+    }
+
+    getMuleSteerYaw() {
+        return this.steerAngle * 0.82;
+    }
+
+    getMulePhase(localX) {
+        return this.gaitPhase + (localX > 0 ? Math.PI * 0.12 : 0.0);
+    }
+
+    getMuleBodyBob(localX) {
+        const phase = this.getMulePhase(localX);
+        return Math.abs(Math.sin(phase * 2.0)) * 0.012 * this.getGaitIntensity();
+    }
+
+    getMuleLeadTransform(localX) {
+        const yaw = this.getMuleSteerYaw();
+        const c = Math.cos(yaw);
+        const s = Math.sin(yaw);
+        const pivotZ = this.getFrontAxleZ();
+        const dz = this.muleZ - pivotZ;
+
+        return {
+            x: localX * c + dz * s,
+            z: pivotZ - localX * s + dz * c,
+            yaw,
+        };
+    }
+
+    getMuleLeadPose(localX, terrainOffset) {
+        const lead = this.getMuleLeadTransform(localX);
+
+        return {
+            ...lead,
+            y: terrainOffset + this.getMuleBodyBob(localX),
+        };
+    }
+
+    getMuleLocalPoint(localX, terrainOffset, pointX, pointY, pointZ) {
+        const lead = this.getMuleLeadPose(localX, terrainOffset);
+        const c = Math.cos(lead.yaw);
+        const s = Math.sin(lead.yaw);
+        const scaledX = pointX * this.muleScale;
+        const scaledZ = pointZ * this.muleScale;
+
+        return {
+            x: lead.x + scaledX * c + scaledZ * s,
+            y: lead.y + pointY * this.muleScale,
+            z: lead.z - scaledX * s + scaledZ * c,
+        };
+    }
+
     display() {
         if (!this.visible) return;
         const pose = this.getTerrainPose();
@@ -632,7 +700,6 @@ export class MyWagon extends CGFobject {
         this.displayDriverSeat();
         this.displayCover();
         this.displayCargo();
-        this.displayHitch();
         this.displayMule(-this.muleHalfSpacing, this.leftMuleOffset);
         this.displayMule(this.muleHalfSpacing, this.rightMuleOffset);
         this.displayHarness();
@@ -814,21 +881,68 @@ export class MyWagon extends CGFobject {
     // ----- Running gear ----------------------------------------------------
 
     displayRunningGear() {
-        const axleZ = [-this.bedHalfLength + 0.10, this.bedHalfLength - 0.10];
-        for (const z of axleZ) {
-            const leftOffset = this.getWheelYOffset(-this.bedHalfWidth - 0.18, z);
-            const rightOffset = this.getWheelYOffset(this.bedHalfWidth + 0.18, z);
+        this.displayRearRunningGear();
+        this.displayFrontSteeringAssembly();
+    }
 
-            this.metal.apply();
-            this.drawAt(this.axle, 0, this.wheelCenterY + (leftOffset + rightOffset) * 0.5, z);
+    displayRearRunningGear() {
+        const rearAxleZ = -this.bedHalfLength + 0.10;
+        const wheelHalfSpan = this.bedHalfWidth + 0.20;
+        const leftOffset = this.getWheelYOffset(-this.bedHalfWidth - 0.18, rearAxleZ);
+        const rightOffset = this.getWheelYOffset(this.bedHalfWidth + 0.18, rearAxleZ);
+
+        this.metal.apply();
+        this.drawAt(this.axle, 0, this.wheelCenterY + (leftOffset + rightOffset) * 0.5, rearAxleZ);
+
+        for (const x of [-wheelHalfSpan, wheelHalfSpan]) {
+            this.displayWheel(x, this.wheelCenterY + this.getWheelYOffset(x, rearAxleZ), rearAxleZ);
+        }
+    }
+
+    displayFrontSteeringAssembly() {
+        const frontAxleZ = this.getFrontAxleZ();
+        const wheelHalfSpan = this.bedHalfWidth + 0.20;
+        const wheelOffsets = [-wheelHalfSpan, wheelHalfSpan].map((x) => {
+            const p = this.getSteeredPoint(x, this.wheelCenterY, frontAxleZ);
+            return {
+                x,
+                offset: this.getWheelYOffset(p.x, p.z),
+            };
+        });
+        const pivotY = this.wheelCenterY +
+            (wheelOffsets[0].offset + wheelOffsets[1].offset) * 0.5;
+
+        this.scene.pushMatrix();
+        this.scene.translate(0, pivotY, frontAxleZ);
+        this.scene.rotate(this.steerAngle, 0, 1, 0);
+
+        this.metal.apply();
+        this.axle.display();
+
+        for (const wheel of wheelOffsets) {
+            this.displayWheel(wheel.x, this.wheelCenterY + wheel.offset - pivotY, 0);
         }
 
-        for (const z of axleZ) {
-            for (const x of [-1, 1]) {
-                const wheelX = x * (this.bedHalfWidth + 0.20);
-                this.displayWheel(wheelX, this.wheelCenterY + this.getWheelYOffset(wheelX, z), z);
-            }
-        }
+        this.displayHitch(pivotY, frontAxleZ);
+
+        this.scene.popMatrix();
+    }
+
+    getFrontAxleZ() {
+        return this.bedHalfLength - 0.10;
+    }
+
+    getSteeredPoint(x, y, z) {
+        const pivotZ = this.getFrontAxleZ();
+        const dz = z - pivotZ;
+        const c = Math.cos(this.steerAngle);
+        const s = Math.sin(this.steerAngle);
+
+        return {
+            x: x * c + dz * s,
+            y,
+            z: pivotZ - x * s + dz * c,
+        };
     }
 
     displayWheel(x, y, z) {
@@ -838,6 +952,7 @@ export class MyWagon extends CGFobject {
 
         this.scene.pushMatrix();
         this.scene.translate(x, y, z);
+        this.scene.rotate(this.wheelSpinAngle, 1, 0, 0);
 
         this.darkWood.apply();
         this.wheelRim.display();
@@ -980,24 +1095,28 @@ export class MyWagon extends CGFobject {
 
     // ----- Hitch (central tongue + rear lateral stick) -------------------
 
-    displayHitch() {
-        const tongueBackY = this.tongueY;
-        const tongueFrontY = this.tongueFrontY;   // rises slightly toward horses
-        const tongueBackZ = this.tongueBackZ;
-        const tongueFrontZ = this.tongueFrontZ;
+    displayHitch(pivotY = 0, pivotZ = 0) {
+        const tongueBackY = this.tongueY - pivotY;
+        const tongueFrontY = this.tongueFrontY - pivotY;   // rises slightly toward horses
+        const tongueBackZ = this.tongueBackZ - pivotZ;
+        const tongueFrontZ = this.tongueFrontZ - pivotZ;
 
         // One central pole from the wagon to the horse line.
         this.darkWood.apply();
         this.drawShaft(0, tongueBackY, tongueBackZ, tongueFrontY, tongueFrontZ, this.tongueBeam);
 
         // One lateral stick across the back of the horses.
-        this.drawAt(this.lateralStick, 0, this.lateralStickY, this.lateralStickZ);
+        this.drawAt(this.lateralStick, 0, this.lateralStickY - pivotY, this.lateralStickZ - pivotZ);
 
         // Small caps on the lateral-stick ends and pole tip.
         this.metal.apply();
         for (const sign of [-1, 1]) {
             this.scene.pushMatrix();
-            this.scene.translate(sign * this.lateralStickHalfWidth, this.lateralStickY, this.lateralStickZ);
+            this.scene.translate(
+                sign * this.lateralStickHalfWidth,
+                this.lateralStickY - pivotY,
+                this.lateralStickZ - pivotZ
+            );
             this.ironCap.display();
             this.scene.popMatrix();
         }
@@ -1014,8 +1133,8 @@ export class MyWagon extends CGFobject {
             this.scene.pushMatrix();
             this.scene.translate(
                 side * (this.muleHalfSpacing + this.muleScale * 0.48),
-                this.lateralStickY + 0.04,
-                this.lateralStickZ + 0.05
+                this.lateralStickY + 0.04 - pivotY,
+                this.lateralStickZ + 0.05 - pivotZ
             );
             this.lateralRopeRing.display();
             this.scene.popMatrix();
@@ -1035,10 +1154,9 @@ export class MyWagon extends CGFobject {
     displayHorseHarness(side) {
         const muleX = side * this.muleHalfSpacing;
         const offset = side < 0 ? this.leftMuleOffset : this.rightMuleOffset;
-        const outerRingX = muleX + side * this.muleScale * 0.22;
-        const innerRingX = muleX - side * this.muleScale * 0.22;
-        const ringY = offset + this.muleScale * 1.66;
-        const ringZ = this.muleZ + this.muleScale * 1.52;
+        const reinSway = Math.sin(this.gaitPhase * 2.0 + side * 0.6) * 0.05 * this.getGaitIntensity();
+        const outerRing = this.getMuleLocalPoint(muleX, offset, side * 0.22, 1.66, 1.52);
+        const innerRing = this.getMuleLocalPoint(muleX, offset, -side * 0.22, 1.66, 1.52);
 
         // Both reins first tie onto the lateral stick behind the horses. The
         // outer rein ties near the outside end; the inner rein ties near the
@@ -1049,6 +1167,8 @@ export class MyWagon extends CGFobject {
         const shaftTieY = this.lateralStickY + 0.04;
         const outerTieZ = this.lateralStickZ + 0.05;
         const innerTieZ = this.lateralStickZ;
+        const outerTie = this.getSteeredPoint(outerShaftTieX, shaftTieY, outerTieZ);
+        const innerTie = this.getSteeredPoint(innerShaftTieX, shaftTieY, innerTieZ);
 
         // After tying to the side stick, the reins continue back toward the
         // wagon along the same side.
@@ -1059,27 +1179,27 @@ export class MyWagon extends CGFobject {
 
         this.leather.apply();
         this.drawSaggingRope(
-            outerRingX, ringY, ringZ,
-            outerShaftTieX, shaftTieY, outerTieZ,
+            outerRing.x, outerRing.y, outerRing.z,
+            outerTie.x, outerTie.y, outerTie.z,
             0.12, 18,
             this.reinSegment,
             side * 0.42
         );
         this.drawSaggingRope(
-            innerRingX, ringY, ringZ,
-            innerShaftTieX, shaftTieY, innerTieZ,
+            innerRing.x, innerRing.y, innerRing.z,
+            innerTie.x, innerTie.y, innerTie.z,
             0.15, 22,
             this.reinSegment,
-            -side * 0.13
+            -side * 0.13 + reinSway
         );
         this.drawSaggingRope(
-            outerShaftTieX, shaftTieY, outerTieZ,
+            outerTie.x, outerTie.y, outerTie.z,
             wagonOuterX, wagonY, wagonZ,
             0.08, 16,
             this.reinSegment
         );
         this.drawSaggingRope(
-            innerShaftTieX, shaftTieY, innerTieZ,
+            innerTie.x, innerTie.y, innerTie.z,
             wagonInnerX, wagonY, wagonZ,
             0.07, 16,
             this.reinSegment
@@ -1089,8 +1209,14 @@ export class MyWagon extends CGFobject {
     // ----- Mule (called twice — for left and right animal) ----------------
 
     displayMule(localX, terrainOffset) {
+        const phase = this.getMulePhase(localX);
+        const intensity = this.getGaitIntensity();
+        const lead = this.getMuleLeadPose(localX, terrainOffset);
+        const tailSway = Math.sin(phase + 0.7) * 0.18 * intensity;
+
         this.scene.pushMatrix();
-        this.scene.translate(localX, terrainOffset, this.muleZ);
+        this.scene.translate(lead.x, lead.y, lead.z);
+        this.scene.rotate(lead.yaw, 0, 1, 0);
         // Scale the entire mule frame by muleScale so the OBJ and the overlay
         // details share the same coordinate system.
         this.scene.scale(this.muleScale, this.muleScale, this.muleScale);
@@ -1102,7 +1228,7 @@ export class MyWagon extends CGFobject {
         // OBJ body — disable face culling because the export does not have
         // consistently outward-facing normals on every group.
         this.scene.gl.disable(this.scene.gl.CULL_FACE);
-        this.mule.display();
+        this.mule.displayAnimated(phase, intensity);
         this.scene.gl.enable(this.scene.gl.CULL_FACE);
 
         // Tail tuft at the tip of the OBJ tail (tail ends near y=0.55, z=-1.45)
@@ -1110,11 +1236,15 @@ export class MyWagon extends CGFobject {
         this.displayManeCrest();
 
         this.scene.pushMatrix();
+        this.scene.translate(0, 1.13, -1.12);
+        this.scene.rotate(tailSway, 0, 1, 0);
+        this.scene.translate(0, -1.13, 1.12);
         this.scene.translate(0, 0.56, -1.46);
         this.scene.rotate(-0.35, 1, 0, 0);
         this.tailTuft.display();
         this.scene.popMatrix();
 
+        this.displayAnimatedHoofOverlays(phase, intensity);
         this.displayMuleDetails();
         this.scene.popMatrix();
     }
@@ -1179,13 +1309,49 @@ export class MyWagon extends CGFobject {
             this.drawAt(this.bitRing, sign * bitRingX, bitRingY, bitZ);
         }
 
-        // ----- Hooves -------------------------------------------------------
-        // Dark hoof horn — compact square paws, all in the same dark brown.
-        this.hoofMaterial.apply();
-        for (const h of this.muleHoofCenters) {
-            this.drawAt(this.hoofWrap, h.x, this.hoofCenterY, h.z);
-        }
+    }
 
+    displayAnimatedHoofOverlays(phase, intensity) {
+        this.hoofMaterial.apply();
+
+        const hooves = [
+            { side: 'Left', pair: 'Front', x: -0.24, z: 0.560, phaseOffset: 0.0 },
+            { side: 'Right', pair: 'Front', x: 0.24, z: 0.560, phaseOffset: Math.PI },
+            { side: 'Left', pair: 'Back', x: -0.24, z: -0.660, phaseOffset: Math.PI },
+            { side: 'Right', pair: 'Back', x: 0.24, z: -0.660, phaseOffset: 0.0 },
+        ];
+
+        for (const hoof of hooves) {
+            const pose = this.getMuleLegPose(hoof.side, hoof.pair, phase, intensity, hoof.phaseOffset);
+
+            this.scene.pushMatrix();
+            this.applyPivotRotation(pose.upperPivot, pose.upperAngle, 1, 0, 0);
+            this.applyPivotRotation(pose.lowerPivot, pose.lowerAngle, 1, 0, 0);
+            this.drawAt(this.hoofWrap, hoof.x, this.hoofCenterY, hoof.z);
+            this.scene.popMatrix();
+        }
+    }
+
+    getMuleLegPose(side, pair, phase, intensity, phaseOffset = 0.0) {
+        const sideSign = side === 'Left' ? -1 : 1;
+        const isFront = pair === 'Front';
+        const legPhase = phase + phaseOffset;
+        const swing = Math.sin(legPhase);
+        const lift = Math.max(0, -Math.cos(legPhase));
+        const baseZ = isFront ? 0.56 : -0.66;
+
+        return {
+            upperPivot: { x: sideSign * 0.24, y: 1.0, z: isFront ? 0.54 : -0.67 },
+            lowerPivot: { x: sideSign * 0.24, y: 0.58, z: baseZ },
+            upperAngle: swing * 0.26 * intensity,
+            lowerAngle: (lift * 0.34 - 0.08 * swing) * intensity,
+        };
+    }
+
+    applyPivotRotation(pivot, angle, x, y, z) {
+        this.scene.translate(pivot.x, pivot.y, pivot.z);
+        this.scene.rotate(angle, x, y, z);
+        this.scene.translate(-pivot.x, -pivot.y, -pivot.z);
     }
 
     // ----- Beam helpers ---------------------------------------------------
