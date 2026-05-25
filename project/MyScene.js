@@ -7,6 +7,7 @@ import { MyScatterElements } from "./elements/part2/MyScatterElements.js";
 import { MyFlowers } from "./elements/part3/MyFlowers.js";
 import { MyGrass } from "./elements/part3/MyGrass.js";
 import { MyWagon } from "./elements/part4/MyWagon.js";
+import { MyHayBales } from "./elements/part5/MyHayBales.js";
 
 export class MyScene extends CGFscene {
   	constructor() {
@@ -36,6 +37,7 @@ export class MyScene extends CGFscene {
 		this.wagon = new MyWagon(this, this.terrain, {
 			obstacles: this.scatterElements.getCollisionObstacles(),
 		});
+		this.hayBales = new MyHayBales(this, this.terrain);
 
 		this.setUpdatePeriod(50);
 
@@ -140,5 +142,7 @@ export class MyScene extends CGFscene {
 		this.flowers.display();
 		this.grass.display();
 		this.wagon.display();
-  	}
+		this.hayBales.display();
+  	
+	}
 }
