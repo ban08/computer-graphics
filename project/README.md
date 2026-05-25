@@ -50,3 +50,4 @@
 - https://www.jasondavies.com/poisson-disc/
 - https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
 - https://polyhaven.com/
+- https://freesvg.org/

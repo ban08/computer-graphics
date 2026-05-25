@@ -7,7 +7,7 @@ import { MyRoundedCoverEndPanel } from '../../primitives/MyRoundedCoverEndPanel.
 import { MyArchBow } from '../../primitives/MyArchBow.js';
 import { MySphere } from '../../primitives/MySphere.js';
 import { MyGroupedMule } from '../../objects/MyGroupedMule.js';
-import {MyHayBale} from '../../objects/MyHayBale.js';
+import { MyHayBale } from '../../objects/MyHayBale.js';
 
 /**
  * Hierarchical prairie schooner pulled by two mules.
@@ -51,6 +51,7 @@ export class MyWagon extends CGFobject {
         this.visible = true;
         this.maxTerrainTilt = 0.28;
         this.collisionObstacles = options.obstacles ?? [];
+        this.getPickupTargets = options.getPickupTargets ?? (() => []);
         this.staticCollisionMargin = 0.24;
 
         // movement related vars
@@ -67,6 +68,7 @@ export class MyWagon extends CGFobject {
         this.wheelSpinAngle = 0.0;
         this.gaitPhase = 0.0;
         this.lastUpdateTime = null;
+        this.hayBalePickupDistance = 2.0;
 
         // --- Bed/cover key dimensions (single source of truth) -------------
         this.bedHalfWidth = 0.85;
@@ -355,6 +357,15 @@ export class MyWagon extends CGFobject {
         const braking = this.isInputPressed(input, 'KeyS');
         const steeringLeft = this.isInputPressed(input, 'KeyA');
         const steeringRight = this.isInputPressed(input, 'KeyD');
+        const pickUp = this.isInputPressed(input, 'KeyP');
+
+        // pickup checking
+        if (pickUp) {
+            const bale = this.getPickupTargets().find((target) =>
+                Math.hypot(this.x - target.x, this.z - target.z) <= this.hayBalePickupDistance
+            );
+            if (bale) bale.onPickup();
+        }
 
         if (accelerating) this.speed += this.acceleration * dt;
         if (braking) this.speed -= this.brakeDeceleration * dt;

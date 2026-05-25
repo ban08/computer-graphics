@@ -38,8 +38,6 @@ export class MyHayBales extends CGFobject {
 
 
    generateBalePlacements() {
-    this.placements = [];
-
     const isValidPlacement = (x, z) => {
         const awayFromStarterWagon = Math.hypot(x - 2.0, z - 21.0) > 6.0;
         const awayFromPathway = !this.terrain.isPointOnPath(x, z);
@@ -68,7 +66,7 @@ export class MyHayBales extends CGFobject {
 };
 
     const maxRadius = this.terrain.maxRadius * 0.85; 
-    const minDistanceBetweenBales = 18.0;      
+    const minDistanceBetweenBales = 8.0;
     const targetCount = 5;   //numero de fardos alterar se necessário                    
     let totalAttempts = 0;
 
@@ -106,6 +104,19 @@ export class MyHayBales extends CGFobject {
             rotation: this.randomRange(0, Math.PI * 2)
         });
     }
+    }
+
+    collectBale(index) {
+        this.placements.splice(index, 1);
+        this.generateBalePlacements();
+    }
+
+    getPickupTargets() {
+        return this.placements.map((placement, index) => ({
+            x: placement.x,
+            z: placement.z,
+            onPickup: () => this.collectBale(index)
+        }));
     }
 
     update(t) {

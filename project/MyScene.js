@@ -34,10 +34,11 @@ export class MyScene extends CGFscene {
 		this.scatterElements = new MyScatterElements(this, this.terrain);
 		this.flowers = new MyFlowers(this, this.terrain);
 		this.grass = new MyGrass(this, this.terrain);
+		this.hayBales = new MyHayBales(this, this.terrain,this.flowers,this.scatterElements);
 		this.wagon = new MyWagon(this, this.terrain, {
 			obstacles: this.scatterElements.getCollisionObstacles(),
+			getPickupTargets: () => this.hayBales.getPickupTargets(),
 		});
-		this.hayBales = new MyHayBales(this, this.terrain,this.flowers,this.scatterElements);
 
 		this.setUpdatePeriod(50);
 
