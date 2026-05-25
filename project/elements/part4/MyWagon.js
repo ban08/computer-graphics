@@ -642,7 +642,6 @@ export class MyWagon extends CGFobject {
         this.displayDriverSeat();
         this.displayCover();
         this.displayCargo();
-        this.displayHitch();
         this.displayMule(-this.muleHalfSpacing, this.leftMuleOffset);
         this.displayMule(this.muleHalfSpacing, this.rightMuleOffset);
         this.displayHarness();
@@ -824,21 +823,68 @@ export class MyWagon extends CGFobject {
     // ----- Running gear ----------------------------------------------------
 
     displayRunningGear() {
-        const axleZ = [-this.bedHalfLength + 0.10, this.bedHalfLength - 0.10];
-        for (const z of axleZ) {
-            const leftOffset = this.getWheelYOffset(-this.bedHalfWidth - 0.18, z);
-            const rightOffset = this.getWheelYOffset(this.bedHalfWidth + 0.18, z);
+        this.displayRearRunningGear();
+        this.displayFrontSteeringAssembly();
+    }
 
-            this.metal.apply();
-            this.drawAt(this.axle, 0, this.wheelCenterY + (leftOffset + rightOffset) * 0.5, z);
+    displayRearRunningGear() {
+        const rearAxleZ = -this.bedHalfLength + 0.10;
+        const wheelHalfSpan = this.bedHalfWidth + 0.20;
+        const leftOffset = this.getWheelYOffset(-this.bedHalfWidth - 0.18, rearAxleZ);
+        const rightOffset = this.getWheelYOffset(this.bedHalfWidth + 0.18, rearAxleZ);
+
+        this.metal.apply();
+        this.drawAt(this.axle, 0, this.wheelCenterY + (leftOffset + rightOffset) * 0.5, rearAxleZ);
+
+        for (const x of [-wheelHalfSpan, wheelHalfSpan]) {
+            this.displayWheel(x, this.wheelCenterY + this.getWheelYOffset(x, rearAxleZ), rearAxleZ);
+        }
+    }
+
+    displayFrontSteeringAssembly() {
+        const frontAxleZ = this.getFrontAxleZ();
+        const wheelHalfSpan = this.bedHalfWidth + 0.20;
+        const wheelOffsets = [-wheelHalfSpan, wheelHalfSpan].map((x) => {
+            const p = this.getSteeredPoint(x, this.wheelCenterY, frontAxleZ);
+            return {
+                x,
+                offset: this.getWheelYOffset(p.x, p.z),
+            };
+        });
+        const pivotY = this.wheelCenterY +
+            (wheelOffsets[0].offset + wheelOffsets[1].offset) * 0.5;
+
+        this.scene.pushMatrix();
+        this.scene.translate(0, pivotY, frontAxleZ);
+        this.scene.rotate(this.steerAngle, 0, 1, 0);
+
+        this.metal.apply();
+        this.axle.display();
+
+        for (const wheel of wheelOffsets) {
+            this.displayWheel(wheel.x, this.wheelCenterY + wheel.offset - pivotY, 0);
         }
 
-        for (const z of axleZ) {
-            for (const x of [-1, 1]) {
-                const wheelX = x * (this.bedHalfWidth + 0.20);
-                this.displayWheel(wheelX, this.wheelCenterY + this.getWheelYOffset(wheelX, z), z);
-            }
-        }
+        this.displayHitch(pivotY, frontAxleZ);
+
+        this.scene.popMatrix();
+    }
+
+    getFrontAxleZ() {
+        return this.bedHalfLength - 0.10;
+    }
+
+    getSteeredPoint(x, y, z) {
+        const pivotZ = this.getFrontAxleZ();
+        const dz = z - pivotZ;
+        const c = Math.cos(this.steerAngle);
+        const s = Math.sin(this.steerAngle);
+
+        return {
+            x: x * c + dz * s,
+            y,
+            z: pivotZ - x * s + dz * c,
+        };
     }
 
     displayWheel(x, y, z) {
@@ -998,24 +1044,28 @@ export class MyWagon extends CGFobject {
 
     // ----- Hitch (central tongue + rear lateral stick) -------------------
 
-    displayHitch() {
-        const tongueBackY = this.tongueY;
-        const tongueFrontY = this.tongueFrontY;   // rises slightly toward horses
-        const tongueBackZ = this.tongueBackZ;
-        const tongueFrontZ = this.tongueFrontZ;
+    displayHitch(pivotY = 0, pivotZ = 0) {
+        const tongueBackY = this.tongueY - pivotY;
+        const tongueFrontY = this.tongueFrontY - pivotY;   // rises slightly toward horses
+        const tongueBackZ = this.tongueBackZ - pivotZ;
+        const tongueFrontZ = this.tongueFrontZ - pivotZ;
 
         // One central pole from the wagon to the horse line.
         this.darkWood.apply();
         this.drawShaft(0, tongueBackY, tongueBackZ, tongueFrontY, tongueFrontZ, this.tongueBeam);
 
         // One lateral stick across the back of the horses.
-        this.drawAt(this.lateralStick, 0, this.lateralStickY, this.lateralStickZ);
+        this.drawAt(this.lateralStick, 0, this.lateralStickY - pivotY, this.lateralStickZ - pivotZ);
 
         // Small caps on the lateral-stick ends and pole tip.
         this.metal.apply();
         for (const sign of [-1, 1]) {
             this.scene.pushMatrix();
-            this.scene.translate(sign * this.lateralStickHalfWidth, this.lateralStickY, this.lateralStickZ);
+            this.scene.translate(
+                sign * this.lateralStickHalfWidth,
+                this.lateralStickY - pivotY,
+                this.lateralStickZ - pivotZ
+            );
             this.ironCap.display();
             this.scene.popMatrix();
         }
@@ -1032,8 +1082,8 @@ export class MyWagon extends CGFobject {
             this.scene.pushMatrix();
             this.scene.translate(
                 side * (this.muleHalfSpacing + this.muleScale * 0.48),
-                this.lateralStickY + 0.04,
-                this.lateralStickZ + 0.05
+                this.lateralStickY + 0.04 - pivotY,
+                this.lateralStickZ + 0.05 - pivotZ
             );
             this.lateralRopeRing.display();
             this.scene.popMatrix();
@@ -1067,6 +1117,8 @@ export class MyWagon extends CGFobject {
         const shaftTieY = this.lateralStickY + 0.04;
         const outerTieZ = this.lateralStickZ + 0.05;
         const innerTieZ = this.lateralStickZ;
+        const outerTie = this.getSteeredPoint(outerShaftTieX, shaftTieY, outerTieZ);
+        const innerTie = this.getSteeredPoint(innerShaftTieX, shaftTieY, innerTieZ);
 
         // After tying to the side stick, the reins continue back toward the
         // wagon along the same side.
@@ -1078,26 +1130,26 @@ export class MyWagon extends CGFobject {
         this.leather.apply();
         this.drawSaggingRope(
             outerRingX, ringY, ringZ,
-            outerShaftTieX, shaftTieY, outerTieZ,
+            outerTie.x, outerTie.y, outerTie.z,
             0.12, 18,
             this.reinSegment,
             side * 0.42
         );
         this.drawSaggingRope(
             innerRingX, ringY, ringZ,
-            innerShaftTieX, shaftTieY, innerTieZ,
+            innerTie.x, innerTie.y, innerTie.z,
             0.15, 22,
             this.reinSegment,
             -side * 0.13
         );
         this.drawSaggingRope(
-            outerShaftTieX, shaftTieY, outerTieZ,
+            outerTie.x, outerTie.y, outerTie.z,
             wagonOuterX, wagonY, wagonZ,
             0.08, 16,
             this.reinSegment
         );
         this.drawSaggingRope(
-            innerShaftTieX, shaftTieY, innerTieZ,
+            innerTie.x, innerTie.y, innerTie.z,
             wagonInnerX, wagonY, wagonZ,
             0.07, 16,
             this.reinSegment
