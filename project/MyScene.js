@@ -98,8 +98,8 @@ export class MyScene extends CGFscene {
 		const dx = Math.sin(this.wagon.rotation);
 		const dz = Math.cos(this.wagon.rotation);
 
-		vec4.set(this.camera.position, this.wagon.x - dx * 18, pose.y + 8, this.wagon.z - dz * 18, 0);
-		vec4.set(this.camera.target, this.wagon.x, pose.y + 4, this.wagon.z, 0);
+		vec4.set(this.camera.position, this.wagon.x - dx * 18, pose.y + 6, this.wagon.z - dz * 18, 0);
+		vec4.set(this.camera.target, this.wagon.x, pose.y + 2, this.wagon.z, 0);
 
 		this.camera.direction = this.camera.calculateDirection();
 	}
