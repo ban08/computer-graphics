@@ -7,6 +7,7 @@ import { MyRoundedCoverEndPanel } from '../../primitives/MyRoundedCoverEndPanel.
 import { MyArchBow } from '../../primitives/MyArchBow.js';
 import { MySphere } from '../../primitives/MySphere.js';
 import { MyGroupedMule } from '../../objects/MyGroupedMule.js';
+import {MyHayBale} from '../../objects/MyHayBale.js';
 
 /**
  * Hierarchical prairie schooner pulled by two mules.
@@ -136,12 +137,7 @@ export class MyWagon extends CGFobject {
             specular: [0.10, 0.09, 0.07, 1],
             shininess: 4,
         });
-        this.hay = this.makeMaterial('/project/textures/wagonHay.svg', {
-            ambient: [0.70, 0.50, 0.18, 1],
-            diffuse: [0.95, 0.72, 0.28, 1],
-            specular: [0.10, 0.08, 0.03, 1],
-            shininess: 6,
-        });
+       
         this.metal = this.makeMaterial('/project/textures/wagonMetal.svg', {
             ambient: [0.18, 0.17, 0.15, 1],
             diffuse: [0.35, 0.33, 0.29, 1],
@@ -313,10 +309,7 @@ export class MyWagon extends CGFobject {
         this.reinSegment = new MyTexturedBox(this.scene, 0.022, 0.020, 1.0, 0.18);
 
         // Cargo (hay bales) -------------------------------------------------
-        this.bale = new MyTexturedBox(this.scene, 0.62, 0.34, 0.50, 0.28);
-        this.baleBandX = new MyTexturedBox(this.scene, 0.68, 0.04, 0.055, 0.20);
-        this.baleBandZ = new MyTexturedBox(this.scene, 0.055, 0.04, 0.56, 0.20);
-
+        this.hayBaleGeometry = new MyHayBale(this.scene);
         // ---- Mule overlay geometry -----------------------------------------
         // The OBJ mule is the base model; these boxes/spheres are drawn ON TOP
         // of it (inside the muleScale-scaled local frame) to enrich the
@@ -1095,14 +1088,7 @@ export class MyWagon extends CGFobject {
         this.scene.translate(x, y, z);
         this.scene.rotate(rotation, 0, 1, 0);
 
-        this.hay.apply();
-        this.bale.display();
-
-        this.leather.apply();
-        this.drawAt(this.baleBandX, 0, 0.18, -0.14);
-        this.drawAt(this.baleBandX, 0, 0.18, 0.14);
-        this.drawAt(this.baleBandZ, -0.17, 0.19, 0);
-        this.drawAt(this.baleBandZ, 0.17, 0.19, 0);
+        this.hayBaleGeometry.display();
 
         this.scene.popMatrix();
     }
