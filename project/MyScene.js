@@ -1,4 +1,4 @@
-import { CGFscene, CGFcamera, CGFaxis } from "../lib/CGF.js";
+import { CGFscene, CGFcamera } from "../lib/CGF.js";
 import { MySky } from "./elements/part1/MySky.js";
 import { MyClouds } from "./elements/part1/MyClouds.js";
 import { MySun } from "./elements/part1/MySun.js";
@@ -20,14 +20,12 @@ export class MyScene extends CGFscene {
     	this.initLights();
 
     	this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
 		this.gl.clearDepth(100.0);
 		this.gl.enable(this.gl.DEPTH_TEST);
 		this.gl.enable(this.gl.CULL_FACE);
 		this.gl.depthFunc(this.gl.LEQUAL);
 		this.enableTextures(true);
 
-		this.axis = new CGFaxis(this);
 		this.sky = new MySky(this);
 		this.sun = new MySun(this);
 		this.clouds = new MyClouds(this);
@@ -41,24 +39,32 @@ export class MyScene extends CGFscene {
 
 		this.setUpdatePeriod(50);
 
-    	this.displayAxis = true;
+		this.cameraType = 'Follow Wagon';
   	}
 
   	update(t) {
 		this.sun.update(t);
-		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 0);
 		const sunAmount = Math.max(0.0, Math.min(this.sun.sunY / 10.0, 1.0));
+
+		this.lights[0].setPosition(this.sun.sunX, this.sun.sunY, this.sun.z, 0);
 		this.lights[0].setAmbient(0.28 * sunAmount, 0.25 * sunAmount, 0.18 * sunAmount, 1.0);
 		this.lights[0].setDiffuse(1.25 * sunAmount, 1.15 * sunAmount, 0.85 * sunAmount, 1.0);
         this.lights[0].setSpecular(1.0 * sunAmount, 0.9 * sunAmount, 0.55 * sunAmount, 1.0);
         this.lights[0].update();
+
         this.sky.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
+
         this.clouds.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
 		this.clouds.update(t);
+
         this.terrain.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
+
         this.grass.update(t, this.clouds);
         this.grass.updateSunDir(this.sun.sunX, this.sun.sunY, this.sun.z);
+
         this.wagon.update(t, this.gui);
+		
+		if (this.cameraType == 'Follow Wagon') this.setChaseCamera();
   	}
 
   	initLights() {
@@ -82,10 +88,28 @@ export class MyScene extends CGFscene {
       		0.4,
       		0.1,
       		500,
-      		vec3.fromValues(15, 5.5, 15),
-      		vec3.fromValues(0, 5, 0)
+      		vec3.fromValues(0, 0, 0),
+      		vec3.fromValues(0, 0, 0)
     	);
   	}
+
+	setChaseCamera() {
+		const pose = this.wagon.getTerrainPose();
+		const dx = Math.sin(this.wagon.rotation);
+		const dz = Math.cos(this.wagon.rotation);
+
+		vec4.set(this.camera.position, this.wagon.x - dx * 18, pose.y + 8, this.wagon.z - dz * 18, 0);
+		vec4.set(this.camera.target, this.wagon.x, pose.y + 4, this.wagon.z, 0);
+
+		this.camera.direction = this.camera.calculateDirection();
+	}
+
+	setFreeCamera() {
+		vec4.set(this.camera.position, 15, 5.5, 15, 0);
+		vec4.set(this.camera.target, 0, 5, 0, 0);
+		
+		this.camera.direction = this.camera.calculateDirection();
+	}
 
 	setDefaultAppearance() {
 		this.setAmbient(0.2, 0.4, 0.8, 1.0);
@@ -105,8 +129,6 @@ export class MyScene extends CGFscene {
 
 		this.lights[0].update();
 		this.lights[1].update();
-
-		if (this.displayAxis) this.axis.display();
 
 		this.setDefaultAppearance();
 
