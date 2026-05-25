@@ -11,9 +11,8 @@ import { MySphere } from '../../primitives/MySphere.js';
 /**
  * Hierarchical prairie schooner pulled by two mules.
  *
- * Pure visual model — no input, gameplay, or animation. Wheel rotation,
- * steering and rope/wind movement are out of scope here and live in the
- * gameplay layer once that exists.
+ * Hierarchical visual model with its own movement state. Gameplay actions
+ * such as bale pickup/drop live outside this class.
  *
  * Local frame conventions
  * -----------------------
@@ -64,6 +63,7 @@ export class MyWagon extends CGFobject {
         this.steerSpeed = 1.6;
         this.steerReturnSpeed = 1.9;
         this.turnRateFactor = 2.4;
+        this.wheelSpinAngle = 0.0;
         this.lastUpdateTime = null;
 
         // --- Bed/cover key dimensions (single source of truth) -------------
@@ -381,6 +381,9 @@ export class MyWagon extends CGFobject {
         }
 
         const distance = this.speed * dt;
+        const wheelWorldRadius = Math.max(this.wheelOuterRadius * this.scaleFactor, 0.0001);
+        this.wheelSpinAngle = (this.wheelSpinAngle + distance / wheelWorldRadius) % (Math.PI * 2);
+
         const turnRate = (this.speed / this.turnRateFactor) * Math.tan(this.steerAngle);
         const nextRotation = this.rotation + turnRate * dt;
         const nextX = this.x + Math.sin(nextRotation) * distance;
@@ -845,6 +848,7 @@ export class MyWagon extends CGFobject {
 
         this.scene.pushMatrix();
         this.scene.translate(x, y, z);
+        this.scene.rotate(this.wheelSpinAngle, 1, 0, 0);
 
         this.darkWood.apply();
         this.wheelRim.display();
