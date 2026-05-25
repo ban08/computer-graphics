@@ -1,6 +1,7 @@
 import { CGFobject } from '../../../lib/CGF.js';
 import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js';
 import { MyHayBale } from '../../objects/MyHayBale.js';
+import { MyPinpointArrow } from '../../objects/MyPinpointArrow.js';
 
 /**
  * MyHayBales
@@ -24,6 +25,7 @@ export class MyHayBales extends CGFobject {
         this.rocks = rocks;
         this.placements = [];
         this.bale = new MyHayBale(this.scene);
+        this.arrow = new MyPinpointArrow(this.scene);
 
 
         this.generateBalePlacements();
@@ -105,10 +107,15 @@ export class MyHayBales extends CGFobject {
             rotation: this.randomRange(0, Math.PI * 2)
         });
     }
-}
+    }
+
+    update(t) {
+        this.arrow.update(t);
+    }
 
     display() {
-        for (const placement of this.placements) {
+        for (let i = 0; i < this.placements.length; i++) {
+            const placement = this.placements[i];
             this.scene.pushMatrix();
 
             this.scene.translate(placement.x, placement.y + 0.17, placement.z);
@@ -117,6 +124,12 @@ export class MyHayBales extends CGFobject {
             this.bale.display();
 
 
+            this.scene.popMatrix();
+
+            this.scene.pushMatrix();
+            this.scene.translate(placement.x, placement.y + 2.05, placement.z);
+            this.scene.scale(0.85, 0.85, 0.85);
+            this.arrow.display(i * 1.31);
             this.scene.popMatrix();
         }
     }
