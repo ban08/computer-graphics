@@ -31,7 +31,7 @@ export class MyWagon extends CGFobject {
         this.x = options.x ?? -0.5;
         this.z = options.z ?? 4.0;
         this.rotation = options.rotation ?? -Math.PI / 4;
-        this.scaleFactor = options.scale ?? 0.78;
+        this.scaleFactor = options.scale ?? 0.45;
         this.wheelCenterY = 0.62;
         this.wheelOuterRadius = 0.56;
         this.wheelGroundLocalY = this.wheelCenterY - this.wheelOuterRadius;
