@@ -37,7 +37,7 @@ export class MyScene extends CGFscene {
 		this.wagon = new MyWagon(this, this.terrain, {
 			obstacles: this.scatterElements.getCollisionObstacles(),
 		});
-		this.hayBales = new MyHayBales(this, this.terrain);
+		this.hayBales = new MyHayBales(this, this.terrain,this.flowers,this.scatterElements);
 
 		this.setUpdatePeriod(50);
 

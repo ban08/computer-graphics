@@ -11,12 +11,17 @@ export class MyHayBales extends CGFobject {
      * @constructor
      * @param {CGFscene} scene - Reference to the main scene
      * @param {Object} terrain - Reference to MyTerrain object
+     * * @param {Object} flowers - Reference to the instantiated MyFlowers object
+     * @param {Object} rocks - Reference to the instantiated MyScatterElements object
+    
      */
-    constructor(scene, terrain) {
+    constructor(scene, terrain,flowers,rocks) {
         super(scene);
 
         this.scene = scene;
         this.terrain = terrain;
+        this.flowers = flowers;
+        this.rocks = rocks;
         this.placements = [];
 
 
@@ -64,8 +69,28 @@ export class MyHayBales extends CGFobject {
         const awayFromStarterWagon = Math.hypot(x - 8.0, z - 6.2) > 6.0;
         const awayFromPathway = !this.terrain.isPointOnPath(x, z);
         
-        return awayFromSceneCenter && awayFromStarterWagon && awayFromPathway;
-    };
+    if (!awayFromSceneCenter || !awayFromStarterWagon || !awayFromPathway) {
+                return false;
+    }
+ 
+    if (this.rocks && this.rocks.placements) {
+        for (const rock of this.rocks.placements) {
+            const distanceToRock = Math.hypot(x - rock.x, z - rock.z);
+            if (distanceToRock < (rock.collisionRadius + 1.2)) {
+                return false; 
+            }
+        }
+    }
+    if (this.flowers && this.flowers.placements) {
+        for (const flower of this.flowers.placements) {
+            const distanceToFlower = Math.hypot(x - flower.x, z - flower.z);
+            if (distanceToFlower < 1.5) {
+                return false; 
+            }
+        }
+    }
+    return true;
+};
 
     const maxRadius = this.terrain.maxRadius * 0.85; 
     const minDistanceBetweenBales = 18.0;      
