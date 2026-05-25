@@ -340,7 +340,7 @@ export class MyWagon extends CGFobject {
         this.hoofWrap = new MyTexturedBox(this.scene, this.hoofWidth, this.hoofHeight, this.hoofDepth, 0.12);
     }
 
-    // movement related funcs
+    // movement related funcs (update, isinputpressed, approachzero)
     update(t, input) {
         if (this.lastUpdateTime === null) {
             this.lastUpdateTime = t;
@@ -375,18 +375,31 @@ export class MyWagon extends CGFobject {
         }
 
         const distance = this.speed * dt;
-        const wheelWorldRadius = Math.max(this.wheelOuterRadius * this.scaleFactor, 0.0001);
-        this.wheelSpinAngle = (this.wheelSpinAngle + distance / wheelWorldRadius) % (Math.PI * 2);
-        this.gaitPhase = (this.gaitPhase + (distance / Math.max(this.scaleFactor, 0.0001)) * 3.2) % (Math.PI * 2);
-
         const turnRate = (this.speed / this.turnRateFactor) * Math.tan(this.steerAngle);
         const nextRotation = this.rotation + turnRate * dt;
         const nextX = this.x + Math.sin(nextRotation) * distance;
         const nextZ = this.z + Math.cos(nextRotation) * distance;
 
+        // collision checking
+        if (!this.isInsideTerrain(nextX, nextZ, nextRotation)) {
+            this.speed = 0.0;
+            return;
+        }
+        const obstacle = this.findStaticCollision(nextX, nextZ, nextRotation);
+        if (obstacle) {
+            this.speed = 0.0;
+            obstacle.onImpact(t);
+            return;
+        }
+
         this.rotation = nextRotation;
         this.x = nextX;
         this.z = nextZ;
+
+        // used for wagon anims
+        const wheelWorldRadius = Math.max(this.wheelOuterRadius * this.scaleFactor, 0.0001);
+        this.wheelSpinAngle = (this.wheelSpinAngle + distance / wheelWorldRadius) % (Math.PI * 2);
+        this.gaitPhase = (this.gaitPhase + (distance / Math.max(this.scaleFactor, 0.0001)) * 3.2) % (Math.PI * 2);
     }
 
     isInputPressed(input, keyCode) {
@@ -600,20 +613,26 @@ export class MyWagon extends CGFobject {
     }
 
     hasStaticCollision(originX, originZ, rotation) {
+        return this.findStaticCollision(originX, originZ, rotation) !== null;
+    }
+
+    findStaticCollision(originX, originZ, rotation) {
         for (const circle of this.collisionFootprint) {
             const [x, z] = this.localToWorldXZAt(circle.x, circle.z, originX, originZ, rotation);
             const radius = circle.radius * this.scaleFactor + this.staticCollisionMargin;
 
             for (const obstacle of this.collisionObstacles) {
+                if (!obstacle.isActive()) continue;
+
                 const dx = x - obstacle.x;
                 const dz = z - obstacle.z;
                 const minDistance = radius + (obstacle.radius ?? 0);
 
-                if (dx * dx + dz * dz < minDistance * minDistance) return true;
+                if (dx * dx + dz * dz < minDistance * minDistance) return obstacle;
             }
         }
 
-        return false;
+        return null;
     }
 
     averageHeight(points) {
