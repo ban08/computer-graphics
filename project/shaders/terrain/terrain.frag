@@ -60,6 +60,9 @@ void main() {
         base = mix(midColor, highColor, smoothstep(0.50, 1.0, vHeight));
     }
 
+    vec3 soilTexture = texture2D(terrainTex, vTexCoord).rgb;
+    base = mix(base, soilTexture, 0.42);
+
     float broadVariation = fbm3(vWorldXY * 0.085 + vec2(3.4, 7.1));
     float fineVariation = vnoise(vWorldXY * 0.72 + vec2(12.8, 2.2));
     float dryPatch = smoothstep(0.47, 0.78, broadVariation + vHeight * 0.18 + slope * 0.12);
