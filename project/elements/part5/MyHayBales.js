@@ -65,7 +65,7 @@ export class MyHayBales extends CGFobject {
     return true;
 };
 
-    const maxRadius = this.terrain.maxRadius * 0.85; 
+    const maxRadius = 25.0;
     const minDistanceBetweenBales = 8.0;
     const targetCount = 5;   //numero de fardos alterar se necessário                    
     let totalAttempts = 0;

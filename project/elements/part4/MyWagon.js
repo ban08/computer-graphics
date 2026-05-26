@@ -635,7 +635,7 @@ export class MyWagon extends CGFobject {
     isInsideTerrain(originX, originZ, rotation) {
         if (!this.terrain?.maxRadius) return true;
 
-        const limit = this.terrain.maxRadius * 0.90;
+        const limit = 30.0;
         for (const circle of this.collisionFootprint) {
             const [x, z] = this.localToWorldXZAt(circle.x, circle.z, originX, originZ, rotation);
             const radius = circle.radius * this.scaleFactor;

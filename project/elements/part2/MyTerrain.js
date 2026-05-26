@@ -18,12 +18,12 @@ export class MyTerrain extends CGFobject {
         super(scene);
 
         this.seed = seed ?? Math.random() * 1000;
-        this.size = size ?? 64;
+        this.size = size ?? 80;
         this.divisions = divisions ?? 128;
         this.heightScale = heightScale ?? 5.2;
         this.frequency = frequency ?? 0.045;
         this.hazeStrength = hazeStrength ?? 0.22;
-        this.maxRadius = maxRadius ?? 30.0;
+        this.maxRadius = maxRadius ?? 40.0;
 
         this.proceduralHeights = [];
         this.proceduralStep = this.size / this.divisions;

@@ -77,7 +77,7 @@ export class MyGrass {
         this.densityFactor = opts.densityFactor ?? 10.0;
         this.bladeScale = opts.bladeScale ?? 1.0;
         this.colorVariation = opts.colorVariation ?? 1.0;
-        this.fieldRadius = (opts.fieldRadius ?? terrain.maxRadius) * 0.97;
+        this.fieldRadius = opts.fieldRadius ?? 27.5;
         this.maxBlades = opts.maxBlades ?? 125000;
 
         this.visible = true;

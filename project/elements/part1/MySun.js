@@ -16,7 +16,7 @@ export class MySun extends CGFobject {
         this.z = 0;
       
         this.speed = 0.0001;
-        this.arc = 30;
+        this.arc = 40;
         this.sunX = this.x;
         this.sunY = this.y;
 

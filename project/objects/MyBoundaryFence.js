@@ -17,7 +17,7 @@ export class MyBoundaryFence extends CGFobject {
         this.segments = segments ?? 36;
         this.postHeight = postHeight ?? 1.15;
 
-        this.radius = terrain.maxRadius * 0.90 + 0.25;
+        this.radius = 30.0;
         this.railHeights = [this.postHeight * 0.33, this.postHeight * 0.68];
         this.step = Math.PI * 2 / this.segments;
         this.span = 2 * this.radius * Math.sin(this.step / 2);

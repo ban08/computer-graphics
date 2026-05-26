@@ -10,7 +10,7 @@ export class MySky extends CGFobject {
     constructor(scene) {
         super(scene);
 
-        this.reverseSphere = new MyReverseHalfSphere(scene, 30, 30, 30);
+        this.reverseSphere = new MyReverseHalfSphere(scene, 40, 30, 30);
 
         this.shader = new CGFshader(
             scene.gl,

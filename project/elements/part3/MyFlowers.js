@@ -58,7 +58,7 @@ export class MyFlowers extends CGFobject {
         const generator = new PlacementGenerator(
             0,
             0,
-            this.terrain.maxRadius * 0.9,
+            27.5,
             (x, z) => this.terrain.getHeightAt(x, z)
         );
 
