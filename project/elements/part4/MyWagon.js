@@ -3,7 +3,6 @@ import { MyTexturedBox } from '../../primitives/MyTexturedBox.js';
 import { MyCappedCylinder } from '../../primitives/MyCappedCylinder.js';
 import { MyTorus } from '../../primitives/MyTorus.js';
 import { MyRoundedCoverShell } from '../../primitives/MyRoundedCoverShell.js';
-import { MyRoundedCoverEndPanel } from '../../primitives/MyRoundedCoverEndPanel.js';
 import { MyArchBow } from '../../primitives/MyArchBow.js';
 import { MySphere } from '../../primitives/MySphere.js';
 import { MyGroupedMule } from '../../objects/MyGroupedMule.js';
@@ -90,8 +89,8 @@ export class MyWagon extends CGFobject {
         this.coverSideHeight = 0.45;
         this.coverArchHeight = 1.40;
         // Extended cover — runs from the back of the bed forward to just
-        // behind the driver seat back. The front opening is left fully open
-        // (no cinch ties) so you can see the hay bales through the canopy.
+        // behind the driver seat back. Both openings are framed with rolled
+        // canvas lips so the cover reads like a real tied-up wagon canopy.
         this.coverFrontZ = this.bedHalfLength - 0.65;     // ~1.00, behind seat back
         this.coverBackZ = -this.bedHalfLength;
         this.coverLength = this.coverFrontZ - this.coverBackZ;
@@ -241,6 +240,8 @@ export class MyWagon extends CGFobject {
         this.cornerPost = new MyTexturedBox(this.scene, 0.13, this.wallHeight + 0.10, 0.13, 0.35);
         this.bolt = new MyTexturedBox(this.scene, 0.07, 0.07, 0.03, 0.15);
         this.bolsterBeam = new MyTexturedBox(this.scene, bedW + this.wallThickness * 1.8, 0.18, 0.22, 0.35);
+        this.tailgateBatten = new MyTexturedBox(this.scene, 0.035, this.wallHeight * 0.75, 0.035, 0.22);
+        this.tailgateLatch = new MyTexturedBox(this.scene, 0.34, 0.045, 0.035, 0.14);
 
         // Built-in driver bench: one wide plank seat that spans the bed
         // wall-to-wall, a leather cushion on top, and a low back panel that
@@ -262,14 +263,6 @@ export class MyWagon extends CGFobject {
             10,
             true
         );
-        this.coverBackPanel = new MyRoundedCoverEndPanel(
-            this.scene,
-            this.coverHalfWidth * 0.99,
-            this.coverSideHeight,
-            this.coverArchHeight * 0.995,
-            24,
-            true
-        );
         this.coverBow = new MyArchBow(
             this.scene,
             this.coverHalfWidth + 0.006,
@@ -280,7 +273,27 @@ export class MyWagon extends CGFobject {
             8
         );
         this.ridgePole = new MyCappedCylinder(this.scene, 0.025, this.coverLength * 0.96, 16, 1);
-        this.coverTie = new MyTexturedBox(this.scene, 0.14, 0.025, 0.025, 0.18);
+        this.coverFlapTie = new MyTorus(this.scene, 0.121, 0.012, 18, 6);
+        this.rearCoverArchRoll = new MyArchBow(
+            this.scene,
+            this.coverHalfWidth + 0.015,
+            this.coverSideHeight,
+            this.coverArchHeight,
+            0.105,
+            24,
+            10
+        );
+        this.frontCoverArchRoll = new MyArchBow(
+            this.scene,
+            this.coverHalfWidth + 0.015,
+            this.coverSideHeight,
+            this.coverArchHeight,
+            0.105,
+            24,
+            10
+        );
+        this.frontCoverStrap = new MyTexturedBox(this.scene, 0.045, 0.22, 0.030, 0.16);
+        this.rearTieTail = new MyTexturedBox(this.scene, 0.030, 0.34, 0.024, 0.14);
 
         // Running gear ------------------------------------------------------
         this.axle = new MyCappedCylinder(this.scene, 0.065, outerHalfW * 2.05, 24, 1);
@@ -301,7 +314,7 @@ export class MyWagon extends CGFobject {
         // Stake-side rail along the bed walls (mid-rail under the top rail)
         this.stakeRail = new MyTexturedBox(this.scene, this.wallThickness * 0.55, 0.05, bedL + this.wallThickness, 0.45);
 
-        // Driver area extras: footboard, tailgate hinges, brake assembly
+        // Driver area extras: footboard, rear-wall hinges and brake assembly
         this.footboard = new MyTexturedBox(this.scene, bedW * 0.82, 0.05, 0.40, 0.40);
         this.tailgateHinge = new MyTexturedBox(this.scene, 0.10, 0.05, 0.05, 0.12);
         this.brakeLever = new MyCappedCylinder(this.scene, 0.026, 0.80, 14, 1);
@@ -785,12 +798,24 @@ export class MyWagon extends CGFobject {
         const wallCenterY = this.floorTop + this.wallHeight * 0.5;
         this.drawAt(this.sideWall, -outerHalfW, wallCenterY, 0);
         this.drawAt(this.sideWall, outerHalfW, wallCenterY, 0);
-        // Only the back wall is closed — the front (facing the horses) is open
-        // so the driver climbs straight onto the seat without a panel in the way.
+        // Front stays clear for the driver; the rear keeps its wooden wall
+        // while the canvas flap above it is tied up.
         this.drawAt(this.endWall, 0, wallCenterY, -this.bedHalfLength - this.wallThickness * 0.5);
+        const tailgateFaceZ = -this.bedHalfLength - this.wallThickness * 0.60;
 
-        // Corner posts — back corners only (front is open, no posts holding a
-        // missing wall).
+        this.darkWood.apply();
+        for (const x of [-0.32, 0.0, 0.32]) {
+            this.drawAt(this.tailgateBatten, x, wallCenterY, tailgateFaceZ);
+        }
+
+        this.metal.apply();
+        const latchY = this.floorTop + this.wallHeight * 0.52;
+        this.drawAt(this.tailgateLatch, 0, latchY, tailgateFaceZ - 0.005);
+        for (const x of [-0.20, 0.20]) {
+            this.drawAt(this.bolt, x, latchY, tailgateFaceZ - 0.026);
+        }
+
+        // Rear corner posts brace the restored back wall.
         const cornerY = this.floorTop + (this.wallHeight + 0.10) * 0.5;
         for (const sx of [-1, 1]) {
             this.drawAt(
@@ -801,7 +826,7 @@ export class MyWagon extends CGFobject {
             );
         }
 
-        // Top rails framing the bed — sides + back rail only.
+        // Top rails framing the bed — side rails plus a high rear header.
         this.wood.apply();
         this.drawAt(this.topRail, -outerHalfW - 0.005, this.wallTop + 0.035, 0);
         this.drawAt(this.topRail, outerHalfW + 0.005, this.wallTop + 0.035, 0);
@@ -815,7 +840,7 @@ export class MyWagon extends CGFobject {
             this.drawAt(this.stakeRail, sx * (outerHalfW + this.wallThickness * 0.45), stakeY, 0);
         }
 
-        // Tailgate hinges on the back wall
+        // Tailgate hinges on the restored rear wall.
         this.metal.apply();
         for (const sx of [-1, 1]) {
             this.drawAt(
@@ -832,7 +857,8 @@ export class MyWagon extends CGFobject {
             );
         }
 
-        // Iron bolts at the (existing) back corner posts only
+        // Iron bolts at the rear corner posts only.
+        this.metal.apply();
         for (const sx of [-1, 1]) {
             this.drawAt(
                 this.bolt,
@@ -1073,7 +1099,6 @@ export class MyWagon extends CGFobject {
 
         this.cloth.apply();
         this.drawAt(this.cover, 0, coverBaseY, coverCenterZ);
-        this.drawAt(this.coverBackPanel, 0, coverBaseY, this.coverBackZ);
 
         // Wooden bows following the cover profile.
         this.wood.apply();
@@ -1094,17 +1119,81 @@ export class MyWagon extends CGFobject {
             this.drawAt(this.ridgePole, x, archTop - 0.05, coverCenterZ, 0, Math.PI / 2, 0);
         }
 
-        // Front is intentionally open — the spec calls for the cover to leave
-        // the front visible "to see the hay bales". Only the back panel keeps
-        // the cargo from spilling out and gets cinch ties.
+        // Canvas flaps make both openings look intentional.
+        this.displayRearRolledCoverFlap(this.coverBackZ - 0.04);
+        this.displayFrontRolledCoverFlap(this.coverFrontZ + 0.04);
+    }
+
+    displayRearRolledCoverFlap(z) {
+        this.displayRolledCoverFlap(z, this.rearCoverArchRoll, true);
+    }
+
+    displayFrontRolledCoverFlap(z) {
+        this.displayRolledCoverFlap(z, this.frontCoverArchRoll, false);
+    }
+
+    displayRolledCoverFlap(z, archRoll, addRearDetail) {
+        const baseY = this.wallTop + 0.005;
+        const topY = baseY + this.coverSideHeight + this.coverArchHeight - 0.03;
+        const sideY = baseY + this.coverSideHeight * 0.55;
+        const sideX = this.coverHalfWidth + 0.02;
+
+        this.cloth.apply();
+        this.drawAt(archRoll, 0, baseY, z);
+
         this.leather.apply();
-        const backCinchZ = this.coverBackZ - 0.01;
-        for (let i = 0; i < 5; i++) {
-            const theta = (i + 1) / 6 * Math.PI;
-            const x = Math.cos(theta) * (this.coverHalfWidth - 0.04);
-            const y = coverBaseY + this.coverSideHeight + Math.sin(theta) * (this.coverArchHeight - 0.04);
-            this.drawAt(this.coverTie, x, y, backCinchZ);
+        if (!addRearDetail) {
+            this.drawCoverTieRing(0, topY, z);
         }
+
+        for (const sx of [-1, 1]) {
+            this.drawAt(this.frontCoverStrap, sx * sideX, sideY, z);
+            this.drawAt(this.frontCoverStrap, sx * sideX, sideY + 0.36, z);
+        }
+
+        if (!addRearDetail) return;
+
+        const rearTiePoints = [
+            { x: -0.70, y: topY - 0.28, angle: -0.16 },
+            { x: -0.44, y: topY - 0.10, angle: -0.12 },
+            { x: 0.00, y: topY - 0.03, angle: 0.00 },
+            { x: 0.44, y: topY - 0.10, angle: 0.12 },
+            { x: 0.70, y: topY - 0.28, angle: 0.16 },
+        ];
+        for (let i = 0; i < rearTiePoints.length; i++) {
+            const tie = rearTiePoints[i];
+            this.drawAt(
+                this.rearTieTail,
+                tie.x,
+                tie.y - 0.20,
+                z - 0.012,
+                0,
+                0,
+                tie.angle + this.getRearTieSwing(i)
+            );
+        }
+
+        for (const sx of [-1, 1]) {
+            this.drawAt(
+                this.rearTieTail,
+                sx * sideX,
+                sideY + 0.11,
+                z - 0.012,
+                0,
+                0,
+                -sx * 0.12 + this.getRearTieSwing(sx < 0 ? 5 : 6)
+            );
+        }
+    }
+
+    getRearTieSwing(index) {
+        const steerLean = this.clamp(-this.steerAngle * 0.42, -0.24, 0.24);
+        const roadSway = Math.sin(this.gaitPhase * 2.4 + index * 0.75) * 0.045 * this.getGaitIntensity();
+        return steerLean + roadSway;
+    }
+
+    drawCoverTieRing(x, y, z) {
+        this.drawAt(this.coverFlapTie, x, y, z, 0, Math.PI / 2, 0);
     }
 
     // ----- Cargo ----------------------------------------------------------
