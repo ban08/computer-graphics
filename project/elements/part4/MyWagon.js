@@ -52,7 +52,9 @@ export class MyWagon extends CGFobject {
         this.maxTerrainTilt = 0.28;
         this.collisionObstacles = options.obstacles ?? [];
         this.getPickupTargets = options.getPickupTargets ?? (() => []);
+        this.dropBaleAt = options.dropBaleAt ?? (() => {});
         this.tryAddCargoBale = options.tryAddCargoBale ?? (() => false);
+        this.tryDropCargoBale = options.tryDropCargoBale ?? (() => false);
         this.getCargoBaleCount = options.getCargoBaleCount ?? (() => 0);
         this.onObstacleImpact = options.onObstacleImpact ?? (() => {});
         this.staticCollisionMargin = 0.24;
@@ -73,6 +75,7 @@ export class MyWagon extends CGFobject {
         this.lastUpdateTime = null;
         this.hayBalePickupDistance = 2.0;
         this.wasPickupPressed = false;
+        this.wasDropdownPressed = false;
 
         // --- Bed/cover key dimensions (single source of truth) -------------
         this.bedHalfWidth = 0.85;
@@ -362,9 +365,10 @@ export class MyWagon extends CGFobject {
         const steeringLeft = this.isInputPressed(input, 'KeyA');
         const steeringRight = this.isInputPressed(input, 'KeyD');
         const pickUp = this.isInputPressed(input, 'KeyP');
+        const dropDown = this.isInputPressed(input, 'KeyL');
 
         // pickup checking
-        if (pickUp) {
+        if (pickUp && !this.wasPickupPressed) {
             const bale = this.getPickupTargets().find((target) =>
                 Math.hypot(this.x - target.x, this.z - target.z) <= this.hayBalePickupDistance
             );
@@ -372,6 +376,16 @@ export class MyWagon extends CGFobject {
                 bale.onPickup();
             }
         }
+        this.wasPickupPressed = pickUp;
+
+        // dropdown checking
+        if (dropDown && !this.wasDropdownPressed && this.tryDropCargoBale()) {
+            const dropDistance = this.hayBalePickupDistance + 0.35;
+            const dropX = this.x - Math.sin(this.rotation) * dropDistance;
+            const dropZ = this.z - Math.cos(this.rotation) * dropDistance;
+            this.dropBaleAt(dropX, dropZ);
+        }
+        this.wasDropdownPressed = dropDown;
 
         if (accelerating) this.speed += this.acceleration * dt;
         if (braking) this.speed -= this.brakeDeceleration * dt;

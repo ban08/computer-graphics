@@ -53,6 +53,13 @@ export class MyGameplay {
         return true;
     }
 
+    tryDropBale() {
+        if (this.currentBales === 0) return false;
+
+        this.currentBales--;
+        return true;
+    }
+
     getCurrentBales() {
         return this.currentBales;
     }

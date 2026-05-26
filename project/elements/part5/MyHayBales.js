@@ -5,7 +5,7 @@ import { MyPinpointArrow } from '../../objects/MyPinpointArrow.js';
 
 /**
  * MyHayBales
- * Class strictly responsible for the independent procedural placement of hay bales.
+ * Manages hay bales currently placed in the world, including dropped cargo.
  */
 export class MyHayBales extends CGFobject {
     /**
@@ -109,6 +109,17 @@ export class MyHayBales extends CGFobject {
     collectBale(index) {
         this.placements.splice(index, 1);
         this.generateBalePlacements();
+    }
+
+    dropBale(x, z) {
+        const y = this.terrain.getHeightAt(x, z);
+
+        this.placements.push({
+            x,
+            y,
+            z,
+            rotation: this.randomRange(0, Math.PI * 2)
+        });
     }
 
     getPickupTargets() {

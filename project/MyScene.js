@@ -44,7 +44,9 @@ export class MyScene extends CGFscene {
 			obstacles: this.scatterElements.getCollisionObstacles(),
 			onObstacleImpact: () => this.gameplay.registerObstacleImpact(),
 			getPickupTargets: () => this.hayBales.getPickupTargets(),
+			dropBaleAt: (x, z) => this.hayBales.dropBale(x, z),
 			tryAddCargoBale: () => this.gameplay.tryAddBale(),
+			tryDropCargoBale: () => this.gameplay.tryDropBale(),
 			getCargoBaleCount: () => this.gameplay.getCurrentBales()
 		});
 
