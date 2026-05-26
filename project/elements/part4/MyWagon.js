@@ -1108,36 +1108,25 @@ export class MyWagon extends CGFobject {
     // ----- Cargo ----------------------------------------------------------
 
     displayCargo() {
-        // Pack the cargo area with hay bales. Bales are 0.62 wide × 0.34 tall
-        // × 0.50 deep; the bed inner area runs roughly x[-0.85, 0.85],
-        // z[-1.55, 0.95]. Layout: 2 across, 4 along, with a second layer of
-        // 4 on top staggered so the stack reads as freshly loaded.
-        const baseY = this.floorTop + 0.20;        // first layer Y
-        const stackY = baseY + 0.36;               // second layer (just above)
-        const zRows = [-1.20, -0.65, -0.10, 0.55];
-        const xCols = [-0.34, 0.34];
-        const rotations = [0.06, -0.05, 0.08, -0.04];
+        // visually accurate to gameplay
+        const cargoSlots = [
+            { x: 0.00, y: 1.46, z: 0.40, rotation: 0.06, scale: 2.1 },
+            { x: 0.08, y: 2.22, z: 0.25, rotation: 1.39, scale: 2.1 },
+        ];
 
-        for (let i = 0; i < zRows.length; i++) {
-            for (const x of xCols) {
-                this.displayBale(x, baseY, zRows[i], rotations[i] * Math.sign(x));
-            }
-        }
+        const baleCount = Math.max(0, Math.min(this.getCargoBaleCount(), cargoSlots.length));
 
-        // Staggered second layer — only on the rear three rows so the front
-        // (driver-facing end) stays open and visible.
-        const topRows = [-1.20, -0.65, -0.10];
-        for (let i = 0; i < topRows.length; i++) {
-            // Offset the second-layer bales between the lower ones for a
-            // brick-pattern feel.
-            this.displayBale(0, stackY, topRows[i] + 0.10, 0.05);
+        for (let i = 0; i < baleCount; i++) {
+            const slot = cargoSlots[i];
+            this.displayBale(slot.x, slot.y, slot.z, slot.rotation, slot.scale);
         }
     }
 
-    displayBale(x, y, z, rotation) {
+    displayBale(x, y, z, rotation, scale) {
         this.scene.pushMatrix();
         this.scene.translate(x, y, z);
         this.scene.rotate(rotation, 0, 1, 0);
+        this.scene.scale(scale, scale, scale);
 
         this.hayBaleGeometry.display();
 
