@@ -73,7 +73,8 @@ export class MyWagon extends CGFobject {
         this.wheelSpinAngle = 0.0;
         this.gaitPhase = 0.0;
         this.lastUpdateTime = null;
-        this.hayBalePickupDistance = 2.0;
+        this.hayBalePickupDistance = 1.5;
+        this.hayBaleInteractionOffset = 2.5;
         this.wasPickupPressed = false;
         this.wasDropdownPressed = false;
 
@@ -366,11 +367,13 @@ export class MyWagon extends CGFobject {
         const steeringRight = this.isInputPressed(input, 'KeyD');
         const pickUp = this.isInputPressed(input, 'KeyP');
         const dropDown = this.isInputPressed(input, 'KeyL');
+        const baleInteractionX = this.x - Math.sin(this.rotation) * this.hayBaleInteractionOffset;
+        const baleInteractionZ = this.z - Math.cos(this.rotation) * this.hayBaleInteractionOffset;
 
         // pickup checking
         if (pickUp && !this.wasPickupPressed) {
             const bale = this.getPickupTargets().find((target) =>
-                Math.hypot(this.x - target.x, this.z - target.z) <= this.hayBalePickupDistance
+                Math.hypot(baleInteractionX - target.x, baleInteractionZ - target.z) <= this.hayBalePickupDistance
             );
             if (bale && this.tryAddCargoBale()) {
                 bale.onPickup();
@@ -380,10 +383,7 @@ export class MyWagon extends CGFobject {
 
         // dropdown checking
         if (dropDown && !this.wasDropdownPressed && this.tryDropCargoBale()) {
-            const dropDistance = this.hayBalePickupDistance + 0.35;
-            const dropX = this.x - Math.sin(this.rotation) * dropDistance;
-            const dropZ = this.z - Math.cos(this.rotation) * dropDistance;
-            this.dropBaleAt(dropX, dropZ);
+            this.dropBaleAt(baleInteractionX, baleInteractionZ);
         }
         this.wasDropdownPressed = dropDown;
 
