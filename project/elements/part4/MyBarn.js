@@ -86,10 +86,28 @@ export class MyBarn extends CGFobject {
 
         // FRONT
         this.scene.pushMatrix();
-        this.scene.translate(0,0,0.5);
+        this.scene.translate(0, 0, 0.5); 
+
+        this.scene.pushMatrix();
+        this.scene.translate(-0.35, 0, 0); 
+        this.scene.scale(0.3, 1, 1);       
+        this.planeWalls.display();
+        this.scene.popMatrix();
+    
+        this.scene.pushMatrix();
+        this.scene.translate(0.35, 0, 0);  
+        this.scene.scale(0.3, 1, 1);       
+        this.planeWalls.display();
+        this.scene.popMatrix();
+    
+        this.scene.pushMatrix();
+        this.scene.translate(0, 0.3, 0);    
+        this.scene.scale(0.4, 0.4, 1);  
         this.planeWalls.display();
         this.scene.popMatrix();
 
+        this.scene.popMatrix();
+        
         // BACK
         this.scene.pushMatrix();
         this.scene.translate(0,0,-0.5);
