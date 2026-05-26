@@ -8,6 +8,7 @@ import { MyFlowers } from "./elements/part3/MyFlowers.js";
 import { MyGrass } from "./elements/part3/MyGrass.js";
 import { MyWagon } from "./elements/part4/MyWagon.js";
 import { MyHayBales } from "./elements/part5/MyHayBales.js";
+import { MyGameplay } from "./MyGameplay.js";
 
 export class MyScene extends CGFscene {
   	constructor() {
@@ -30,14 +31,21 @@ export class MyScene extends CGFscene {
 		this.sky = new MySky(this);
 		this.sun = new MySun(this);
 		this.clouds = new MyClouds(this);
+
 		this.terrain = new MyTerrain(this);
 		this.scatterElements = new MyScatterElements(this, this.terrain);
+
 		this.flowers = new MyFlowers(this, this.terrain);
 		this.grass = new MyGrass(this, this.terrain);
-		this.hayBales = new MyHayBales(this, this.terrain,this.flowers,this.scatterElements);
+
+		this.gameplay = new MyGameplay();
+		this.hayBales = new MyHayBales(this, this.terrain, this.flowers, this.scatterElements);
 		this.wagon = new MyWagon(this, this.terrain, {
 			obstacles: this.scatterElements.getCollisionObstacles(),
+			onObstacleImpact: () => this.gameplay.registerObstacleImpact(),
 			getPickupTargets: () => this.hayBales.getPickupTargets(),
+			tryAddCargoBale: () => this.gameplay.tryAddBale(),
+			getCargoBaleCount: () => this.gameplay.getCurrentBales()
 		});
 
 		this.setUpdatePeriod(50);
@@ -67,9 +75,11 @@ export class MyScene extends CGFscene {
 
 		this.scatterElements.update(t);
 
-        this.wagon.update(t, this.gui);
+		this.gameplay.update(t);
 
 		this.hayBales.update(t);
+		
+        this.wagon.update(t, this.gui);
 		
 		if (this.cameraType == 'Follow Wagon') this.setChaseCamera();
   	}

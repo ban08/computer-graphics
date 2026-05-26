@@ -52,6 +52,9 @@ export class MyWagon extends CGFobject {
         this.maxTerrainTilt = 0.28;
         this.collisionObstacles = options.obstacles ?? [];
         this.getPickupTargets = options.getPickupTargets ?? (() => []);
+        this.tryAddCargoBale = options.tryAddCargoBale ?? (() => false);
+        this.getCargoBaleCount = options.getCargoBaleCount ?? (() => 0);
+        this.onObstacleImpact = options.onObstacleImpact ?? (() => {});
         this.staticCollisionMargin = 0.24;
 
         // movement related vars
@@ -69,6 +72,7 @@ export class MyWagon extends CGFobject {
         this.gaitPhase = 0.0;
         this.lastUpdateTime = null;
         this.hayBalePickupDistance = 2.0;
+        this.wasPickupPressed = false;
 
         // --- Bed/cover key dimensions (single source of truth) -------------
         this.bedHalfWidth = 0.85;
@@ -364,7 +368,9 @@ export class MyWagon extends CGFobject {
             const bale = this.getPickupTargets().find((target) =>
                 Math.hypot(this.x - target.x, this.z - target.z) <= this.hayBalePickupDistance
             );
-            if (bale) bale.onPickup();
+            if (bale && this.tryAddCargoBale()) {
+                bale.onPickup();
+            }
         }
 
         if (accelerating) this.speed += this.acceleration * dt;
@@ -400,6 +406,7 @@ export class MyWagon extends CGFobject {
         if (obstacle) {
             this.speed = 0.0;
             obstacle.onImpact(t);
+            this.onObstacleImpact(obstacle);
             return;
         }
 
