@@ -57,6 +57,7 @@ export class MyWagon extends CGFobject {
         this.tryDropCargoBale = options.tryDropCargoBale ?? (() => false);
         this.getCargoBaleCount = options.getCargoBaleCount ?? (() => 0);
         this.onObstacleImpact = options.onObstacleImpact ?? (() => {});
+        this.onBoundaryImpact = options.onBoundaryImpact ?? (() => {});
         this.staticCollisionMargin = 0.24;
 
         // movement related vars
@@ -414,6 +415,7 @@ export class MyWagon extends CGFobject {
         // collision checking
         if (!this.isInsideTerrain(nextX, nextZ, nextRotation)) {
             this.speed = 0.0;
+            this.onBoundaryImpact();
             return;
         }
         const obstacle = this.findStaticCollision(nextX, nextZ, nextRotation);

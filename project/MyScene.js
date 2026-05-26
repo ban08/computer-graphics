@@ -8,6 +8,7 @@ import { MyFlowers } from "./elements/part3/MyFlowers.js";
 import { MyGrass } from "./elements/part3/MyGrass.js";
 import { MyWagon } from "./elements/part4/MyWagon.js";
 import { MyHayBales } from "./elements/part5/MyHayBales.js";
+import { MyBoundaryFence } from "./objects/MyBoundaryFence.js";
 import { MyGameplay } from "./MyGameplay.js";
 
 export class MyScene extends CGFscene {
@@ -43,12 +44,15 @@ export class MyScene extends CGFscene {
 		this.wagon = new MyWagon(this, this.terrain, {
 			obstacles: this.scatterElements.getCollisionObstacles(),
 			onObstacleImpact: () => this.gameplay.registerObstacleImpact(),
+			onBoundaryImpact: () => this.gameplay.registerBoundaryImpact(),
 			getPickupTargets: () => this.hayBales.getPickupTargets(),
 			dropBaleAt: (x, z) => this.hayBales.dropBale(x, z),
 			tryAddCargoBale: () => this.gameplay.tryAddBale(),
 			tryDropCargoBale: () => this.gameplay.tryDropBale(),
 			getCargoBaleCount: () => this.gameplay.getCurrentBales()
 		});
+
+		this.boundaryFence = new MyBoundaryFence(this, this.terrain);
 
 		this.setUpdatePeriod(50);
 
@@ -160,5 +164,6 @@ export class MyScene extends CGFscene {
 		this.grass.display();
 		this.wagon.display();
 		this.hayBales.display();
+		this.boundaryFence.display();
 	}
 }

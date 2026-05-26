@@ -89,4 +89,14 @@ export class MyGameplay {
 
         return damage;
     }
+
+    registerBoundaryImpact() {
+        const damage = 9999; // ouch
+        this.lastDamage = 100;
+        
+        this.hp = Math.max(0, this.hp - damage);
+        if (this.hp === 0) this.gameOver = true;
+
+        return damage;
+    }
 }
