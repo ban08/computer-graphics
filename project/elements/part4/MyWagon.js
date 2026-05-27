@@ -27,9 +27,9 @@ export class MyWagon extends CGFobject {
         super(scene);
 
         this.terrain = terrain;
-        this.x = options.x ?? 2.0;
-        this.z = options.z ?? 21.0;
-        this.rotation = options.rotation ?? -2.35;
+        this.x = options.x ?? 2.7;
+        this.z = options.z ?? 21.6;
+        this.rotation = options.rotation ?? -3.02;
         this.scaleFactor = options.scale ?? 0.45;
         this.wheelCenterY = 0.62;
         this.wheelOuterRadius = 0.56;
