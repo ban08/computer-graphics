@@ -284,13 +284,10 @@ export class MyBarn extends CGFobject {
     }
 
     display() {
-        let z = -26;
-        let x = Math.sin(z * 0.15) * 8.0 +  Math.cos(z * 0.05) * 4.0;
-
         this.scene.pushMatrix();
 
-        this.scene.translate(x+4, 5, z+6);
-        this.scene.rotate(-Math.PI/4, 0, 1, 0);
+        this.scene.translate(1.1, 5, -21.6);
+        this.scene.rotate(0.94, 0, 1, 0);
         this.scene.scale(8*0.6, 5*0.6, 6*0.6); // resize
 
         this.displayWalls();

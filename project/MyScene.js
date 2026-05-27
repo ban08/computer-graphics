@@ -171,7 +171,7 @@ export class MyScene extends CGFscene {
 		this.grass.display();
 		this.wagon.display();
 		this.hayBales.display();
-		this.barn.display(this.wagon);
+		this.barn.display();
 		this.boundaryFence.display();
 	}
 }
