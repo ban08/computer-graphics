@@ -6,10 +6,11 @@ import { MyTerrain } from "./elements/part2/MyTerrain.js";
 import { MyScatterElements } from "./elements/part2/MyScatterElements.js";
 import { MyFlowers } from "./elements/part3/MyFlowers.js";
 import { MyGrass } from "./elements/part3/MyGrass.js";
-import { MyWagon } from "./elements/part4/MyWagon.js";
-import { MyHayBales } from "./elements/part5/MyHayBales.js";
-import { MyBoundaryFence } from "./objects/MyBoundaryFence.js";
 import { MyGameplay } from "./MyGameplay.js";
+import { MyHayBales } from "./elements/part5/MyHayBales.js";
+import { MyBarn } from "./elements/part4/MyBarn.js";
+import { MyWagon } from "./elements/part4/MyWagon.js";
+import { MyBoundaryFence } from "./objects/MyBoundaryFence.js";
 
 export class MyScene extends CGFscene {
   	constructor() {
@@ -29,18 +30,23 @@ export class MyScene extends CGFscene {
 		this.gl.depthFunc(this.gl.LEQUAL);
 		this.enableTextures(true);
 
+		// environment
 		this.sky = new MySky(this);
 		this.sun = new MySun(this);
 		this.clouds = new MyClouds(this);
 
+		// terrain
 		this.terrain = new MyTerrain(this);
 		this.scatterElements = new MyScatterElements(this, this.terrain);
 
+		// flora
 		this.flowers = new MyFlowers(this, this.terrain);
 		this.grass = new MyGrass(this, this.terrain);
 
+		// gameplay
 		this.gameplay = new MyGameplay();
 		this.hayBales = new MyHayBales(this, this.terrain, this.flowers, this.scatterElements);
+		this.barn = new MyBarn(this, this.terrain, 5.0, -10.0);
 		this.wagon = new MyWagon(this, this.terrain, {
 			obstacles: this.scatterElements.getCollisionObstacles(),
 			onObstacleImpact: () => this.gameplay.registerObstacleImpact(),
@@ -52,6 +58,7 @@ export class MyScene extends CGFscene {
 			getCargoBaleCount: () => this.gameplay.getCurrentBales()
 		});
 
+		// extra
 		this.boundaryFence = new MyBoundaryFence(this, this.terrain);
 
 		this.setUpdatePeriod(50);
@@ -164,6 +171,7 @@ export class MyScene extends CGFscene {
 		this.grass.display();
 		this.wagon.display();
 		this.hayBales.display();
+		this.barn.display(this.wagon);
 		this.boundaryFence.display();
 	}
 }
