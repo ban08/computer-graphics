@@ -48,7 +48,7 @@ export class MyHayBales extends CGFobject {
     
         const awayFromBarn = Math.hypot(x - barnX, z - barnZ) > 6.0; 
         
-        if (!awayFromSceneCenter || !awayFromStarterWagon || !awayFromPathway || !awayFromBarn) {
+        if ( !awayFromStarterWagon || !awayFromPathway || !awayFromBarn) {
             return false;
         }
  
