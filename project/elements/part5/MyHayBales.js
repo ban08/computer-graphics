@@ -41,10 +41,16 @@ export class MyHayBales extends CGFobject {
     const isValidPlacement = (x, z) => {
         const awayFromStarterWagon = Math.hypot(x - 2.7, z - 21.6) > 6.0;
         const awayFromPathway = !this.terrain.isPointOnPath(x, z);
+        const barnBaseZ = -26;
+        const barnX = (Math.sin(barnBaseZ * 0.15) * 8.0) + (Math.cos(barnBaseZ * 0.05) * 4.0) + 4.0;
+        const barnZ = barnBaseZ + 6.0; 
         
-    if (!awayFromStarterWagon || !awayFromPathway) {
-        return false;
-    }
+    
+        const awayFromBarn = Math.hypot(x - barnX, z - barnZ) > 6.0; 
+        
+        if (!awayFromSceneCenter || !awayFromStarterWagon || !awayFromPathway || !awayFromBarn) {
+            return false;
+        }
  
     if (this.rocks && this.rocks.placements) {
         for (const rock of this.rocks.placements) {

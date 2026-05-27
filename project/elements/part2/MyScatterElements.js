@@ -46,7 +46,15 @@ export class MyScatterElements extends CGFobject {
         const isValidPlacement = (x, z) => {
             const awayFromStarterWagon = Math.hypot(x - 2.7, z - 21.6) > 6.0;
             const awayFromPathway = !this.terrain.isPointOnPath(x, z);
-            return awayFromStarterWagon && awayFromPathway;
+            const barnBaseZ = -26;
+            const barnX = (Math.sin(barnBaseZ * 0.15) * 8.0) + (Math.cos(barnBaseZ * 0.05) * 4.0) + 4.0;
+            const barnZ = barnBaseZ + 6.0; 
+            const awayFromBarn = Math.hypot(x - barnX, z - barnZ) > 6.0; 
+            
+            if (!awayFromSceneCenter || !awayFromStarterWagon || !awayFromPathway || !awayFromBarn) {
+            return false;
+            }
+            return true;
         };
 
         const createRockPlacement = (placement) => {
