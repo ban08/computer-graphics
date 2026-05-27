@@ -1,6 +1,7 @@
 import { CGFobject, CGFappearance, CGFtexture } from '../../../lib/CGF.js';
 import { MyPlane } from '../../primitives/MyPlane.js';
 import { MyRoofGable } from '../../primitives/MyRoofGable.js'; 
+import { MyRing } from '../../primitives/MyRing.js';
 
 export class MyBarn extends CGFobject {
     constructor(scene,terrain) {
@@ -11,7 +12,7 @@ export class MyBarn extends CGFobject {
         this.planeRoof = new MyPlane(scene, 10);
         this.roofGable = new MyRoofGable(scene);
         this.terrain = terrain;
-
+        this.ring = new MyRing(scene, 30, 1,1.05);
         this.initMaterials();
     }
 
@@ -39,8 +40,13 @@ export class MyBarn extends CGFobject {
         this.roof.setSpecular(0.1, 0.1, 0.1, 1);
         this.roof.setShininess(5);
         this.roof.setTexture(new CGFtexture(this.scene, './textures/darkWoodTexture.png')); 
-      
-     
+        this.roof.setTextureWrap('REPEAT', 'REPEAT');
+
+        this.ringMaterial = new CGFappearance(this.scene);
+        this.ringMaterial.setAmbient(0.2, 0.0, 0.0, 1);
+        this.ringMaterial.setDiffuse(1.0, 0.0, 0.0, 1);  
+        this.ringMaterial.setSpecular(0.2, 0.0, 0.0, 1);
+        this.ringMaterial.setShininess(100);
     }
 displayRoof() {
         this.walls.apply();
@@ -307,16 +313,34 @@ displayRoof() {
 
       
     }
+    displayRing() {
+        this.ringMaterial.apply();
+        this.scene.pushMatrix();
+        
+        this.scene.translate(0, -1.45, 0); 
+        this.scene.scale(3.5*1.2, 1.2, 3.5*1.2);        
+        this.ring.display();
+        this.scene.popMatrix();
+    }
 
     display() {
         let z = -26;
         let x = Math.sin(z * 0.15) * 8.0 +  Math.cos(z * 0.05) * 4.0;
+        
+        let worldX = x + 4;
+        let worldZ = z + 6;
+
+        let terrainHeight = this.terrain ? this.terrain.getHeightAt(worldX, worldZ) : 0;
+
+        let correctY = terrainHeight + 1.6;
+
         this.scene.pushMatrix();
 
-        this.scene.translate(x+4, 5, z+6);
+        this.scene.translate(worldX, correctY, worldZ);
         this.scene.rotate(-Math.PI/4, 0, 1, 0);
+        this.displayRing();
 
-        this.scene.scale(8*0.6,5*0.6,6*0.6); // resize
+        this.scene.scale(8*0.6, 5*0.6, 6*0.6); 
 
         this.displayWalls();
         this.displayRoof();

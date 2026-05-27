@@ -148,7 +148,7 @@ export class MyTerrain extends CGFobject {
     }
 
     // ported terrainHeight(vec2 worldXY) from the old procedural.vert shader
-    buildProceduralTerrainHeightAt(x, y) {
+    getRawTerrainHeight(x, y) {
         const qx = x * this.frequency + this.seed;
         const qy = y * this.frequency + this.seed * 1.61803398875 + 56.78;
 
@@ -176,8 +176,28 @@ export class MyTerrain extends CGFobject {
 
         return h * this.heightScale;
     }
+buildProceduralTerrainHeightAt(x, y) {
+        let rawHeight = this.getRawTerrainHeight(x, y);
 
-    // builds the actual terrain mesh and normals from the height field
+        let barnBaseZ = -26;
+        let barnWorldX = Math.sin(barnBaseZ * 0.15) * 8.0 + Math.cos(barnBaseZ * 0.05) * 4.0 + 4.0;
+        let barnWorldZ = barnBaseZ + 6.0;
+
+        let barnGridX = barnWorldX;
+        let barnGridY = -barnWorldZ; 
+
+        let plateauHeight = this.getRawTerrainHeight(barnGridX, barnGridY);
+
+        let distToBarn = Math.hypot(x - barnGridX, y - barnGridY);
+
+        let flatRadius = 8.0;  
+        let blendMargin = 4.0; 
+
+        let mixFactor = this.smoothstep(flatRadius, flatRadius + blendMargin, distToBarn);
+
+        return this.mix(plateauHeight, rawHeight, mixFactor);
+    }
+
     buildProceduralTerrain() {
         const divs = this.divisions;
         const verticesPerSide = divs + 1;
