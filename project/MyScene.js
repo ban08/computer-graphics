@@ -8,7 +8,7 @@ import { MyFlowers } from "./elements/part3/MyFlowers.js";
 import { MyGrass } from "./elements/part3/MyGrass.js";
 import { MyGameplay } from "./MyGameplay.js";
 import { MyHayBales } from "./elements/part5/MyHayBales.js";
-import { MyBarn } from "./elements/part4/MyBarn.js";
+import { MyBarn } from "./elements/part5/MyBarn.js";
 import { MyWagon } from "./elements/part4/MyWagon.js";
 import { MyBoundaryFence } from "./objects/MyBoundaryFence.js";
 
@@ -46,7 +46,7 @@ export class MyScene extends CGFscene {
 		// gameplay
 		this.gameplay = new MyGameplay();
 		this.hayBales = new MyHayBales(this, this.terrain, this.flowers, this.scatterElements);
-		this.barn = new MyBarn(this, this.terrain, 5.0, -10.0);
+		this.barn = new MyBarn(this, this.terrain);
 		this.wagon = new MyWagon(this, this.terrain, {
 			obstacles: this.scatterElements.getCollisionObstacles(),
 			onObstacleImpact: () => this.gameplay.registerObstacleImpact(),
