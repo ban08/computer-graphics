@@ -39,7 +39,7 @@ export class MyBarn extends CGFobject {
         this.roof.setSpecular(0.1, 0.1, 0.1, 1);
         this.roof.setShininess(5);
         this.roof.setTexture(new CGFtexture(this.scene, './textures/darkWoodTexture.png')); 
-       this.walls.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
+      
      
     }
 displayRoof() {
@@ -156,6 +156,32 @@ displayRoof() {
         this.scene.popMatrix();
 
     }
+    displayDoorFrame() {
+        this.roof.apply();
+
+        let frameZ = 0.502; 
+        let frameThickness = 0.06; 
+        //left
+        this.scene.pushMatrix();
+        this.scene.translate(-0.23, -0.2, frameZ);
+        this.scene.scale(frameThickness, 0.6, 1);
+        this.planeWalls.display();
+        this.scene.popMatrix();
+
+        //right
+        this.scene.pushMatrix();
+        this.scene.translate(0.23, -0.2, frameZ);
+        this.scene.scale(frameThickness, 0.6, 1);
+        this.planeWalls.display();
+        this.scene.popMatrix();
+
+        //top
+        this.scene.pushMatrix();
+        this.scene.translate(0, 0.13, frameZ);
+        this.scene.scale(0.4 + (frameThickness * 2), frameThickness, 1);
+        this.planeWalls.display();
+        this.scene.popMatrix();
+    }
 
     displayWalls() {
         this.walls.apply();
@@ -195,7 +221,7 @@ displayRoof() {
         this.scene.pushMatrix();
         this.scene.translate(0.5,0,0);
         this.scene.rotate(Math.PI/2,0,1,0);
-        this.scene.scale(1, 1.2, 1)
+        this.scene.scale(1, 1, 1); 
         this.planeWalls.display();
         this.scene.popMatrix();
 
@@ -203,9 +229,10 @@ displayRoof() {
         this.scene.pushMatrix();
         this.scene.translate(-0.5,0,0);
         this.scene.rotate(-Math.PI/2,0,1,0);
-        this.scene.scale(1, 1.2, 1)
+        this.scene.scale(1, 1, 1); 
         this.planeWalls.display();
         this.scene.popMatrix();
+        
         // TOP
         this.scene.pushMatrix();
         this.scene.translate(0,0.5,0);
@@ -219,8 +246,67 @@ displayRoof() {
         this.scene.rotate(Math.PI/2,1,0,0);
         this.planeWalls.display();
         this.scene.popMatrix();
-    }
 
+   
+        // BACK 
+        this.scene.pushMatrix();
+        this.scene.translate(0, 0, -0.45);
+        this.scene.scale(0.9, 1, 1);
+        this.planeWalls.display();
+        this.scene.popMatrix();
+
+        // RIGHT 
+        this.scene.pushMatrix();
+        this.scene.translate(0.45, 0, 0);
+        this.scene.rotate(-Math.PI/2, 0, 1, 0);
+        this.scene.scale(0.9, 1, 1);
+        this.planeWalls.display();
+        this.scene.popMatrix();
+
+        // LEFT
+        this.scene.pushMatrix();
+        this.scene.translate(-0.45, 0, 0);
+        this.scene.rotate(Math.PI/2, 0, 1, 0);
+        this.scene.scale(0.9, 1, 1);
+        this.planeWalls.display();
+        this.scene.popMatrix();
+
+        // FLOOR
+        this.scene.pushMatrix();
+        this.scene.translate(0, -0.49, 0);
+        this.scene.rotate(-Math.PI/2, 1, 0, 0);
+        this.scene.scale(0.9, 0.9, 1);
+        this.planeWalls.display();
+        this.scene.popMatrix();
+
+        // FRONT 
+        this.scene.pushMatrix();
+        this.scene.translate(0, 0, 0.45); 
+        this.scene.rotate(Math.PI, 0, 1, 0); 
+
+        this.scene.pushMatrix();
+        this.scene.translate(-0.325, 0, 0); 
+        this.scene.scale(0.25, 1, 1);       
+        this.planeWalls.display();
+        this.scene.popMatrix();
+    
+        
+        this.scene.pushMatrix();
+        this.scene.translate(0.325, 0, 0);  
+        this.scene.scale(0.25, 1, 1);       
+        this.planeWalls.display();
+        this.scene.popMatrix();
+   
+        this.scene.pushMatrix();
+        this.scene.translate(0, 0.3, 0);    
+        this.scene.scale(0.4, 0.4, 1);  
+        this.planeWalls.display();
+        this.scene.popMatrix();
+
+        this.scene.popMatrix();
+
+      
+    }
 
     display() {
         let z = -26;
@@ -234,7 +320,8 @@ displayRoof() {
 
         this.displayWalls();
         this.displayRoof();
-        this.displayWindow();   
+        this.displayWindow();  
+        this.displayDoorFrame(); 
         this.scene.popMatrix();
     }
 }

@@ -1,7 +1,7 @@
 import { CGFobject } from '../../lib/CGF.js';
 
 /**
- * MyPlane
+ * MyPlane (Double-Sided)
  * @constructor
  * @param scene - Reference to MyScene object
  * @param nrDivs - Number of subdivisions in both directions of the plane
@@ -30,19 +30,37 @@ export class MyPlane extends CGFobject {
         this.normals = [];
         this.texCoords = [];
 
+        // frente
         var yCoord = 0.5;
         for (var j = 0; j <= this.nrDivs; j++) {
             var xCoord = -0.5;
             for (var i = 0; i <= this.nrDivs; i++) {
                 this.vertices.push(xCoord, yCoord, 0);
-                this.normals.push(0, 0, 1);
+                this.normals.push(0, 0, 1); // Normal aponta para a FRENTE
                 this.texCoords.push(this.minS + i * this.q, this.minT + j * this.w);
                 xCoord += this.patchLength;
             }
             yCoord -= this.patchLength;
         }
 
+        // trás
+        yCoord = 0.5;
+        for (var j = 0; j <= this.nrDivs; j++) {
+            var xCoord = -0.5;
+            for (var i = 0; i <= this.nrDivs; i++) {
+                this.vertices.push(xCoord, yCoord, 0);
+                this.normals.push(0, 0, -1); // Normal aponta para TRÁS
+                // Inverter o eixo S (X da textura) para não ficar espelhada!
+                this.texCoords.push(this.maxS - (i * this.q), this.minT + j * this.w);
+                xCoord += this.patchLength;
+            }
+            yCoord -= this.patchLength;
+        }
+
         this.indices = [];
+        var numVerticesPerFace = (this.nrDivs + 1) * (this.nrDivs + 1);
+
+        // frente
         var ind = 0;
         for (var j = 0; j < this.nrDivs; j++) {
             for (var i = 0; i <= this.nrDivs; i++) {
@@ -53,6 +71,27 @@ export class MyPlane extends CGFobject {
             if (j + 1 < this.nrDivs) {
                 this.indices.push(ind + this.nrDivs);
                 this.indices.push(ind);
+            }
+        }
+
+    
+        var lastFrontIndex = this.indices[this.indices.length - 1];
+        var firstBackIndex = numVerticesPerFace + this.nrDivs + 1;
+        
+        this.indices.push(lastFrontIndex);
+        this.indices.push(firstBackIndex);
+
+        // trás
+        var indBack = numVerticesPerFace;
+        for (var j = 0; j < this.nrDivs; j++) {
+            for (var i = 0; i <= this.nrDivs; i++) {
+                this.indices.push(indBack + this.nrDivs + 1);
+                this.indices.push(indBack);
+                indBack++;
+            }
+            if (j + 1 < this.nrDivs) {
+                this.indices.push(indBack - 1);
+                this.indices.push(indBack + this.nrDivs + 1);
             }
         }
 
