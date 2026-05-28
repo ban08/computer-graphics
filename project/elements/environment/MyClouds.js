@@ -15,7 +15,7 @@ export class MyClouds extends CGFobject {
         this.radius = 120;
         this.slices = 90;
         this.stacks = 36;
-        this.sphere = new MyReverseSphere(scene, radius, slices, stacks);
+        this.sphere = new MyReverseSphere(scene, this.radius, this.slices, this.stacks);
         this.curvature = 0.22;
         this.edgeDrop = 16.0;
 
