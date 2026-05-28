@@ -1,4 +1,4 @@
-import { CGFobject } from '../../../lib/CGF.js';
+import { CGFobject } from '../../lib/CGF.js';
 
 export class MyRing extends CGFobject {
     constructor(scene, slices, innerRadius = 0.9, outerRadius = 1.0) {

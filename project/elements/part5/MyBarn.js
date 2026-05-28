@@ -1,5 +1,5 @@
 import { CGFobject, CGFappearance, CGFtexture } from '../../../lib/CGF.js';
-import { MyPlane } from '../../primitives/MyPlane.js';
+import { MyTwoSidedPlane } from '../../primitives/MyTwoSidedPlane.js';
 import { MyRoofGable } from '../../primitives/MyRoofGable.js'; 
 import { MyRing } from '../../primitives/MyRing.js';
 
@@ -9,9 +9,9 @@ export class MyBarn extends CGFobject {
 
         this.terrain = terrain;
 
-        this.planeWalls = new MyPlane(scene, 10);
-        this.planeWindow = new MyPlane(scene, 10);
-        this.planeRoof = new MyPlane(scene, 10);
+        this.planeWalls = new MyTwoSidedPlane(scene, 10);
+        this.planeWindow = new MyTwoSidedPlane(scene, 10);
+        this.planeRoof = new MyTwoSidedPlane(scene, 10);
         this.roofGable = new MyRoofGable(scene);
         this.terrain = terrain;
         this.ring = new MyRing(scene, 30, 1,1.05);
