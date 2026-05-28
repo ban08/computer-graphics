@@ -10,6 +10,8 @@ import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js'
  * @param terrain - Terrain used to place objects at the correct height and radius
  */
 export class MyScatterElements extends CGFobject {
+    // --- constructor
+
     constructor(scene, terrain) {
         super(scene);
 
@@ -33,6 +35,8 @@ export class MyScatterElements extends CGFobject {
             'shaders/dust/dust.frag'
         );
     }
+
+    // --- misc
 
     randomRange(min, max) {
         return min + Math.random() * (max - min);
@@ -107,6 +111,8 @@ export class MyScatterElements extends CGFobject {
         placement.dustTime = t;
     }
 
+    // --- updaters
+
     update(t) {
         this.currentTime = t;
 
@@ -122,16 +128,7 @@ export class MyScatterElements extends CGFobject {
         }
     }
 
-    getCollisionObstacles() {
-        return this.placements.map((placement) => ({
-            x: placement.x,
-            z: placement.z,
-            radius: placement.collisionRadius,
-            type: 'rock',
-            isActive: () => placement.impactTime === null,
-            onImpact: (time) => this.impactRock(placement, time),
-        }));
-    }
+    // --- diisplayers
 
     displayDust(placement) {
         const age = this.currentTime - placement.dustTime;
@@ -189,5 +186,22 @@ export class MyScatterElements extends CGFobject {
 
             this.scene.popMatrix();
         }
+    }
+
+    // --- exposed getters
+
+    getPlacements() {
+        return this.placements;
+    }
+
+    getCollisionObstacles() {
+        return this.placements.map((placement) => ({
+            x: placement.x,
+            z: placement.z,
+            radius: placement.collisionRadius,
+            type: 'rock',
+            isActive: () => placement.impactTime === null,
+            onImpact: (time) => this.impactRock(placement, time),
+        }));
     }
 }

@@ -8,6 +8,7 @@ import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js'
  * the WebGL 1 Uint16 index ceiling (~65k) allows in a single buffer.
  */
 class GrassMeshChunk extends CGFobject {
+    // --- constructor
     constructor(scene, data) {
         super(scene);
         this.vertices = data.vertices;
@@ -17,6 +18,8 @@ class GrassMeshChunk extends CGFobject {
         this.primitiveType = scene.gl.TRIANGLES;
         this.initGLBuffers();
     }
+
+    // --- displayers
 
     display() {
         const gl = this.scene.gl;
@@ -64,6 +67,7 @@ class GrassMeshChunk extends CGFobject {
  * @param opts    - Optional override map
  */
 export class MyGrass {
+    // --- constructor
     constructor(scene, terrain, opts = {}) {
         this.scene = scene;
         this.terrain = terrain;
@@ -115,7 +119,7 @@ export class MyGrass {
             groundAmbient: [0.55, 0.48, 0.32],
             sunDir:    [0.4, 0.85, 0.4],
             ambient:   0.72,
-            maxRadius: terrain.maxRadius,
+            maxRadius: terrain.getMaxRadius(),
             hazeColor: [0.74, 0.82, 0.84],
             hazeStrength: 0.22,
         });
@@ -124,6 +128,8 @@ export class MyGrass {
         this.bladeCount = 0;
         this.buildField();
     }
+
+    // --- misc
 
     buildField() {
         // Density acts on two knobs at once: Poisson anchor spacing (sqrt so
@@ -223,39 +229,6 @@ export class MyGrass {
         };
     }
 
-    updateSunDir(x, y, z) {
-        const len = Math.sqrt(x * x + y * y + z * z) || 1.0;
-        this.shader.setUniformsValues({ sunDir: [x / len, y / len, z / len] });
-    }
-
-    update(t, windSource = null) {
-        if (windSource) {
-            this.windAngleDeg = windSource.windAngleDeg;
-            this.windSpeed = 0.55 + windSource.driftSpeed * 55.0;
-            this.windStrength = this.clamp(0.36 + windSource.driftSpeed * 14.5, 0.34, 1.15);
-        }
-
-        const windRad = this.windAngleDeg * Math.PI / 180.0;
-        this.shader.setUniformsValues({
-            timeFactor: (t / 1000.0) % 10000.0,
-            windDir: [Math.cos(windRad), Math.sin(windRad)],
-            windStrength: this.windStrength,
-            windSpeed: this.windSpeed,
-            colorVariation: this.colorVariation,
-        });
-    }
-
-    rebuild() {
-        this.blade = new MyGrassBlade(this.bladeWidth, this.bladeHeight);
-        this.chunks = [];
-        this.bladeCount = 0;
-        this.shader.setUniformsValues({
-            uBladeHeight: this.bladeHeight * this.bladeScale,
-            colorVariation: this.colorVariation,
-        });
-        this.buildField();
-    }
-
     clamp(x, min, max) {
         return Math.max(min, Math.min(max, x));
     }
@@ -341,6 +314,48 @@ export class MyGrass {
             anchors[j] = tmp;
         }
     }
+
+    /// --- updaters
+
+    rebuild() {
+        this.blade = new MyGrassBlade(this.bladeWidth, this.bladeHeight);
+        this.chunks = [];
+        this.bladeCount = 0;
+        this.shader.setUniformsValues({
+            uBladeHeight: this.bladeHeight * this.bladeScale,
+            colorVariation: this.colorVariation,
+        });
+        this.buildField();
+    }
+
+    updateSunDir(x, y, z) {
+        const len = Math.sqrt(x * x + y * y + z * z) || 1.0;
+        this.shader.setUniformsValues({ sunDir: [x / len, y / len, z / len] });
+    }
+
+    update(t, windSource = null) {
+        let windDir;
+
+        if (windSource) {
+            const driftSpeed = windSource.getDriftSpeed();
+            windDir = windSource.getWindVector();
+            this.windSpeed = 0.55 + driftSpeed * 55.0;
+            this.windStrength = this.clamp(0.36 + driftSpeed * 14.5, 0.34, 1.15);
+        } else {
+            const windRad = this.windAngleDeg * Math.PI / 180.0;
+            windDir = [Math.cos(windRad), Math.sin(windRad)];
+        }
+
+        this.shader.setUniformsValues({
+            timeFactor: (t / 1000.0) % 10000.0,
+            windDir,
+            windStrength: this.windStrength,
+            windSpeed: this.windSpeed,
+            colorVariation: this.colorVariation,
+        });
+    }
+
+    // --- displayers
 
     display() {
         if (!this.visible) return;

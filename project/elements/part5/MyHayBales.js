@@ -7,7 +7,6 @@ import { MyPinpointArrow } from '../../objects/MyPinpointArrow.js';
  * MyHayBales
  * Manages hay bales currently placed in the world, including dropped cargo.
  */
-export class MyHayBales extends CGFobject {
     /**
      * @constructor
      * @param {CGFscene} scene - Reference to the main scene
@@ -16,6 +15,9 @@ export class MyHayBales extends CGFobject {
      * @param {Object} rocks - Reference to the instantiated MyScatterElements object
     
      */
+export class MyHayBales extends CGFobject {
+    // --- constructor
+
     constructor(scene, terrain,flowers,rocks) {
         super(scene);
 
@@ -31,85 +33,81 @@ export class MyHayBales extends CGFobject {
         this.generateBalePlacements();
     }
 
+    // --- misc
 
     randomRange(min, max) {
         return min + Math.random() * (max - min);
     }
 
-
-   generateBalePlacements() {
-    const isValidPlacement = (x, z) => {
-        const awayFromStarterWagon = Math.hypot(x - 2.7, z - 21.6) > 6.0;
-        const awayFromPathway = !this.terrain.isPointOnPath(x, z);
-        const barnBaseZ = -26;
-        const barnX = (Math.sin(barnBaseZ * 0.15) * 8.0) + (Math.cos(barnBaseZ * 0.05) * 4.0) + 4.0;
-        const barnZ = barnBaseZ + 6.0; 
+    generateBalePlacements() {
+        const isValidPlacement = (x, z) => {
+            const awayFromStarterWagon = Math.hypot(x - 2.7, z - 21.6) > 6.0;
+            const awayFromPathway = !this.terrain.isPointOnPath(x, z);
+            const barnBaseZ = -26;
+            const barnX = (Math.sin(barnBaseZ * 0.15) * 8.0) + (Math.cos(barnBaseZ * 0.05) * 4.0) + 4.0;
+            const barnZ = barnBaseZ + 6.0; 
+            
         
+            const awayFromBarn = Math.hypot(x - barnX, z - barnZ) > 6.0; 
+            
+            if ( !awayFromStarterWagon || !awayFromPathway || !awayFromBarn) {
+                return false;
+            }
+
+            if (this.rocks?.getPlacements) {
+                for (const rock of this.rocks.getPlacements()) {
+                    const distanceToRock = Math.hypot(x - rock.x, z - rock.z);
+                    if (distanceToRock < (rock.collisionRadius + 1.2)) {
+                        return false; 
+                    }
+                }
+            }
+            if (this.flowers?.getPlacements) {
+                for (const flower of this.flowers.getPlacements()) {
+                    const distanceToFlower = Math.hypot(x - flower.x, z - flower.z);
+                    if (distanceToFlower < 1.5) {
+                        return false; 
+                    }
+                }
+            }
+            return true;
+        };
+
+        const maxRadius = 25.0;
+        const minDistanceBetweenBales = 8.0;
+        const targetCount = 5;   //numero de fardos alterar se necessário                    
+        let totalAttempts = 0;
+
+        while (this.placements.length < targetCount && totalAttempts < 500) {
+            totalAttempts++;
+        
+            const radius = Math.sqrt(Math.random()) * maxRadius;
+            const angle = Math.random() * Math.PI * 2;
+            
+            const x = radius * Math.cos(angle);
+            const z = radius * Math.sin(angle);
+
+            if (!isValidPlacement(x, z)) continue;
     
-        const awayFromBarn = Math.hypot(x - barnX, z - barnZ) > 6.0; 
-        
-        if ( !awayFromStarterWagon || !awayFromPathway || !awayFromBarn) {
-            return false;
-        }
- 
-    if (this.rocks && this.rocks.placements) {
-        for (const rock of this.rocks.placements) {
-            const distanceToRock = Math.hypot(x - rock.x, z - rock.z);
-            if (distanceToRock < (rock.collisionRadius + 1.2)) {
-                return false; 
+            let tooCloseToOthers = false;
+            for (const p of this.placements) {
+                if (Math.hypot(x - p.x, z - p.z) < minDistanceBetweenBales) {
+                    tooCloseToOthers = true;
+                    break;
+                }
             }
+
+            if (tooCloseToOthers) continue;
+
+            const y = this.terrain.getHeightAt ? this.terrain.getHeightAt(x, z) : 0.0;
+
+            this.placements.push({
+                x: x,
+                y: y,
+                z: z,
+                rotation: this.randomRange(0, Math.PI * 2)
+            });
         }
-    }
-    if (this.flowers && this.flowers.placements) {
-        for (const flower of this.flowers.placements) {
-            const distanceToFlower = Math.hypot(x - flower.x, z - flower.z);
-            if (distanceToFlower < 1.5) {
-                return false; 
-            }
-        }
-    }
-    return true;
-};
-
-    const maxRadius = 25.0;
-    const minDistanceBetweenBales = 8.0;
-    const targetCount = 5;   //numero de fardos alterar se necessário                    
-    let totalAttempts = 0;
-
-
-    while (this.placements.length < targetCount && totalAttempts < 500) {
-        totalAttempts++;
-
-      
-        const radius = Math.sqrt(Math.random()) * maxRadius;
-        const angle = Math.random() * Math.PI * 2;
-        
-        const x = radius * Math.cos(angle);
-        const z = radius * Math.sin(angle);
-
-        if (!isValidPlacement(x, z)) continue;
-
-   
-        let tooCloseToOthers = false;
-        for (const p of this.placements) {
-            if (Math.hypot(x - p.x, z - p.z) < minDistanceBetweenBales) {
-                tooCloseToOthers = true;
-                break;
-            }
-        }
-
-        if (tooCloseToOthers) continue;
-
-
-        const y = this.terrain.getHeightAt ? this.terrain.getHeightAt(x, z) : 0.0;
-
-        this.placements.push({
-            x: x,
-            y: y,
-            z: z,
-            rotation: this.randomRange(0, Math.PI * 2)
-        });
-    }
     }
 
     collectBale(index) {
@@ -128,17 +126,13 @@ export class MyHayBales extends CGFobject {
         });
     }
 
-    getPickupTargets() {
-        return this.placements.map((placement, index) => ({
-            x: placement.x,
-            z: placement.z,
-            onPickup: () => this.collectBale(index)
-        }));
-    }
+    // --- updaters
 
     update(t) {
         this.arrow.update(t);
     }
+
+    // --- displayers
 
     display() {
         for (let i = 0; i < this.placements.length; i++) {
@@ -159,5 +153,19 @@ export class MyHayBales extends CGFobject {
             this.arrow.display(i * 1.31);
             this.scene.popMatrix();
         }
+    }
+
+    // --- exposed getters
+
+    getPlacements() {
+        return this.placements;
+    }
+
+    getPickupTargets() {
+        return this.placements.map((placement, index) => ({
+            x: placement.x,
+            z: placement.z,
+            onPickup: () => this.collectBale(index)
+        }));
     }
 }

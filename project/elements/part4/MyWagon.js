@@ -23,6 +23,7 @@ import { MyHayBale } from '../../objects/MyHayBale.js';
  *    are kept in "wagon design units" which roughly match metres.
  */
 export class MyWagon extends CGFobject {
+    // --- constructor
     constructor(scene, terrain, options = {}) {
         super(scene);
 
@@ -107,6 +108,8 @@ export class MyWagon extends CGFobject {
         // displayMule to enrich the silhouette.
         this.mule = new MyGroupedMule(scene, '/project/assets/mule.obj');
     }
+
+    // --- misc
 
     createMaterials() {
         this.wood = this.makeMaterial('/project/textures/wagonWood.svg', {
@@ -344,90 +347,6 @@ export class MyWagon extends CGFobject {
         this.hoofWrap = new MyTexturedBox(this.scene, this.hoofWidth, this.hoofHeight, this.hoofDepth, 0.12);
     }
 
-    getPose() {
-        return {
-            x: this.x,
-            z: this.z,
-            rotation: this.rotation,
-        };
-    }
-
-    setPose(x, z, rotation = this.rotation) {
-        this.x = x;
-        this.z = z;
-        this.rotation = rotation;
-    }
-
-    setMotionState({ speed = this.speed, maxSpeed = this.maxSpeed, steerAngle = this.steerAngle }) {
-        this.speed = speed;
-        this.maxSpeed = maxSpeed;
-        this.steerAngle = steerAngle;
-    }
-
-    setCargoBaleCount(count) {
-        this.cargoBaleCount = count;
-    }
-
-    advanceMovementAnimation(distance) {
-        const wheelWorldRadius = Math.max(this.wheelOuterRadius * this.scaleFactor, 0.0001);
-        this.wheelSpinAngle = (this.wheelSpinAngle + distance / wheelWorldRadius) % (Math.PI * 2);
-        this.gaitPhase = (this.gaitPhase + (distance / Math.max(this.scaleFactor, 0.0001)) * 3.2) % (Math.PI * 2);
-    }
-
-    getBaleInteractionPoint() {
-        return {
-            x: this.x - Math.sin(this.rotation) * this.hayBaleInteractionOffset,
-            z: this.z - Math.cos(this.rotation) * this.hayBaleInteractionOffset,
-        };
-    }
-
-    getCollisionCirclesAt(originX = this.x, originZ = this.z, rotation = this.rotation, margin = 0.0) {
-        return this.collisionFootprint.map((circle) => {
-            const [x, z] = this.localToWorldXZAt(circle.x, circle.z, originX, originZ, rotation);
-
-            return {
-                x,
-                z,
-                radius: circle.radius * this.scaleFactor + margin,
-            };
-        });
-    }
-
-    getTerrainPose() {
-        if (!this.terrain) return { y: 0, pitch: 0, roll: 0 };
-
-        const halfW = this.bedHalfWidth + this.wallThickness * 0.5;
-        const halfL = this.bedHalfLength * 0.78;
-        const contacts = [
-            { x: -halfW, z: -halfL },
-            { x: halfW, z: -halfL },
-            { x: -halfW, z: halfL },
-            { x: halfW, z: halfL },
-        ].map((p) => ({ ...p, h: this.terrain.getHeightAt(...this.localToWorldXZ(p.x, p.z)) }));
-
-        const left = this.averageHeight(contacts.filter((p) => p.x < 0));
-        const right = this.averageHeight(contacts.filter((p) => p.x > 0));
-        const front = this.averageHeight(contacts.filter((p) => p.z > 0.5));
-        const back = this.averageHeight(contacts.filter((p) => p.z < 0));
-        const roll = this.clamp(
-            Math.atan2(right - left, this.scaleFactor * 2.34),
-            -this.maxTerrainTilt,
-            this.maxTerrainTilt
-        );
-        const pitch = this.clamp(
-            Math.atan2(back - front, this.scaleFactor * (halfL * 2)),
-            -this.maxTerrainTilt,
-            this.maxTerrainTilt
-        );
-        const y = contacts.reduce((sum, p) => {
-            return sum + p.h - this.scaleFactor * (
-                this.wheelGroundLocalY + p.x * Math.sin(roll) - p.z * Math.sin(pitch)
-            );
-        }, 0) / contacts.length;
-
-        return { y, pitch, roll };
-    }
-
     getMuleTerrainOffset(muleX, pose) {
         if (!this.terrain || !pose) return 0;
 
@@ -609,31 +528,7 @@ export class MyWagon extends CGFobject {
         };
     }
 
-    display() {
-        if (!this.visible) return;
-        const pose = this.getTerrainPose();
-        this.currentPose = pose;
-        this.leftMuleOffset = this.getMuleTerrainOffset(-this.muleHalfSpacing, pose);
-        this.rightMuleOffset = this.getMuleTerrainOffset(this.muleHalfSpacing, pose);
-
-        this.scene.pushMatrix();
-        this.scene.translate(this.x, pose.y, this.z);
-        this.scene.rotate(this.rotation, 0, 1, 0);
-        this.scene.rotate(pose.pitch, 1, 0, 0);
-        this.scene.rotate(pose.roll, 0, 0, 1);
-        this.scene.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
-
-        this.displayRunningGear();
-        this.displayBed();
-        this.displayDriverSeat();
-        this.displayCover();
-        this.displayCargo();
-        this.displayMule(-this.muleHalfSpacing, this.leftMuleOffset);
-        this.displayMule(this.muleHalfSpacing, this.rightMuleOffset);
-        this.displayHarness();
-
-        this.scene.popMatrix();
-    }
+    // --- displayers
 
     // ----- Bed --------------------------------------------------------------
 
@@ -1421,5 +1316,119 @@ export class MyWagon extends CGFobject {
         if (rotZ !== 0) this.scene.rotate(rotZ, 0, 0, 1);
         object.display();
         this.scene.popMatrix();
+    }
+
+    advanceMovementAnimation(distance) {
+        const wheelWorldRadius = Math.max(this.wheelOuterRadius * this.scaleFactor, 0.0001);
+        this.wheelSpinAngle = (this.wheelSpinAngle + distance / wheelWorldRadius) % (Math.PI * 2);
+        this.gaitPhase = (this.gaitPhase + (distance / Math.max(this.scaleFactor, 0.0001)) * 3.2) % (Math.PI * 2);
+    }
+
+    display() {
+        if (!this.visible) return;
+        const pose = this.getTerrainPose();
+        this.currentPose = pose;
+        this.leftMuleOffset = this.getMuleTerrainOffset(-this.muleHalfSpacing, pose);
+        this.rightMuleOffset = this.getMuleTerrainOffset(this.muleHalfSpacing, pose);
+
+        this.scene.pushMatrix();
+        this.scene.translate(this.x, pose.y, this.z);
+        this.scene.rotate(this.rotation, 0, 1, 0);
+        this.scene.rotate(pose.pitch, 1, 0, 0);
+        this.scene.rotate(pose.roll, 0, 0, 1);
+        this.scene.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
+
+        this.displayRunningGear();
+        this.displayBed();
+        this.displayDriverSeat();
+        this.displayCover();
+        this.displayCargo();
+        this.displayMule(-this.muleHalfSpacing, this.leftMuleOffset);
+        this.displayMule(this.muleHalfSpacing, this.rightMuleOffset);
+        this.displayHarness();
+
+        this.scene.popMatrix();
+    }
+
+    // --- exposed getters
+
+    getPose() {
+        return {
+            x: this.x,
+            z: this.z,
+            rotation: this.rotation,
+        };
+    }
+
+    getBaleInteractionPoint() {
+        return {
+            x: this.x - Math.sin(this.rotation) * this.hayBaleInteractionOffset,
+            z: this.z - Math.cos(this.rotation) * this.hayBaleInteractionOffset,
+        };
+    }
+
+    getCollisionCirclesAt(originX = this.x, originZ = this.z, rotation = this.rotation, margin = 0.0) {
+        return this.collisionFootprint.map((circle) => {
+            const [x, z] = this.localToWorldXZAt(circle.x, circle.z, originX, originZ, rotation);
+
+            return {
+                x,
+                z,
+                radius: circle.radius * this.scaleFactor + margin,
+            };
+        });
+    }
+
+    getTerrainPose() {
+        if (!this.terrain) return { y: 0, pitch: 0, roll: 0 };
+
+        const halfW = this.bedHalfWidth + this.wallThickness * 0.5;
+        const halfL = this.bedHalfLength * 0.78;
+        const contacts = [
+            { x: -halfW, z: -halfL },
+            { x: halfW, z: -halfL },
+            { x: -halfW, z: halfL },
+            { x: halfW, z: halfL },
+        ].map((p) => ({ ...p, h: this.terrain.getHeightAt(...this.localToWorldXZ(p.x, p.z)) }));
+
+        const left = this.averageHeight(contacts.filter((p) => p.x < 0));
+        const right = this.averageHeight(contacts.filter((p) => p.x > 0));
+        const front = this.averageHeight(contacts.filter((p) => p.z > 0.5));
+        const back = this.averageHeight(contacts.filter((p) => p.z < 0));
+        const roll = this.clamp(
+            Math.atan2(right - left, this.scaleFactor * 2.34),
+            -this.maxTerrainTilt,
+            this.maxTerrainTilt
+        );
+        const pitch = this.clamp(
+            Math.atan2(back - front, this.scaleFactor * (halfL * 2)),
+            -this.maxTerrainTilt,
+            this.maxTerrainTilt
+        );
+        const y = contacts.reduce((sum, p) => {
+            return sum + p.h - this.scaleFactor * (
+                this.wheelGroundLocalY + p.x * Math.sin(roll) - p.z * Math.sin(pitch)
+            );
+        }, 0) / contacts.length;
+
+        return { y, pitch, roll };
+    }
+
+    // --- exposed setters
+
+    setPose(x, z, rotation = this.rotation) {
+        this.x = x;
+        this.z = z;
+        this.rotation = rotation;
+    }
+
+    setMotionState({ speed = this.speed, maxSpeed = this.maxSpeed, steerAngle = this.steerAngle }) {
+        this.speed = speed;
+        this.maxSpeed = maxSpeed;
+        this.steerAngle = steerAngle;
+    }
+
+    setCargoBaleCount(count) {
+        this.cargoBaleCount = count;
     }
 }

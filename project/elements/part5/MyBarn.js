@@ -4,6 +4,7 @@ import { MyRoofGable } from '../../primitives/MyRoofGable.js';
 import { MyRing } from '../../primitives/MyRing.js';
 
 export class MyBarn extends CGFobject {
+    // --- constructor
     constructor(scene, terrain) {
         super(scene);
 
@@ -17,6 +18,8 @@ export class MyBarn extends CGFobject {
         this.ring = new MyRing(scene, 30, 1,1.05);
         this.initMaterials();
     }
+
+    // --- misc
 
     initMaterials() {
         this.wall = new CGFappearance(this.scene);
@@ -49,6 +52,8 @@ export class MyBarn extends CGFobject {
         this.ringMaterial.setSpecular(0.2, 0.0, 0.0, 1);
         this.ringMaterial.setShininess(100);
     }
+
+    // --- displayers
 
     displayRoof() {
         this.wall.apply();

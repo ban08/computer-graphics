@@ -10,6 +10,8 @@ import { MyReverseSphere } from '../../primitives/MyReverseSphere.js';
  * @param stacks - Number of vertical cloud sphere subdivisions
  */
 export class MyClouds extends CGFobject {
+    // --- constructor
+
     constructor(scene, radius = 120, slices = 90, stacks = 36) {
         super(scene);
 
@@ -44,14 +46,11 @@ export class MyClouds extends CGFobject {
         });
     }
 
+    // --- updaters
+
     updateSunDir(x, y, z) {
         const len = Math.sqrt(x*x + y*y + z*z) || 1;
         this.shader.setUniformsValues({ sunDir: [x/len, y/len, z/len] });
-    }
-
-    getWindVector() {
-        const rad = this.windAngleDeg * Math.PI / 180.0;
-        return [Math.cos(rad), Math.sin(rad)];
     }
 
     update(t) {
@@ -65,6 +64,8 @@ export class MyClouds extends CGFobject {
             cloudSoftness: this.horizonFade,
         });
     }
+
+    // --- displayers
 
     display() {
         if (!this.visible) return;
@@ -87,5 +88,16 @@ export class MyClouds extends CGFobject {
         gl.depthMask(true);
         gl.enable(gl.DEPTH_TEST);
         gl.disable(gl.BLEND);
+    }
+
+    // --- exposed getters
+
+    getWindVector() {
+        const rad = this.windAngleDeg * Math.PI / 180.0;
+        return [Math.cos(rad), Math.sin(rad)];
+    }
+
+    getDriftSpeed() {
+        return this.driftSpeed;
     }
 }

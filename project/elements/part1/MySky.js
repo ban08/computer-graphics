@@ -7,6 +7,8 @@ import { MyReverseHalfSphere } from '../../primitives/MyReverseHalfSphere.js';
  * @param scene - Reference to MyScene object
  */
 export class MySky extends CGFobject {
+    // --- constructor
+
     constructor(scene) {
         super(scene);
 
@@ -21,10 +23,14 @@ export class MySky extends CGFobject {
         this.shader.setUniformsValues({sunDir: [0.0, 1.0, 0.0]});
     }
 
+    // --- updaters
+
     updateSunDir(x, y, z) {
         const len = Math.sqrt(x*x + y*y + z*z) || 1;
         this.shader.setUniformsValues({sunDir: [x/len, y/len, z/len]});
     }
+
+    // --- displayers
 
     display() {
         this.scene.gl.depthMask(false);

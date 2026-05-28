@@ -9,6 +9,8 @@ import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js'
  * @param terrain - Terrain used to place flowers at the correct height and radius
  */
 export class MyFlowers extends CGFobject {
+    // --- constructor
+
     constructor(scene, terrain) {
         super(scene);
 
@@ -17,6 +19,8 @@ export class MyFlowers extends CGFobject {
 
         this.generateFlowers();
     }
+
+    // --- misc
 
     randomRange(min, max) {
         return min + Math.random() * (max - min);
@@ -81,6 +85,8 @@ export class MyFlowers extends CGFobject {
         );
     }
 
+    // --- displayers
+
     display() {
         for (const placement of this.placements) {
             this.scene.pushMatrix();
@@ -92,5 +98,11 @@ export class MyFlowers extends CGFobject {
 
             this.scene.popMatrix();
         }
+    }
+
+    // --- exposed getters
+
+    getPlacements() {
+        return this.placements;
     }
 }

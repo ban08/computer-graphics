@@ -14,6 +14,8 @@ import { MyPlane } from '../../primitives/MyPlane.js';
  * @param maxRadius - Visible circular terrain radius
  */
 export class MyTerrain extends CGFobject {
+    // --- constructors
+
     constructor(scene, seed, size, divisions, heightScale, frequency, hazeStrength, maxRadius) {
         super(scene);
 
@@ -49,20 +51,11 @@ export class MyTerrain extends CGFobject {
             hazeColor: [0.74, 0.82, 0.84],
             terrainTex: 0 
         });
-        
+
         this.buildProceduralTerrain();
     }
 
-    updateSunDir(x, y, z) {
-        const ox = x;
-        const oy = z;
-        const oz = y;
-
-        const len = Math.sqrt(ox*ox + oy*oy + oz*oz) || 1;
-        const dir = [ox/len, oy/len, oz/len];
-
-        this.shader.setUniformsValues({ sunDir: dir });
-    }
+    // --- misc
 
     // To allow for fetching of terrain height at certain points,
     // which enables the correct placements of elements along the
@@ -176,7 +169,8 @@ export class MyTerrain extends CGFobject {
 
         return h * this.heightScale;
     }
-buildProceduralTerrainHeightAt(x, y) {
+
+    buildProceduralTerrainHeightAt(x, y) {
         let rawHeight = this.getRawTerrainHeight(x, y);
 
         let barnBaseZ = -26;
@@ -282,7 +276,36 @@ buildProceduralTerrainHeightAt(x, y) {
         return h11 + (1.0 - u) * (h01 - h11) + (1.0 - v) * (h10 - h11);
     }
 
-    // public getter to be used by elements when generating positions
+    // --- updaters
+
+    updateSunDir(x, y, z) {
+        const ox = x;
+        const oy = z;
+        const oz = y;
+
+        const len = Math.sqrt(ox*ox + oy*oy + oz*oz) || 1;
+        const dir = [ox/len, oy/len, oz/len];
+
+        this.shader.setUniformsValues({ sunDir: dir });
+    }
+
+    // --- displayers
+
+    display() {
+        this.scene.setActiveShader(this.shader);
+        this.texture.bind(0);
+        this.scene.pushMatrix();
+
+        this.scene.rotate(-Math.PI / 2, 1, 0, 0);
+        this.plane.display();
+
+        this.scene.popMatrix();
+
+        this.scene.setActiveShader(this.scene.defaultShader);
+    }
+
+    // --- exposed getters
+
     getHeightAt(x, z) {
         if (Math.sqrt(x * x + z * z) > this.maxRadius) return 0;
 
@@ -298,6 +321,7 @@ buildProceduralTerrainHeightAt(x, y) {
         const v = this.fbm4(qx, qy);
         return this.smoothstep(-0.05, 0.32, v);
     }
+
     getPathCenterXAt(z) {
         const mappedY = -z; 
         return Math.sin(mappedY * 0.15) * 8.0 + Math.cos(mappedY * 0.05) * 4.0;
@@ -309,16 +333,8 @@ buildProceduralTerrainHeightAt(x, y) {
         
         return distanceToPath < 2.5; 
     }
-    display() {
-        this.scene.setActiveShader(this.shader);
-        this.texture.bind(0);
-        this.scene.pushMatrix();
 
-        this.scene.rotate(-Math.PI / 2, 1, 0, 0);
-        this.plane.display();
-        
-        this.scene.popMatrix();
-
-        this.scene.setActiveShader(this.scene.defaultShader);
+    getMaxRadius() {
+        return this.maxRadius;
     }
 }

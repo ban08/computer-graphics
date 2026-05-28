@@ -7,6 +7,8 @@ import { MySphere } from '../../primitives/MySphere.js';
  * @param scene - Reference to MyScene object
  */
 export class MySun extends CGFobject {
+    // --- constructors
+
     constructor(scene) {
         super(scene);
 
@@ -41,6 +43,8 @@ export class MySun extends CGFobject {
         this.visible = true;
     }
 
+    // --- updaters
+
     update(t) {
         if (!this.moving) return;
         
@@ -55,6 +59,8 @@ export class MySun extends CGFobject {
         this.sunY = Math.sin(angle) * this.arc;
     }
 
+    // ---  displayers
+
     display() {
         if (!this.visible) return;
         
@@ -65,5 +71,15 @@ export class MySun extends CGFobject {
         this.sun.display();
         this.scene.setActiveShader(this.scene.defaultShader); 
         this.scene.popMatrix();
+    }
+
+    // --- exposed getters
+
+    getPosition() {
+        return {
+            x: this.sunX,
+            y: this.sunY,
+            z: this.z,
+        };
     }
 }
