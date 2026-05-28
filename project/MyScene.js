@@ -1,14 +1,14 @@
 import { CGFscene, CGFcamera } from "../lib/CGF.js";
-import { MySky } from "./elements/part1/MySky.js";
-import { MySun } from "./elements/part1/MySun.js";
-import { MyClouds } from "./elements/part1/MyClouds.js";
-import { MyTerrain } from "./elements/part2/MyTerrain.js";
-import { MyScatterElements } from "./elements/part2/MyScatterElements.js";
-import { MyFlowers } from "./elements/part3/MyFlowers.js";
-import { MyGrass } from "./elements/part3/MyGrass.js";
-import { MyWagon } from "./elements/part4/MyWagon.js";
-import { MyHayBales } from "./elements/part5/MyHayBales.js";
-import { MyBarn } from "./elements/part5/MyBarn.js";
+import { MySky } from "./elements/environment/MySky.js";
+import { MySun } from "./elements/environment/MySun.js";
+import { MyClouds } from "./elements/environment/MyClouds.js";
+import { MyTerrain } from "./elements/terrain/MyTerrain.js";
+import { MyScatterElements } from "./elements/terrain/MyScatterElements.js";
+import { MyFlowers } from "./elements/flora/MyFlowers.js";
+import { MyGrass } from "./elements/flora/MyGrass.js";
+import { MyWagon } from "./elements/interaction/MyWagon.js";
+import { MyHayBales } from "./elements/gameplay/MyHayBales.js";
+import { MyBarn } from "./elements/gameplay/MyBarn.js";
 import { MyGameplay } from "./MyGameplay.js";
 import { MyBoundaryFence } from "./objects/MyBoundaryFence.js";
 

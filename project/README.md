@@ -2,7 +2,7 @@
 
 ## Group T11G03
 
-## Final Project - Gamified Spring Pairie Landscape
+## Final Project - Gamified Spring Prairie Landscape
 
 ### Introduction
 
@@ -28,6 +28,10 @@
 
 <!-- Known issues or limitations (if any) -->
 
+<!-- constants should be more centralized, perhaps in a config file, -->
+<!-- but given the close deadline, probs not worth unless we have time -->
+<!-- to spare at the end (i.e. initial placements, sizes). -->
+
 ### Demo Video and Screenshots
 
 <!-- Screenshot thumbnails or links to the 5 required screenshots -->
@@ -36,6 +40,9 @@
 ### AI Usage Declaration
 
 <!-- A declaration on AI use, to what extent and for what purpose. -->
+
+<!-- include aid in file organization towards software quality, generated obj, -->
+<!-- generation of jsdocs and other explanatory comments, ... -->
 
 ### Project Authors
 
