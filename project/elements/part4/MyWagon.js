@@ -49,34 +49,15 @@ export class MyWagon extends CGFobject {
         this.hoofCenterY = 0.038;
         this.visible = true;
         this.maxTerrainTilt = 0.28;
-        this.collisionObstacles = options.obstacles ?? [];
-        this.getPickupTargets = options.getPickupTargets ?? (() => []);
-        this.dropBaleAt = options.dropBaleAt ?? (() => {});
-        this.tryAddCargoBale = options.tryAddCargoBale ?? (() => false);
-        this.tryDropCargoBale = options.tryDropCargoBale ?? (() => false);
-        this.getCargoBaleCount = options.getCargoBaleCount ?? (() => 0);
-        this.onObstacleImpact = options.onObstacleImpact ?? (() => {});
-        this.onBoundaryImpact = options.onBoundaryImpact ?? (() => {});
-        this.staticCollisionMargin = 0.24;
 
-        // movement related vars
+        // movement related vars supplied by MyGameplay
         this.speed = 0.0;
         this.maxSpeed = 4.0;
-        this.acceleration = 2.6;
-        this.brakeDeceleration = 4.2;
-        this.coastingDeceleration = 0.35;
         this.steerAngle = 0.0;
-        this.maxSteerAngle = 0.55;
-        this.steerSpeed = 1.6;
-        this.steerReturnSpeed = 1.9;
-        this.turnRateFactor = 2.4;
         this.wheelSpinAngle = 0.0;
         this.gaitPhase = 0.0;
-        this.lastUpdateTime = null;
-        this.hayBalePickupDistance = 1.5;
+        this.cargoBaleCount = 0;
         this.hayBaleInteractionOffset = 2.5;
-        this.wasPickupPressed = false;
-        this.wasDropdownPressed = false;
 
         // --- Bed/cover key dimensions (single source of truth) -------------
         this.bedHalfWidth = 0.85;
@@ -121,7 +102,6 @@ export class MyWagon extends CGFobject {
 
         this.createMaterials();
         this.createGeometry();
-        this.resolveInitialCollision();
         // OBJ-loaded mule body — per spec ("Horses/mules should be imported
         // in OBJ format"). Extra mane and tail tuft are layered on top in
         // displayMule to enrich the silhouette.
@@ -364,100 +344,53 @@ export class MyWagon extends CGFobject {
         this.hoofWrap = new MyTexturedBox(this.scene, this.hoofWidth, this.hoofHeight, this.hoofDepth, 0.12);
     }
 
-    // movement related funcs (update, isinputpressed, approachzero)
-    update(t, input) {
-        if (this.lastUpdateTime === null) {
-            this.lastUpdateTime = t;
-            return;
-        }
+    getPose() {
+        return {
+            x: this.x,
+            z: this.z,
+            rotation: this.rotation,
+        };
+    }
 
-        const dt = this.clamp((t - this.lastUpdateTime) / 1000.0, 0.0, 0.10);
-        this.lastUpdateTime = t;
-        if (dt <= 0) return;
+    setPose(x, z, rotation = this.rotation) {
+        this.x = x;
+        this.z = z;
+        this.rotation = rotation;
+    }
 
-        const accelerating = this.isInputPressed(input, 'KeyW');
-        const braking = this.isInputPressed(input, 'KeyS');
-        const steeringLeft = this.isInputPressed(input, 'KeyA');
-        const steeringRight = this.isInputPressed(input, 'KeyD');
-        const pickUp = this.isInputPressed(input, 'KeyP');
-        const dropDown = this.isInputPressed(input, 'KeyL');
-        const baleInteractionX = this.x - Math.sin(this.rotation) * this.hayBaleInteractionOffset;
-        const baleInteractionZ = this.z - Math.cos(this.rotation) * this.hayBaleInteractionOffset;
+    setMotionState({ speed = this.speed, maxSpeed = this.maxSpeed, steerAngle = this.steerAngle }) {
+        this.speed = speed;
+        this.maxSpeed = maxSpeed;
+        this.steerAngle = steerAngle;
+    }
 
-        // pickup checking
-        if (pickUp && !this.wasPickupPressed) {
-            const bale = this.getPickupTargets().find((target) =>
-                Math.hypot(baleInteractionX - target.x, baleInteractionZ - target.z) <= this.hayBalePickupDistance
-            );
-            if (bale && this.tryAddCargoBale()) {
-                bale.onPickup();
-            }
-        }
-        this.wasPickupPressed = pickUp;
+    setCargoBaleCount(count) {
+        this.cargoBaleCount = count;
+    }
 
-        // dropdown checking
-        if (dropDown && !this.wasDropdownPressed && this.tryDropCargoBale()) {
-            this.dropBaleAt(baleInteractionX, baleInteractionZ);
-        }
-        this.wasDropdownPressed = dropDown;
-
-        if (accelerating) this.speed += this.acceleration * dt;
-        if (braking) this.speed -= this.brakeDeceleration * dt;
-        if (!accelerating && !braking) this.speed = this.approachZero(this.speed, this.coastingDeceleration * dt);
-        this.speed = this.clamp(this.speed, 0.0, this.maxSpeed);
-
-        const steerInput = (steeringLeft ? 1 : 0) - (steeringRight ? 1 : 0);
-        if (steerInput !== 0) {
-            this.steerAngle += steerInput * this.steerSpeed * dt;
-        } else {
-            this.steerAngle = this.approachZero(this.steerAngle, this.steerReturnSpeed * dt);
-        }
-        this.steerAngle = this.clamp(this.steerAngle, -this.maxSteerAngle, this.maxSteerAngle);
-
-        if (this.speed <= 0.001) {
-            this.speed = 0.0;
-            return;
-        }
-
-        const distance = this.speed * dt;
-        const turnRate = (this.speed / this.turnRateFactor) * Math.tan(this.steerAngle);
-        const nextRotation = this.rotation + turnRate * dt;
-        const nextX = this.x + Math.sin(nextRotation) * distance;
-        const nextZ = this.z + Math.cos(nextRotation) * distance;
-
-        // collision checking
-        if (!this.isInsideTerrain(nextX, nextZ, nextRotation)) {
-            this.speed = 0.0;
-            this.onBoundaryImpact();
-            return;
-        }
-        const obstacle = this.findStaticCollision(nextX, nextZ, nextRotation);
-        if (obstacle) {
-            this.speed = 0.0;
-            obstacle.onImpact(t);
-            this.onObstacleImpact(obstacle);
-            return;
-        }
-
-        this.rotation = nextRotation;
-        this.x = nextX;
-        this.z = nextZ;
-
-        // used for wagon anims
+    advanceMovementAnimation(distance) {
         const wheelWorldRadius = Math.max(this.wheelOuterRadius * this.scaleFactor, 0.0001);
         this.wheelSpinAngle = (this.wheelSpinAngle + distance / wheelWorldRadius) % (Math.PI * 2);
         this.gaitPhase = (this.gaitPhase + (distance / Math.max(this.scaleFactor, 0.0001)) * 3.2) % (Math.PI * 2);
     }
 
-    isInputPressed(input, keyCode) {
-        if (!input) return false;
-        return input.isKeyPressed(keyCode);
+    getBaleInteractionPoint() {
+        return {
+            x: this.x - Math.sin(this.rotation) * this.hayBaleInteractionOffset,
+            z: this.z - Math.cos(this.rotation) * this.hayBaleInteractionOffset,
+        };
     }
 
-    approachZero(value, maxDelta) {
-        if (value > maxDelta) return value - maxDelta;
-        if (value < -maxDelta) return value + maxDelta;
-        return 0.0;
+    getCollisionCirclesAt(originX = this.x, originZ = this.z, rotation = this.rotation, margin = 0.0) {
+        return this.collisionFootprint.map((circle) => {
+            const [x, z] = this.localToWorldXZAt(circle.x, circle.z, originX, originZ, rotation);
+
+            return {
+                x,
+                z,
+                radius: circle.radius * this.scaleFactor + margin,
+            };
+        });
     }
 
     getTerrainPose() {
@@ -609,77 +542,6 @@ export class MyWagon extends CGFobject {
             originX + sx * c + sz * s,
             originZ - sx * s + sz * c,
         ];
-    }
-
-    resolveInitialCollision() {
-        const placement = this.findCollisionFreePlacement(this.x, this.z, this.rotation);
-        this.x = placement.x;
-        this.z = placement.z;
-    }
-
-    findCollisionFreePlacement(preferredX, preferredZ, rotation) {
-        if (this.isPlacementValid(preferredX, preferredZ, rotation)) {
-            return { x: preferredX, z: preferredZ };
-        }
-
-        const radii = [0.65, 1.05, 1.55, 2.10, 2.80, 3.60, 4.50];
-        const angleSteps = 18;
-
-        for (const radius of radii) {
-            for (let i = 0; i < angleSteps; i++) {
-                const angle = this.rotation + (i / angleSteps) * Math.PI * 2;
-                const x = preferredX + Math.cos(angle) * radius;
-                const z = preferredZ + Math.sin(angle) * radius;
-
-                if (this.isPlacementValid(x, z, rotation)) {
-                    return { x, z };
-                }
-            }
-        }
-
-        return { x: preferredX, z: preferredZ };
-    }
-
-    isPlacementValid(originX, originZ, rotation) {
-        return this.isInsideTerrain(originX, originZ, rotation) &&
-            !this.hasStaticCollision(originX, originZ, rotation);
-    }
-
-    isInsideTerrain(originX, originZ, rotation) {
-        if (!this.terrain?.maxRadius) return true;
-
-        const limit = 30.0;
-        for (const circle of this.collisionFootprint) {
-            const [x, z] = this.localToWorldXZAt(circle.x, circle.z, originX, originZ, rotation);
-            const radius = circle.radius * this.scaleFactor;
-
-            if (Math.sqrt(x * x + z * z) + radius > limit) return false;
-        }
-
-        return true;
-    }
-
-    hasStaticCollision(originX, originZ, rotation) {
-        return this.findStaticCollision(originX, originZ, rotation) !== null;
-    }
-
-    findStaticCollision(originX, originZ, rotation) {
-        for (const circle of this.collisionFootprint) {
-            const [x, z] = this.localToWorldXZAt(circle.x, circle.z, originX, originZ, rotation);
-            const radius = circle.radius * this.scaleFactor + this.staticCollisionMargin;
-
-            for (const obstacle of this.collisionObstacles) {
-                if (!obstacle.isActive()) continue;
-
-                const dx = x - obstacle.x;
-                const dz = z - obstacle.z;
-                const minDistance = radius + (obstacle.radius ?? 0);
-
-                if (dx * dx + dz * dz < minDistance * minDistance) return obstacle;
-            }
-        }
-
-        return null;
     }
 
     averageHeight(points) {
@@ -1205,7 +1067,7 @@ export class MyWagon extends CGFobject {
             { x: 0.08, y: 2.22, z: 0.25, rotation: 1.39, scale: 2.1 },
         ];
 
-        const baleCount = Math.max(0, Math.min(this.getCargoBaleCount(), cargoSlots.length));
+        const baleCount = Math.max(0, Math.min(this.cargoBaleCount, cargoSlots.length));
 
         for (let i = 0; i < baleCount; i++) {
             const slot = cargoSlots[i];

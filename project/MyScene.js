@@ -43,22 +43,20 @@ export class MyScene extends CGFscene {
 		this.flowers = new MyFlowers(this, this.terrain);
 		this.grass = new MyGrass(this, this.terrain);
 
+		// interaction
+		this.wagon = new MyWagon(this, this.terrain);
+
 		// gameplay
-		this.gameplay = new MyGameplay();
 		this.hayBales = new MyHayBales(this, this.terrain, this.flowers, this.scatterElements);
 		this.barn = new MyBarn(this, this.terrain);
-		this.wagon = new MyWagon(this, this.terrain, {
-			obstacles: this.scatterElements.getCollisionObstacles(),
-			onObstacleImpact: () => this.gameplay.registerObstacleImpact(),
-			onBoundaryImpact: () => this.gameplay.registerBoundaryImpact(),
-			getPickupTargets: () => this.hayBales.getPickupTargets(),
-			dropBaleAt: (x, z) => this.hayBales.dropBale(x, z),
-			tryAddCargoBale: () => this.gameplay.tryAddBale(),
-			tryDropCargoBale: () => this.gameplay.tryDropBale(),
-			getCargoBaleCount: () => this.gameplay.getCurrentBales()
-		});
 
 		// extra
+		this.gameplay = new MyGameplay();
+		this.gameplay.setWorld({
+			wagon: this.wagon,
+			hayBales: this.hayBales,
+			scatterElements: this.scatterElements,
+		});
 		this.boundaryFence = new MyBoundaryFence(this, this.terrain);
 
 		this.setUpdatePeriod(50);
@@ -88,11 +86,9 @@ export class MyScene extends CGFscene {
 
 		this.scatterElements.update(t);
 
-		this.gameplay.update(t);
+		this.gameplay.update(t, this.gui);
 
 		this.hayBales.update(t);
-		
-        this.wagon.update(t, this.gui);
 		
 		if (this.cameraType == 'Follow Wagon') this.setChaseCamera();
   	}
@@ -125,11 +121,12 @@ export class MyScene extends CGFscene {
 
 	setChaseCamera() {
 		const pose = this.wagon.getTerrainPose();
-		const dx = Math.sin(this.wagon.rotation);
-		const dz = Math.cos(this.wagon.rotation);
+		const wagonPose = this.wagon.getPose();
+		const dx = Math.sin(wagonPose.rotation);
+		const dz = Math.cos(wagonPose.rotation);
 
-		vec4.set(this.camera.position, this.wagon.x - dx * 18, pose.y + 6, this.wagon.z - dz * 18, 0);
-		vec4.set(this.camera.target, this.wagon.x, pose.y + 2, this.wagon.z, 0);
+		vec4.set(this.camera.position, wagonPose.x - dx * 18, pose.y + 6, wagonPose.z - dz * 18, 0);
+		vec4.set(this.camera.target, wagonPose.x, pose.y + 2, wagonPose.z, 0);
 
 		this.camera.direction = this.camera.calculateDirection();
 	}
