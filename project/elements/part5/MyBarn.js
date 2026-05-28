@@ -3,8 +3,15 @@ import { MyTwoSidedPlane } from '../../primitives/MyTwoSidedPlane.js';
 import { MyRoofGable } from '../../primitives/MyRoofGable.js'; 
 import { MyRing } from '../../primitives/MyRing.js';
 
+/**
+ * MyBarn
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param terrain - Terrain used to place the barn
+ */
 export class MyBarn extends CGFobject {
     // --- constructor
+    
     constructor(scene, terrain) {
         super(scene);
 

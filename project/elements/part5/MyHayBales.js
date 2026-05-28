@@ -1,24 +1,20 @@
 import { CGFobject } from '../../../lib/CGF.js';
-import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js';
 import { MyHayBale } from '../../objects/MyHayBale.js';
 import { MyPinpointArrow } from '../../objects/MyPinpointArrow.js';
+import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js';
 
 /**
  * MyHayBales
- * Manages hay bales currently placed in the world, including dropped cargo.
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param terrain - Reference to MyTerrain object
+ * @param flowers - Reference to MyFlowers object
+ * @param rocks - Reference to MyScatterElements object
  */
-    /**
-     * @constructor
-     * @param {CGFscene} scene - Reference to the main scene
-     * @param {Object} terrain - Reference to MyTerrain object
-     * * @param {Object} flowers - Reference to the instantiated MyFlowers object
-     * @param {Object} rocks - Reference to the instantiated MyScatterElements object
-    
-     */
 export class MyHayBales extends CGFobject {
     // --- constructor
 
-    constructor(scene, terrain,flowers,rocks) {
+    constructor(scene, terrain, flowers, rocks) {
         super(scene);
 
         this.scene = scene;

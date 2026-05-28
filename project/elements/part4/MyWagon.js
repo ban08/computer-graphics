@@ -9,29 +9,22 @@ import { MyGroupedMule } from '../../objects/MyGroupedMule.js';
 import { MyHayBale } from '../../objects/MyHayBale.js';
 
 /**
- * Hierarchical prairie schooner pulled by two mules.
- *
- * Hierarchical visual model with its own movement state. Gameplay actions
- * such as bale pickup/drop live outside this class.
- *
- * Local frame conventions
- * -----------------------
- *  - +Y is up.
- *  - +Z is the wagon forward direction (where the tongue, neck yoke and the
- *    pair of mules sit); the cover and the cargo bed are around the origin.
- *  - All geometry is expressed before the master `scaleFactor`, so dimensions
- *    are kept in "wagon design units" which roughly match metres.
+ * MyWagon
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param terrain - Terrain used to position the wagon
  */
 export class MyWagon extends CGFobject {
     // --- constructor
-    constructor(scene, terrain, options = {}) {
+    
+    constructor(scene, terrain) {
         super(scene);
 
         this.terrain = terrain;
-        this.x = options.x ?? 2.7;
-        this.z = options.z ?? 21.6;
-        this.rotation = options.rotation ?? -3.02;
-        this.scaleFactor = options.scale ?? 0.45;
+        this.x = 2.7;
+        this.z = 21.6;
+        this.rotation = -3.02;
+        this.scaleFactor = 0.45;
         this.wheelCenterY = 0.62;
         this.wheelOuterRadius = 0.56;
         this.wheelGroundLocalY = this.wheelCenterY - this.wheelOuterRadius;

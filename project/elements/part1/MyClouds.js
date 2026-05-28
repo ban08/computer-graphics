@@ -5,17 +5,16 @@ import { MyReverseSphere } from '../../primitives/MyReverseSphere.js';
  * MyClouds
  * @constructor
  * @param scene - Reference to MyScene object
- * @param radius - Radius of the cloud sphere
- * @param slices - Number of horizontal cloud sphere subdivisions
- * @param stacks - Number of vertical cloud sphere subdivisions
  */
 export class MyClouds extends CGFobject {
     // --- constructor
 
-    constructor(scene, radius = 120, slices = 90, stacks = 36) {
+    constructor(scene) {
         super(scene);
 
-        this.radius = radius;
+        this.radius = 120;
+        this.slices = 90;
+        this.stacks = 36;
         this.sphere = new MyReverseSphere(scene, radius, slices, stacks);
         this.curvature = 0.22;
         this.edgeDrop = 16.0;

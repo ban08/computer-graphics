@@ -1,5 +1,13 @@
 import { CGFobject } from '../../lib/CGF.js';
 
+/**
+ * MyRing
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param slices - Number of ring subdivisions
+ * @param innerRadius - Inner ring radius
+ * @param outerRadius - Outer ring radius
+ */
 export class MyRing extends CGFobject {
     constructor(scene, slices, innerRadius = 0.9, outerRadius = 1.0) {
         super(scene);

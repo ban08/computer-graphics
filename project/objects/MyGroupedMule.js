@@ -1,6 +1,13 @@
 import { CGFobject } from '../../lib/CGF.js';
 
-class MyObjPart extends CGFobject {
+/**
+ * ObjPart
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param name - Name of the OBJ part
+ * @param data - Mesh data for the part
+ */
+class ObjPart extends CGFobject {
     constructor(scene, name, data) {
         super(scene);
         this.name = name;
@@ -14,8 +21,10 @@ class MyObjPart extends CGFobject {
 }
 
 /**
- * OBJ loader that preserves named object sections, allowing the mule's legs
- * and tail to be animated with normal hierarchical transforms.
+ * MyGroupedMule
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param modelUrl - URL of the OBJ model file
  */
 export class MyGroupedMule extends CGFobject {
     constructor(scene, modelUrl) {
@@ -117,7 +126,7 @@ export class MyGroupedMule extends CGFobject {
             delete data.hash;
 
             if (data.indices.length > 0) {
-                this.parts.set(name, new MyObjPart(this.scene, name, data));
+                this.parts.set(name, new ObjPart(this.scene, name, data));
             }
         }
     }

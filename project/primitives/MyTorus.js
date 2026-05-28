@@ -1,7 +1,13 @@
 import { CGFobject } from '../../lib/CGF.js';
 
 /**
- * Torus centered at the origin with its hole axis along X.
+ * MyTorus
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param majorRadius - Radius from center to tube center
+ * @param tubeRadius - Radius of the tube
+ * @param radialSegments - Number of ring subdivisions
+ * @param tubeSegments - Number of tube subdivisions
  */
 export class MyTorus extends CGFobject {
     constructor(scene, majorRadius = 1, tubeRadius = 0.1, radialSegments = 36, tubeSegments = 8) {

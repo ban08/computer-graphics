@@ -1,5 +1,10 @@
 import { CGFinterface, dat } from '../lib/CGF.js';
 
+/**
+ * MyInterface
+ * Handles GUI controls and keyboard input
+ * @constructor
+ */
 export class MyInterface extends CGFinterface {
     constructor() {
         super();
@@ -61,30 +66,6 @@ export class MyInterface extends CGFinterface {
         gameplay.add(this.scene.gameplay, 'lastHealthRestored').name('Last Restored').listen();
         gameplay.add(this.scene.gameplay, 'gameOver').name('Game Over').listen();
         gameplay.open();
-
-        // to remove later for delivery
-        const dev = this.gui.addFolder('dev');
-
-        const sun = dev.addFolder('Sun');
-        sun.add(this.scene.sun, 'visible').name('Visible');
-        sun.add(this.scene.sun, 'moving').name('Moving');
-        sun.add(this.scene.sun, 'timeOffset', 0, 62800, 100).name('Time offset');
-        sun.add(this.scene.sun, 'speed', 0, 0.001, 0.00001).name('Velocity');
-        sun.add(this.scene.sun, 'arc', 0, 25, 1).name('Arc radius');
-
-        const clouds = dev.addFolder('Clouds');
-        clouds.add(this.scene.clouds, 'visible').name('Visible');
-        clouds.add(this.scene.clouds, 'amount', 0, 1, 0.01).name('Amount');
-
-        const wind = dev.addFolder('Wind');
-        wind.add(this.scene.clouds, 'driftSpeed', 0, 0.05, 0.001).name('Speed');
-        wind.add(this.scene.clouds, 'windAngleDeg', 0, 360, 1).name('Direction');
-
-        const grass = dev.addFolder('Grass');
-        grass.add(this.scene.grass, 'visible').name('Visible');
-        grass.add(this.scene.grass, 'densityFactor', 1, 100, 1)
-            .name('Amount')
-            .onFinishChange(() => this.scene.grass.rebuild());
 
         return true;
     }

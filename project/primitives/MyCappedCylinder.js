@@ -1,7 +1,13 @@
 import { CGFobject } from '../../lib/CGF.js';
 
 /**
- * Capped cylinder aligned with the X axis and centered at the origin.
+ * MyCappedCylinder
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param radius - Cylinder radius
+ * @param length - Cylinder length
+ * @param slices - Number of circular subdivisions
+ * @param stacks - Number of length subdivisions
  */
 export class MyCappedCylinder extends CGFobject {
     constructor(scene, radius = 1, length = 1, slices = 32, stacks = 1) {

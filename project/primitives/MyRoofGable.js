@@ -1,5 +1,10 @@
 import { CGFobject } from '../../../lib/CGF.js';
 
+/**
+ * MyRoofGable
+ * @constructor
+ * @param scene - Reference to MyScene object
+ */
 export class MyRoofGable extends CGFobject {
     constructor(scene) {
         super(scene);

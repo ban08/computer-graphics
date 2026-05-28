@@ -1,31 +1,24 @@
-import { CGFobject, CGFshader, CGFtexture } from '../../../lib/CGF.js';
+import { CGFobject, CGFtexture, CGFshader } from '../../../lib/CGF.js';
 import { MyPlane } from '../../primitives/MyPlane.js';
 
 /**
  * MyTerrain
  * @constructor
  * @param scene - Reference to MyScene object
- * @param seed - Procedural noise seed
- * @param size - Side length of the terrain plane
- * @param divisions - Number of terrain plane subdivisions
- * @param heightScale - Vertical scale applied to the generated height
- * @param frequency - Frequency used to sample the procedural noise
- * @param hazeStrength - Amount of distance haze applied by the fragment shader
- * @param maxRadius - Visible circular terrain radius
  */
 export class MyTerrain extends CGFobject {
     // --- constructors
 
-    constructor(scene, seed, size, divisions, heightScale, frequency, hazeStrength, maxRadius) {
+    constructor(scene) {
         super(scene);
 
-        this.seed = seed ?? Math.random() * 1000;
-        this.size = size ?? 80;
-        this.divisions = divisions ?? 128;
-        this.heightScale = heightScale ?? 5.2;
-        this.frequency = frequency ?? 0.045;
-        this.hazeStrength = hazeStrength ?? 0.22;
-        this.maxRadius = maxRadius ?? 40.0;
+        this.seed = Math.random() * 1000;
+        this.size = 80;
+        this.divisions = 128;
+        this.heightScale = 5.2;
+        this.frequency = 0.045;
+        this.hazeStrength = 0.22;
+        this.maxRadius = 40.0;
 
         this.proceduralHeights = [];
         this.proceduralStep = this.size / this.divisions;

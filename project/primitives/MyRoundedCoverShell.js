@@ -1,8 +1,16 @@
 import { CGFobject } from '../../lib/CGF.js';
 
 /**
- * Tall covered-wagon cloth shell: vertical sides plus a rounded top.
- * The section is intentionally squarer than a pure half-cylinder.
+ * MyRoundedCoverShell
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param halfWidth - Half width of the cover
+ * @param sideHeight - Height of the straight sides
+ * @param archHeight - Height of the rounded arch
+ * @param length - Cover length
+ * @param slices - Number of arch subdivisions
+ * @param stacks - Number of length subdivisions
+ * @param doubleSided - Whether to render both sides
  */
 export class MyRoundedCoverShell extends CGFobject {
     constructor(scene, halfWidth = 1, sideHeight = 0.65, archHeight = 0.78, length = 1, slices = 18, stacks = 6, doubleSided = true) {

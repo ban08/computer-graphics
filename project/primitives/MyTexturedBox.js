@@ -1,8 +1,13 @@
 import { CGFobject } from '../../lib/CGF.js';
 
 /**
- * Axis-aligned box centered at the origin, with independent face normals and
- * repeated texture coordinates derived from the box dimensions.
+ * MyTexturedBox
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param width - Box width
+ * @param height - Box height
+ * @param depth - Box depth
+ * @param tileSize - Texture tile size
  */
 export class MyTexturedBox extends CGFobject {
     constructor(scene, width = 1, height = 1, depth = 1, tileSize = 1) {

@@ -1,11 +1,15 @@
 import { CGFobject } from '../../lib/CGF.js';
 
 /**
- * Thin wooden bow that follows the rounded-cover profile (vertical sides plus
- * a rounded top). The cross-section is a small circular tube swept along that
- * profile so the bow can sit flush against the cloth without floating outside.
- *
- * The bow lies in the XY plane; the swept depth points along Z.
+ * MyArchBow
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param halfWidth - Half width of the bow
+ * @param sideHeight - Height of the straight sides
+ * @param archHeight - Height of the arch
+ * @param tubeRadius - Radius of the tube
+ * @param profileSteps - Number of arch profile steps
+ * @param tubeSegments - Number of tube subdivisions
  */
 export class MyArchBow extends CGFobject {
     constructor(scene, halfWidth = 1, sideHeight = 0.35, archHeight = 0.85, tubeRadius = 0.045, profileSteps = 22, tubeSegments = 8) {

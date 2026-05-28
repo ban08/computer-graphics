@@ -3,9 +3,9 @@ import { MyTexturedBox } from '../primitives/MyTexturedBox.js';
 import { MyArrowHead } from '../primitives/MyArrowHead.js';
 
 /**
- * Floating marker arrow for hay bales.
- * All pieces share the same unrotated local Y axis, so the vertex shader can
- * move the complete marker vertically without separating the head and shaft.
+ * MyPinpointArrow
+ * @constructor
+ * @param scene - Reference to MyScene object
  */
 export class MyPinpointArrow extends CGFobject {
     constructor(scene) {

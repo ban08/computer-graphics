@@ -1,5 +1,6 @@
 /**
  * MyGameplay
+ * Handles gameplay state, cargo, movement and collisions
  * @constructor
  */
 export class MyGameplay {

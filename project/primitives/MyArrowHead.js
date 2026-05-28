@@ -1,8 +1,12 @@
 import { CGFobject } from '../../lib/CGF.js';
 
 /**
- * Flat triangular arrow head aligned with the Y axis.
- * The point faces -Y and the straight base sits at +Y.
+ * MyArrowHead
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param width - Arrow head width
+ * @param height - Arrow head height
+ * @param thickness - Arrow head thickness
  */
 export class MyArrowHead extends CGFobject {
     constructor(scene, width = 1, height = 1, thickness = 0.12) {

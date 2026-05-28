@@ -1,14 +1,74 @@
 import { CGFobject, CGFshader } from '../../../lib/CGF.js';
-import { MyGrassBlade } from '../../primitives/MyGrassBlade.js';
 import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js';
 
 /**
- * Internal sub-mesh - one VBO worth of grass triangles. Multiple of these
- * are chained under a single shader bind so the field can hold more than
- * the WebGL 1 Uint16 index ceiling (~65k) allows in a single buffer.
+ * GrassBlade
+ * @constructor
+ * @param width - Blade width at the base
+ * @param height - Blade height (base to tip)
+ */
+class GrassBlade {
+    constructor(width = 0.014, height = 0.085) {
+        this.width = width;
+        this.height = height;
+        this.tipFraction = 0.08;
+    }
+
+    /**
+     * Builds one transformed blade (2 triangles) into the given flat arrays.
+     * Used by MyGrass during VBO baking, with no per-blade allocations.
+     */
+    build(rootX, rootY, rootZ, rotY, widthScale, heightScale, dryness, toneSeed, out) {
+        const halfBase = this.width * widthScale * 0.5;
+        const halfTip = halfBase * this.tipFraction;
+        const h = this.height * heightScale;
+        const c = Math.cos(rotY);
+        const s = Math.sin(rotY);
+
+        const local = [
+            [-halfBase, 0, 0],
+            [ halfBase, 0, 0],
+            [-halfTip,  h, 0],
+            [ halfTip,  h, 0],
+        ];
+
+        const nx = s;
+        const nz = c;
+
+        const baseIndex = out.vertices.length / 3;
+
+        for (let i = 0; i < 4; i++) {
+            const lx = local[i][0];
+            const ly = local[i][1];
+            const lz = local[i][2];
+
+            const wx = rootX + lx * c + lz * s;
+            const wy = rootY + ly;
+            const wz = rootZ - lx * s + lz * c;
+
+            out.vertices.push(wx, wy, wz);
+            out.normals.push(nx, toneSeed, nz);
+        }
+
+        out.texCoords.push(0.0, dryness);
+        out.texCoords.push(0.0, dryness);
+        out.texCoords.push(1.0, dryness);
+        out.texCoords.push(1.0, dryness);
+
+        out.indices.push(baseIndex, baseIndex + 1, baseIndex + 3);
+        out.indices.push(baseIndex, baseIndex + 3, baseIndex + 2);
+    }
+}
+
+/**
+ * GrassMeshChunk
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param data - Mesh data for the grass chunk
  */
 class GrassMeshChunk extends CGFobject {
     // --- constructor
+
     constructor(scene, data) {
         super(scene);
         this.vertices = data.vertices;
@@ -54,35 +114,28 @@ class GrassMeshChunk extends CGFobject {
 
 /**
  * MyGrass
- *
- * Irregular prairie grass built from one Poisson-disc candidate field.
- * A cheap CPU-side density mask turns candidates into dense green patches,
- * open dirt gaps, and short dead tufts without stamping visible circular
- * patch meshes onto the terrain. Wind animation lives in the vertex shader
- * and scales with blade height so the slider units are intuitive.
- *
  * @constructor
- * @param scene   - Reference to MyScene object
+ * @param scene - Reference to MyScene object
  * @param terrain - Terrain used for blade height snapping and dryness sampling
- * @param opts    - Optional override map
  */
 export class MyGrass {
     // --- constructor
-    constructor(scene, terrain, opts = {}) {
+
+    constructor(scene, terrain) {
         this.scene = scene;
         this.terrain = terrain;
 
         // Poisson points are tuft anchors, not individual blades. Each
         // accepted anchor expands into a compact clump, which avoids the
         // "random spike" look while keeping polygon count predictable.
-        this.tuftSpacing = opts.tuftSpacing ?? 0.24;
-        this.bladeWidth = opts.bladeWidth ?? 0.014;
-        this.bladeHeight = opts.bladeHeight ?? 0.085;
-        this.densityFactor = opts.densityFactor ?? 10.0;
-        this.bladeScale = opts.bladeScale ?? 1.0;
-        this.colorVariation = opts.colorVariation ?? 1.0;
-        this.fieldRadius = opts.fieldRadius ?? 27.5;
-        this.maxBlades = opts.maxBlades ?? 125000;
+        this.tuftSpacing = 0.24;
+        this.bladeWidth = 0.014;
+        this.bladeHeight = 0.085;
+        this.densityFactor = 10.0;
+        this.bladeScale = 1.0;
+        this.colorVariation = 1.0;
+        this.fieldRadius = 27.5;
+        this.maxBlades = 125000;
 
         this.visible = true;
         // windStrength is dimensionless: multiplied by blade height in the
@@ -91,7 +144,7 @@ export class MyGrass {
         this.windSpeed = 1.6;
         this.windAngleDeg = 35;
 
-        this.blade = new MyGrassBlade(this.bladeWidth, this.bladeHeight);
+        this.blade = new GrassBlade(this.bladeWidth, this.bladeHeight);
 
         this.shader = new CGFshader(
             scene.gl,
@@ -318,7 +371,7 @@ export class MyGrass {
     /// --- updaters
 
     rebuild() {
-        this.blade = new MyGrassBlade(this.bladeWidth, this.bladeHeight);
+        this.blade = new GrassBlade(this.bladeWidth, this.bladeHeight);
         this.chunks = [];
         this.bladeCount = 0;
         this.shader.setUniformsValues({

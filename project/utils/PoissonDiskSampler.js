@@ -1,4 +1,6 @@
 /**
+ * generatePoissonDiskSample
+ * 
  * Generates 2D Poisson Disk sample points inside a circular domain using
  * Bridson's algorithm, enforcing a minimum distance between samples.
  * Algorithm reference links in project/README.md.

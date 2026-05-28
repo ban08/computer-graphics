@@ -1,7 +1,14 @@
 import { CGFobject } from '../../lib/CGF.js';
 
 /**
- * Filled end panel matching MyRoundedCoverShell.
+ * MyRoundedCoverEndPanel
+ * @constructor
+ * @param scene - Reference to MyScene object
+ * @param halfWidth - Half width of the panel
+ * @param sideHeight - Height of the straight sides
+ * @param archHeight - Height of the rounded arch
+ * @param slices - Number of arch subdivisions
+ * @param doubleSided - Whether to render both sides
  */
 export class MyRoundedCoverEndPanel extends CGFobject {
     constructor(scene, halfWidth = 1, sideHeight = 0.65, archHeight = 0.78, slices = 18, doubleSided = true) {

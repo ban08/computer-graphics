@@ -3,13 +3,10 @@ import { MyTexturedBox } from '../primitives/MyTexturedBox.js';
 
 /**
  * MyHayBale
- * Object representing a single standalone hay bale with leather bands.
+ * @constructor
+ * @param scene - Reference to MyScene object
  */
 export class MyHayBale extends CGFobject {
-    /**
-     * @constructor
-     * @param {CGFscene} scene - Reference to the main scene
-     */
     constructor(scene) {
         super(scene);
 

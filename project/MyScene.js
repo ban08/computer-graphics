@@ -1,17 +1,22 @@
 import { CGFscene, CGFcamera } from "../lib/CGF.js";
 import { MySky } from "./elements/part1/MySky.js";
-import { MyClouds } from "./elements/part1/MyClouds.js";
 import { MySun } from "./elements/part1/MySun.js";
+import { MyClouds } from "./elements/part1/MyClouds.js";
 import { MyTerrain } from "./elements/part2/MyTerrain.js";
 import { MyScatterElements } from "./elements/part2/MyScatterElements.js";
 import { MyFlowers } from "./elements/part3/MyFlowers.js";
 import { MyGrass } from "./elements/part3/MyGrass.js";
-import { MyGameplay } from "./MyGameplay.js";
+import { MyWagon } from "./elements/part4/MyWagon.js";
 import { MyHayBales } from "./elements/part5/MyHayBales.js";
 import { MyBarn } from "./elements/part5/MyBarn.js";
-import { MyWagon } from "./elements/part4/MyWagon.js";
+import { MyGameplay } from "./MyGameplay.js";
 import { MyBoundaryFence } from "./objects/MyBoundaryFence.js";
 
+/**
+ * MyScene
+ * Builds and updates the main scene
+ * @constructor
+ */
 export class MyScene extends CGFscene {
   	constructor() {
     	super();
