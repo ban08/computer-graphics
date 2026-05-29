@@ -61,6 +61,7 @@ export class MyScene extends CGFscene {
 			wagon: this.wagon,
 			hayBales: this.hayBales,
 			scatterElements: this.scatterElements,
+			barn: this.barn,
 		});
 		this.boundaryFence = new MyBoundaryFence(this, this.terrain);
 

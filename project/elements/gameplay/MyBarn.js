@@ -21,8 +21,15 @@ export class MyBarn extends CGFobject {
         this.planeWindow = new MyTwoSidedPlane(scene, 10);
         this.planeRoof = new MyTwoSidedPlane(scene, 10);
         this.roofGable = new MyRoofGable(scene);
-        this.terrain = terrain;
-        this.ring = new MyRing(scene, 30, 1,1.05);
+        this.ring = new MyRing(scene, 30, 1, 1.05);
+
+        this.x = 10.5;
+        this.z = -20;
+        this.rotation = -Math.PI / 4;
+
+        this.deliveryAreaScale = 5;
+        this.deliveryAreaRadius = this.deliveryAreaScale * this.ring.outerRadius;
+
         this.initMaterials();
     }
 
@@ -212,6 +219,7 @@ export class MyBarn extends CGFobject {
 
         this.scene.popMatrix();
     }
+
     displayDoorFrame() {
         this.roof.apply();
 
@@ -386,31 +394,25 @@ export class MyBarn extends CGFobject {
 
       
     }
+
     displayRing() {
         this.ringMaterial.apply();
         this.scene.pushMatrix();
         
         this.scene.translate(0, -1.45, 0); 
-        this.scene.scale(3.5*1.2, 1.2, 3.5*1.2);        
+        this.scene.scale(this.deliveryAreaScale, 1.2, this.deliveryAreaScale);
         this.ring.display();
         this.scene.popMatrix();
     }
 
     display() {
-        let z = -26;
-        let x = Math.sin(z * 0.15) * 8.0 +  Math.cos(z * 0.05) * 4.0;
-        
-        let worldX = x + 4;
-        let worldZ = z + 6;
-
-        let terrainHeight = this.terrain ? this.terrain.getHeightAt(worldX, worldZ) : 0;
-
+        let terrainHeight = this.terrain ? this.terrain.getHeightAt(this.x, this.z) : 0;
         let correctY = terrainHeight + 1.6;
 
         this.scene.pushMatrix();
 
-        this.scene.translate(worldX, correctY, worldZ);
-        this.scene.rotate(-Math.PI/4, 0, 1, 0);
+        this.scene.translate(this.x, correctY, this.z);
+        this.scene.rotate(this.rotation, 0, 1, 0);
         this.displayRing();
 
         this.scene.scale(8*0.6, 5*0.6, 6*0.6); 
@@ -420,5 +422,11 @@ export class MyBarn extends CGFobject {
         this.displayWindow();  
         this.displayDoorFrame(); 
         this.scene.popMatrix();
+    }
+
+    // --- exposed getters
+
+    isPointInDeliveryArea(x, z) {
+        return Math.hypot(x - this.x, z - this.z) <= this.deliveryAreaRadius;
     }
 }

@@ -48,13 +48,15 @@ export class MyGameplay {
         this.wagon = null;
         this.hayBales = null;
         this.scatterElements = null;
+        this.barn = null;
     }
 
     // world setup
-    setWorld({ wagon = null, hayBales = null, scatterElements = null }) {
+    setWorld({ wagon = null, hayBales = null, scatterElements = null, barn = null }) {
         this.wagon = wagon;
         this.hayBales = hayBales;
         this.scatterElements = scatterElements;
+        this.barn = barn;
 
         this.syncWagonVisualState();
     }
@@ -123,7 +125,9 @@ export class MyGameplay {
 
         const pickUp = this.isInputPressed(input, 'KeyP');
         const dropDown = this.isInputPressed(input, 'KeyL');
+
         const interactionPoint = this.wagon.getBaleInteractionPoint();
+        const wagonPoint = this.wagon.getPose();
 
         if (pickUp && !this.wasPickupPressed) {
             const bale = this.hayBales.getPickupTargets().find((target) =>
@@ -135,10 +139,20 @@ export class MyGameplay {
         }
         this.wasPickupPressed = pickUp;
 
-        if (dropDown && !this.wasDropdownPressed && this.tryDropBale()) {
-            this.hayBales.dropBale(interactionPoint.x, interactionPoint.z);
+        if (dropDown && !this.wasDropdownPressed) {
+            if (this.isCargoInDeliveryArea(interactionPoint, wagonPoint)) {
+                this.deliverBales();
+            } else if (this.tryDropBale()) {
+                this.hayBales.dropBale(interactionPoint.x, interactionPoint.z);
+            }
         }
         this.wasDropdownPressed = dropDown;
+    }
+
+    isCargoInDeliveryArea(dropPoint, wagonPoint) {
+        if (!this.barn || this.currentBales === 0) return false;
+
+        return this.barn.isPointInDeliveryArea(wagonPoint.x, wagonPoint.z) || this.barn.isPointInDeliveryArea(dropPoint.x, dropPoint.z);
     }
 
     tryAddBale() {
