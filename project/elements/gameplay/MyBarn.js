@@ -65,6 +65,14 @@ export class MyBarn extends CGFobject {
         this.ringMaterial.setDiffuse(1.0, 0.0, 0.0, 1);  
         this.ringMaterial.setSpecular(0.2, 0.0, 0.0, 1);
         this.ringMaterial.setShininess(100);
+
+        this.doorMaterial = new CGFappearance(this.scene);
+        this.doorMaterial.setAmbient(0.4, 0.2, 0.1, 1);
+        this.doorMaterial.setDiffuse(0.5, 0.3, 0.2, 1);
+        this.doorMaterial.setSpecular(0.1, 0.1, 0.1, 1);
+        this.doorMaterial.setShininess(5);
+        this.doorMaterial.setTexture(new CGFtexture(this.scene, './textures/doorTexture.png')); 
+        this.doorMaterial.setTextureWrap('REPEAT', 'REPEAT');
     }
 
     // --- displayers
@@ -252,36 +260,8 @@ export class MyBarn extends CGFobject {
 
         // FRONT
         this.scene.pushMatrix();
-
         this.scene.translate(0, 0, 0.5);
-
-        this.scene.pushMatrix();
-
-        this.scene.translate(-0.35, 0, 0);
-        this.scene.scale(0.3, 1, 1);
-
         this.planeWalls.display();
-
-        this.scene.popMatrix();
-    
-        this.scene.pushMatrix();
-
-        this.scene.translate(0.35, 0, 0);  
-        this.scene.scale(0.3, 1, 1);
-
-        this.planeWalls.display();
-
-        this.scene.popMatrix();
-    
-        this.scene.pushMatrix();
-        
-        this.scene.translate(0, 0.3, 0);    
-        this.scene.scale(0.4, 0.4, 1);
-
-        this.planeWalls.display();
-
-        this.scene.popMatrix();
-
         this.scene.popMatrix();
         
         // BACK
@@ -323,75 +303,16 @@ export class MyBarn extends CGFobject {
         this.planeWalls.display();
 
         this.scene.popMatrix();
-
-        // BOTTOM
-        this.scene.pushMatrix();
-
-        this.scene.translate(0,-0.5,0);
-        this.scene.rotate(Math.PI/2,1,0,0);
-
-        this.planeWalls.display();
-
-        this.scene.popMatrix();
-
-   
-        // BACK 
-        this.scene.pushMatrix();
-        this.scene.translate(0, 0, -0.45);
-        this.scene.scale(0.9, 1, 1);
-        this.planeWalls.display();
-        this.scene.popMatrix();
-
-        // RIGHT 
-        this.scene.pushMatrix();
-        this.scene.translate(0.45, 0, 0);
-        this.scene.rotate(-Math.PI/2, 0, 1, 0);
-        this.scene.scale(0.9, 1, 1);
-        this.planeWalls.display();
-        this.scene.popMatrix();
-
-        // LEFT
-        this.scene.pushMatrix();
-        this.scene.translate(-0.45, 0, 0);
-        this.scene.rotate(Math.PI/2, 0, 1, 0);
-        this.scene.scale(0.9, 1, 1);
-        this.planeWalls.display();
-        this.scene.popMatrix();
-
-        // FLOOR
-        this.scene.pushMatrix();
-        this.scene.translate(0, -0.49, 0);
-        this.scene.rotate(-Math.PI/2, 1, 0, 0);
-        this.scene.scale(0.9, 0.9, 1);
-        this.planeWalls.display();
-        this.scene.popMatrix();
-
-        // FRONT 
-        this.scene.pushMatrix();
-        this.scene.translate(0, 0, 0.45); 
-        this.scene.rotate(Math.PI, 0, 1, 0); 
-
-        this.scene.pushMatrix();
-        this.scene.translate(-0.325, 0, 0); 
-        this.scene.scale(0.25, 1, 1);       
-        this.planeWalls.display();
-        this.scene.popMatrix();
-    
         
+       
+
+        //DOOR
+        this.doorMaterial.apply();
         this.scene.pushMatrix();
-        this.scene.translate(0.325, 0, 0);  
-        this.scene.scale(0.25, 1, 1);       
+        this.scene.translate(0, -0.2, 0.502);
+        this.scene.scale(0.4, 0.6, 1);
         this.planeWalls.display();
         this.scene.popMatrix();
-   
-        this.scene.pushMatrix();
-        this.scene.translate(0, 0.3, 0);    
-        this.scene.scale(0.4, 0.4, 1);  
-        this.planeWalls.display();
-        this.scene.popMatrix();
-
-        this.scene.popMatrix();
-
       
     }
 
