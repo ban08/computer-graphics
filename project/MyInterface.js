@@ -57,14 +57,15 @@ export class MyInterface extends CGFinterface {
             .onChange((cameraType) => {
                 if (cameraType === 'Free Camera') this.scene.setFreeCamera();
             });
-        gameplay.add(this.scene.gameplay, 'hp').name('Health (HP)').listen();
-        gameplay.add(this.scene.gameplay, 'score').name('Score (s)').listen();
-        gameplay.add(this.scene.gameplay, 'currentBales').name('Cargo Bales').listen();
-        gameplay.add(this.scene.gameplay, 'totalPickedUpBales').name('Picked Up').listen();
-        gameplay.add(this.scene.gameplay, 'totalDeliveredBales').name('Delivered').listen();
+        gameplay.add(this.scene.gameplay, 'gameOver').name('Game Over').listen();
+
+        // mandatory as per spec
+        gameplay.add(this.scene.gameplay, 'hp').name('Health Points').listen();
         gameplay.add(this.scene.gameplay, 'lastDamage').name('Last Damage').listen();
         gameplay.add(this.scene.gameplay, 'lastHealthRestored').name('Last Restored').listen();
-        gameplay.add(this.scene.gameplay, 'gameOver').name('Game Over').listen();
+        gameplay.add(this.scene.gameplay, 'totalDeliveredBales').name('Delivered Bales').listen();
+        gameplay.add(this.scene.gameplay, 'score').name('Score').listen();
+
         gameplay.open();
 
         return true;

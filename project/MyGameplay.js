@@ -6,6 +6,7 @@
 export class MyGameplay {
     constructor() {
         // gameplay settings
+
         this.initialHp = 100;
         this.maxBales = 2;
         this.hpLossPerSecond = 1;
@@ -13,12 +14,13 @@ export class MyGameplay {
         this.minObstacleDamage = 5;
         this.maxObstacleDamage = 15;
         this.hayBalePickupDistance = 1.5;
+        this.feedbackDuration = 5.0;
         
         // gameplay state
+
         this.hp = this.initialHp;
         this.score = 0;
         this.currentBales = 0;
-        this.totalPickedUpBales = 0;
         this.totalDeliveredBales = 0;
         this.lastDamage = 0;
         this.lastHealthRestored = 0;
@@ -26,10 +28,14 @@ export class MyGameplay {
 
         this.elapsedSeconds = 0;
         this.lastUpdateTime = null;
+        this.lastDamageTime = null;
+        this.lastHealthRestoredTime = null;
+
         this.wasPickupPressed = false;
         this.wasDropdownPressed = false;
 
         // movement settings and state
+
         this.speed = 0.0;
         this.maxSpeed = 4.0;
         this.acceleration = 2.6;
@@ -42,16 +48,19 @@ export class MyGameplay {
         this.turnRateFactor = 2.4;
 
         // collision settings
+
         this.staticCollisionMargin = 0.24;
 
         // scene gameplay dynamic objects
+
         this.wagon = null;
         this.hayBales = null;
         this.scatterElements = null;
         this.barn = null;
     }
 
-    // world setup
+    // --- world setup
+
     setWorld({ wagon = null, hayBales = null, scatterElements = null, barn = null }) {
         this.wagon = wagon;
         this.hayBales = hayBales;
@@ -61,7 +70,8 @@ export class MyGameplay {
         this.syncWagonVisualState();
     }
 
-    // update loop
+    // --- update loop
+
     update(t, input = null) {
         let dt = 0;
 
@@ -83,6 +93,7 @@ export class MyGameplay {
 
             this.lastUpdateTime = t;
 
+            this.updateFeedbackTimers();
             this.updateCargoInput(input);
             this.updateWagonMovement(t, this.clamp(dt, 0.0, 0.10), input);
             this.syncWagonVisualState();
@@ -91,7 +102,8 @@ export class MyGameplay {
         }
     }
 
-    // render sync
+    // --- render sync
+
     syncWagonVisualState() {
         if (!this.wagon) return;
 
@@ -104,7 +116,8 @@ export class MyGameplay {
         this.wagon.setCargoBaleCount(this.currentBales);
     }
 
-    // input
+    // --- input
+
     getMovementInput(input) {
         return {
             accelerating: this.isInputPressed(input, 'KeyW'),
@@ -119,7 +132,8 @@ export class MyGameplay {
         return input.isKeyPressed(keyCode);
     }
 
-    // cargo
+    // --- cargo
+
     updateCargoInput(input) {
         if (!this.wagon || !this.hayBales) return;
 
@@ -159,7 +173,6 @@ export class MyGameplay {
         if (this.currentBales >= this.maxBales) return false;
 
         this.currentBales++;
-        this.totalPickedUpBales++;
         return true;
     }
 
@@ -178,6 +191,7 @@ export class MyGameplay {
 
         this.totalDeliveredBales += delivered;
         this.lastHealthRestored = restoredHp;
+        this.lastHealthRestoredTime = this.elapsedSeconds;
 
         this.currentBales = 0;
         this.hp += restoredHp;
@@ -185,7 +199,8 @@ export class MyGameplay {
         return restoredHp;
     }
 
-    // movement
+    // --- movement
+
     updateWagonMovement(t, dt, input) {
         if (!this.wagon) return;
 
@@ -262,7 +277,8 @@ export class MyGameplay {
         this.wagon.advanceMovementAnimation(distance);
     }
 
-    // collisions
+    // --- collisions
+
     isWagonInsideTerrain(wagon, originX, originZ, rotation) {
         for (const circle of wagon.getCollisionCirclesAt(originX, originZ, rotation)) {
             if (Math.sqrt(circle.x * circle.x + circle.z * circle.z) + circle.radius > 30.0) {
@@ -289,11 +305,13 @@ export class MyGameplay {
         return null;
     }
 
-    // damage
+    // --- damage
+
     registerObstacleImpact() {
         const damageRange = this.maxObstacleDamage - this.minObstacleDamage + 1;
         const damage = this.minObstacleDamage + Math.floor(Math.random() * damageRange);
         this.lastDamage = damage;
+        this.lastDamageTime = this.elapsedSeconds;
 
         this.hp = Math.max(0, this.hp - damage);
         if (this.hp === 0) this.gameOver = true;
@@ -304,6 +322,7 @@ export class MyGameplay {
     registerBoundaryImpact() {
         const damage = 9999; // ouch
         this.lastDamage = 100;
+        this.lastDamageTime = this.elapsedSeconds;
         
         this.hp = Math.max(0, this.hp - damage);
         if (this.hp === 0) this.gameOver = true;
@@ -311,7 +330,22 @@ export class MyGameplay {
         return damage;
     }
 
-    // utilities
+    // --- ui
+
+    updateFeedbackTimers() {
+        if (this.lastDamageTime !== null && this.elapsedSeconds - this.lastDamageTime >= this.feedbackDuration) {
+            this.lastDamage = 0;
+            this.lastDamageTime = null;
+        }
+
+        if (this.lastHealthRestoredTime !== null && this.elapsedSeconds - this.lastHealthRestoredTime >= this.feedbackDuration) {
+            this.lastHealthRestored = 0;
+            this.lastHealthRestoredTime = null;
+        }
+    }
+
+    // --- utilities
+
     approachZero(value, maxDelta) {
         if (value > maxDelta) return value - maxDelta;
         if (value < -maxDelta) return value + maxDelta;
