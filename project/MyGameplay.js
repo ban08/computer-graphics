@@ -97,6 +97,7 @@ export class MyGameplay {
             this.updateCargoInput(input);
             this.updateWagonMovement(t, this.clamp(dt, 0.0, 0.10), input);
             this.syncWagonVisualState();
+            this.syncBarnVisualState();
 
             return;
         }
@@ -114,6 +115,15 @@ export class MyGameplay {
         });
 
         this.wagon.setCargoBaleCount(this.currentBales);
+    }
+
+    syncBarnVisualState() {
+        if (!this.barn || !this.wagon) return;
+ 
+        const interactionPoint = this.wagon.getBaleInteractionPoint();
+        const wagonPoint = this.wagon.getPose();
+        
+        this.barn.setWagonInDeliveryArea(this.isWagonOrDropInDeliveryArea(interactionPoint, wagonPoint));
     }
 
     // --- input
@@ -147,14 +157,14 @@ export class MyGameplay {
             const bale = this.hayBales.getPickupTargets().find((target) =>
                 Math.hypot(interactionPoint.x - target.x, interactionPoint.z - target.z) <= this.hayBalePickupDistance
             );
-            if (bale && this.tryAddBale()) {
+            if (bale && this.tryPickBale()) {
                 bale.onPickup();
             }
         }
         this.wasPickupPressed = pickUp;
 
         if (dropDown && !this.wasDropdownPressed) {
-            if (this.isCargoInDeliveryArea(interactionPoint, wagonPoint)) {
+            if (this.isWagonOrDropInDeliveryArea(interactionPoint, wagonPoint)) {
                 this.deliverBales();
             } else if (this.tryDropBale()) {
                 this.hayBales.dropBale(interactionPoint.x, interactionPoint.z);
@@ -163,13 +173,13 @@ export class MyGameplay {
         this.wasDropdownPressed = dropDown;
     }
 
-    isCargoInDeliveryArea(dropPoint, wagonPoint) {
-        if (!this.barn || this.currentBales === 0) return false;
+    isWagonOrDropInDeliveryArea(dropPoint, wagonPoint) {
+        if (!this.barn) return false;
 
         return this.barn.isPointInDeliveryArea(wagonPoint.x, wagonPoint.z) || this.barn.isPointInDeliveryArea(dropPoint.x, dropPoint.z);
     }
 
-    tryAddBale() {
+    tryPickBale() {
         if (this.currentBales >= this.maxBales) return false;
 
         this.currentBales++;
@@ -225,19 +235,11 @@ export class MyGameplay {
         this.steerAngle = this.clamp(this.steerAngle, -this.maxSteerAngle, this.maxSteerAngle);
 
         // set mov state
-        this.wagon.setMotionState({
-            speed: this.speed,
-            maxSpeed: this.maxSpeed,
-            steerAngle: this.steerAngle,
-        });
+        this.syncWagonVisualState();
 
         if (this.speed <= 0.001) {
             this.speed = 0.0;
-            this.wagon.setMotionState({
-                speed: this.speed,
-                maxSpeed: this.maxSpeed,
-                steerAngle: this.steerAngle
-            });
+            this.syncWagonVisualState();
             return;
         }
 
@@ -252,7 +254,7 @@ export class MyGameplay {
         // collision check with map border
         if (!this.isWagonInsideTerrain(this.wagon, nextX, nextZ, nextRotation)) {
             this.speed = 0.0;
-            this.wagon.setMotionState({ speed: this.speed, maxSpeed: this.maxSpeed, steerAngle: this.steerAngle });
+            this.syncWagonVisualState();
             this.registerBoundaryImpact();
             return;
         }
@@ -267,7 +269,7 @@ export class MyGameplay {
         );
         if (obstacle) {
             this.speed = 0.0;
-            this.wagon.setMotionState({ speed: this.speed, maxSpeed: this.maxSpeed, steerAngle: this.steerAngle });
+            this.syncWagonVisualState();
             obstacle.onImpact(t);
             this.registerObstacleImpact(obstacle);
             return;
@@ -276,12 +278,6 @@ export class MyGameplay {
         // set next pose and continue anims
         this.wagon.setPose(nextX, nextZ, nextRotation);
         this.wagon.advanceMovementAnimation(distance);
-
-        // check delivery area
-        if (this.barn) {
-            const pose = this.wagon.getPose();
-            this.barn.setWagonInDeliveryArea(this.barn.isPointInDeliveryArea(pose.x, pose.z));
-        }
     }
 
     // --- collisions

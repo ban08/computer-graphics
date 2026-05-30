@@ -362,7 +362,10 @@ export class MyBarn extends CGFobject {
     isPointInDeliveryArea(x, z) {
         return Math.hypot(x - this.x, z - this.z) <= this.deliveryAreaRadius;
     }
+
+    // --- exposed setters
+
     setWagonInDeliveryArea(inside) {
-    this.wagonInDeliveryArea = inside;
-}
+        this.wagonInDeliveryArea = inside;
+    }
 }
