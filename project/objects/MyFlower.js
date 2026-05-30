@@ -21,6 +21,7 @@ import { MySphere } from '../primitives/MySphere.js';
  * @param options.petalThickness - Thickness of each petal
  * @param options.petalTilt - Petal rotation around the local X axis
  * @param options.petalColor - Petal color as [r, g, b, a]
+ * @param options.petalTexture - Texture (as CFGTexture) of each petal
  * @param options.centerRadius - Radius of the flower center
  * @param options.centerColor - Center color as [r, g, b, a]
  */
@@ -45,6 +46,7 @@ export class MyFlower extends CGFobject {
         this.petalThickness = options.petalThickness ?? 0.018;
         this.petalTilt = options.petalTilt ?? -0.35;
         this.petalColor = options.petalColor ?? [0.92, 0.28, 0.42, 1.0];
+        this.petalTexture = options.petalTexture ?? null;
 
         this.centerRadius = options.centerRadius ?? 0.075;
         this.centerColor = options.centerColor ?? [0.86, 0.60, 0.12, 1.0];
@@ -58,6 +60,11 @@ export class MyFlower extends CGFobject {
         this.leafMaterial = this.createMaterial(this.leafColor, 0.35, 0.08, 8);
         this.petalMaterial = this.createMaterial(this.petalColor, 0.45, 0.16, 18);
         this.centerMaterial = this.createMaterial(this.centerColor, 0.45, 0.10, 12);
+
+        if (this.petalTexture) {
+            this.petalMaterial.setTexture(this.petalTexture);
+            this.petalMaterial.setTextureWrap('REPEAT', 'REPEAT');
+        }
     }
 
     createMaterial(color, ambientFactor, specular, shininess) {

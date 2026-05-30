@@ -1,4 +1,4 @@
-import { CGFobject } from '../../../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../../../lib/CGF.js';
 import { MyFlower } from '../../objects/MyFlower.js';
 import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js';
 
@@ -15,6 +15,11 @@ export class MyFlowers extends CGFobject {
         super(scene);
 
         this.terrain = terrain;
+        this.flowerTextures = [
+            new CGFtexture(scene, '/project/textures/flowerTextureOne.png'),
+            new CGFtexture(scene, '/project/textures/flowerTextureTwo.png'),
+            new CGFtexture(scene, '/project/textures/flowerTextureThree.png'),
+        ];
         this.placements = [];
 
         this.generateFlowers();
@@ -36,6 +41,10 @@ export class MyFlowers extends CGFobject {
         ];
 
         return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    randomFlowerTexture() {
+        return this.flowerTextures[Math.floor(Math.random() * this.flowerTextures.length)];
     }
 
     generateFlowers() {
@@ -67,6 +76,7 @@ export class MyFlowers extends CGFobject {
                 petalCount: Math.floor(this.randomRange(5, 10)),
                 leafCount: Math.floor(this.randomRange(1, 4)),
                 petalColor: this.randomPetalColor(),
+                petalTexture: this.randomFlowerTexture()
             }),
         });
 
