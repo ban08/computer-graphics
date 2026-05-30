@@ -34,7 +34,8 @@ export class MyBarn extends CGFobject {
         this.bodyDepth = 6 * this.scaleFactor;
 
         this.wagonInDeliveryArea = false;
-        this.deliveryAreaScale = 5;
+        this.deliveryAreaOffset = 5;
+        this.deliveryAreaScale = 3;
         this.deliveryAreaRadius = this.deliveryAreaScale * this.ring.outerRadius;
 
         this.initMaterials();
@@ -339,7 +340,7 @@ export class MyBarn extends CGFobject {
 
         this.scene.pushMatrix();
         
-        this.scene.translate(0, -1.45, 0); 
+        this.scene.translate(0, -1.45, this.deliveryAreaOffset); 
         this.scene.scale(this.deliveryAreaScale, 1.2, this.deliveryAreaScale);
         this.ring.display();
         this.scene.popMatrix();
@@ -367,7 +368,13 @@ export class MyBarn extends CGFobject {
     // --- exposed getters
 
     isPointInDeliveryArea(x, z) {
-        return Math.hypot(x - this.x, z - this.z) <= this.deliveryAreaRadius;
+        const c = Math.cos(this.rotation);
+        const s = Math.sin(this.rotation);
+
+        const deliveryX = this.x + this.deliveryAreaOffset * s;
+        const deliveryZ = this.z + this.deliveryAreaOffset * c;
+
+        return Math.hypot(x - deliveryX, z - deliveryZ) <= this.deliveryAreaRadius;
     }
 
     getCollisionBox() {

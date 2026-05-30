@@ -53,7 +53,7 @@ export class MyScatterElements extends CGFobject {
             const barnBaseZ = -26;
             const barnX = (Math.sin(barnBaseZ * 0.15) * 8.0) + (Math.cos(barnBaseZ * 0.05) * 4.0) + 4.0;
             const barnZ = barnBaseZ + 6.0; 
-            const awayFromBarn = Math.hypot(x - barnX, z - barnZ) > 6.0; 
+            const awayFromBarn = Math.hypot(x - barnX, z - barnZ) > 10.0; 
             
             if ( !awayFromStarterWagon || !awayFromPathway || !awayFromBarn) {
             return false;

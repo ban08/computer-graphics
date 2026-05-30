@@ -177,7 +177,7 @@ export class MyTerrain extends CGFobject {
 
         let distToBarn = Math.hypot(x - barnGridX, y - barnGridY);
 
-        let flatRadius = 8.0;  
+        let flatRadius = 10.0;  
         let blendMargin = 4.0; 
 
         let mixFactor = this.smoothstep(flatRadius, flatRadius + blendMargin, distToBarn);
