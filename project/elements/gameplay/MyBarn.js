@@ -26,6 +26,13 @@ export class MyBarn extends CGFobject {
         this.x = 10.5;
         this.z = -20;
         this.rotation = -Math.PI / 4;
+
+        this.scaleFactor = 0.6;
+
+        this.bodyWidth = 8 * this.scaleFactor;
+        this.bodyHeight = 5 * this.scaleFactor;
+        this.bodyDepth = 6 * this.scaleFactor;
+
         this.wagonInDeliveryArea = false;
         this.deliveryAreaScale = 5;
         this.deliveryAreaRadius = this.deliveryAreaScale * this.ring.outerRadius;
@@ -348,7 +355,7 @@ export class MyBarn extends CGFobject {
         this.scene.rotate(this.rotation, 0, 1, 0);
         this.displayRing();
 
-        this.scene.scale(8*0.6, 5*0.6, 6*0.6); 
+        this.scene.scale(this.bodyWidth, this.bodyHeight, this.bodyDepth); 
 
         this.displayWalls();
         this.displayRoof();
@@ -361,6 +368,16 @@ export class MyBarn extends CGFobject {
 
     isPointInDeliveryArea(x, z) {
         return Math.hypot(x - this.x, z - this.z) <= this.deliveryAreaRadius;
+    }
+
+    getCollisionBox() {
+        return {
+            x: this.x,
+            z: this.z,
+            width: this.bodyWidth,
+            depth: this.bodyDepth,
+            rotation: this.rotation,
+        };
     }
 
     // --- exposed setters

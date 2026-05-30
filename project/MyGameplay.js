@@ -255,12 +255,20 @@ export class MyGameplay {
         if (!this.isWagonInsideTerrain(this.wagon, nextX, nextZ, nextRotation)) {
             this.speed = 0.0;
             this.syncWagonVisualState();
-            this.registerBoundaryImpact();
+            this.registerSolidImpact();
+            return;
+        }
+
+        // collision check with barn
+        if (this.isWagonCollidingWithBarn(this.wagon, nextX, nextZ, nextRotation)) {
+            this.speed = 0.0;
+            this.syncWagonVisualState();
+            this.registerSolidImpact();
             return;
         }
 
         // collision check with obstacles (scatter elements)
-        const obstacle = this.findWagonStaticCollision(
+        const obstacle = this.findWagonObjectCollision(
             this.wagon,
             this.scatterElements?.getCollisionObstacles() ?? [],
             nextX,
@@ -292,7 +300,7 @@ export class MyGameplay {
         return true;
     }
 
-    findWagonStaticCollision(wagon, obstacles, originX, originZ, rotation) {
+    findWagonObjectCollision(wagon, obstacles, originX, originZ, rotation) {
         for (const circle of wagon.getCollisionCirclesAt(originX, originZ, rotation, this.staticCollisionMargin)) {
             for (const obstacle of obstacles) {
                 if (!obstacle.isActive()) continue;
@@ -306,6 +314,36 @@ export class MyGameplay {
         }
 
         return null;
+    }
+
+    isWagonCollidingWithBarn(wagon, x, z, rotation) {
+        if (!this.barn) return false;
+
+        const barnBox = this.barn.getCollisionBox();
+
+        for (const circle of wagon.getCollisionCirclesAt(x, z, rotation, this.staticCollisionMargin)) {
+            if (this.circleCollidesWithBarnBox(circle, barnBox)) return true;
+        }
+
+        return false;
+    }
+
+    circleCollidesWithBarnBox(circle, box) {
+        const dx = circle.x - box.x;
+        const dz = circle.z - box.z;
+
+        const c = Math.cos(box.rotation);
+        const s = Math.sin(box.rotation);
+        const localX = dx * c - dz * s;
+        const localZ = dx * s + dz * c;
+
+        const closestX = this.clamp(localX, -box.width / 2, box.width / 2);
+        const closestZ = this.clamp(localZ, -box.depth / 2, box.depth / 2);
+
+        const diffX = localX - closestX;
+        const diffZ = localZ - closestZ;
+
+        return diffX * diffX + diffZ * diffZ <= circle.radius * circle.radius;
     }
 
     // --- damage
@@ -322,7 +360,7 @@ export class MyGameplay {
         return damage;
     }
 
-    registerBoundaryImpact() {
+    registerSolidImpact() {
         const damage = 9999; // ouch
         this.lastDamage = 100;
         this.lastDamageTime = this.elapsedSeconds;
