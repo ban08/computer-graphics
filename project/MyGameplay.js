@@ -276,6 +276,12 @@ export class MyGameplay {
         // set next pose and continue anims
         this.wagon.setPose(nextX, nextZ, nextRotation);
         this.wagon.advanceMovementAnimation(distance);
+
+        // check delivery area
+        if (this.barn) {
+            const pose = this.wagon.getPose();
+            this.barn.setWagonInDeliveryArea(this.barn.isPointInDeliveryArea(pose.x, pose.z));
+        }
     }
 
     // --- collisions

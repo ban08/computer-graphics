@@ -26,7 +26,7 @@ export class MyBarn extends CGFobject {
         this.x = 10.5;
         this.z = -20;
         this.rotation = -Math.PI / 4;
-
+        this.wagonInDeliveryArea = false;
         this.deliveryAreaScale = 5;
         this.deliveryAreaRadius = this.deliveryAreaScale * this.ring.outerRadius;
 
@@ -60,11 +60,17 @@ export class MyBarn extends CGFobject {
         this.roof.setTexture(new CGFtexture(this.scene, './textures/darkWoodTexture.png')); 
         this.roof.setTextureWrap('REPEAT', 'REPEAT');
 
-        this.ringMaterial = new CGFappearance(this.scene);
-        this.ringMaterial.setAmbient(0.2, 0.0, 0.0, 1);
-        this.ringMaterial.setDiffuse(1.0, 0.0, 0.0, 1);  
-        this.ringMaterial.setSpecular(0.2, 0.0, 0.0, 1);
-        this.ringMaterial.setShininess(100);
+        this.ringMaterialRed = new CGFappearance(this.scene);
+        this.ringMaterialRed.setAmbient(0.2, 0.0, 0.0, 1);
+        this.ringMaterialRed.setDiffuse(1.0, 0.0, 0.0, 1);  
+        this.ringMaterialRed.setSpecular(0.2, 0.0, 0.0, 1);
+        this.ringMaterialRed.setShininess(100);
+
+        this.ringMaterialGreen = new CGFappearance(this.scene);
+        this.ringMaterialGreen.setAmbient(0.0, 0.3, 0.0, 1);
+        this.ringMaterialGreen.setDiffuse(0.0, 1.0, 0.0, 1);
+        this.ringMaterialGreen.setSpecular(0.0, 0.2, 0.0, 1);
+        this.ringMaterialGreen.setShininess(100);
 
         this.doorMaterial = new CGFappearance(this.scene);
         this.doorMaterial.setAmbient(0.4, 0.2, 0.1, 1);
@@ -317,7 +323,13 @@ export class MyBarn extends CGFobject {
     }
 
     displayRing() {
-        this.ringMaterial.apply();
+
+        if (this.wagonInDeliveryArea) {
+            this.ringMaterialGreen.apply();  
+        } else {
+            this.ringMaterialRed.apply();    
+        }
+
         this.scene.pushMatrix();
         
         this.scene.translate(0, -1.45, 0); 
@@ -350,4 +362,7 @@ export class MyBarn extends CGFobject {
     isPointInDeliveryArea(x, z) {
         return Math.hypot(x - this.x, z - this.z) <= this.deliveryAreaRadius;
     }
+    setWagonInDeliveryArea(inside) {
+    this.wagonInDeliveryArea = inside;
+}
 }
