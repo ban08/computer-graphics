@@ -10,22 +10,23 @@ import { PlacementGenerator } from '../../utils/PlacementProceduralGenerator.js'
  * @param terrain - Reference to MyTerrain object
  * @param flowers - Reference to MyFlowers object
  * @param rocks - Reference to MyScatterElements object
+ * @param wagon - Reference to MyWagon object
  */
 export class MyHayBales extends CGFobject {
     // --- constructor
 
-    constructor(scene, terrain, flowers, rocks) {
+    constructor(scene, terrain, flowers, rocks, wagon) {
         super(scene);
 
         this.scene = scene;
         this.terrain = terrain;
         this.flowers = flowers;
         this.rocks = rocks;
+        this.wagon = wagon;
         this.placements = [];
         this.bale = new MyHayBale(this.scene);
         this.arrow = new MyPinpointArrow(this.scene);
-        this.wagon = null;
-        this.visible = 20.0; // ajustar se necessário
+        this.visibleDist = 20.0; // ajustar se necessário
 
         this.generateBalePlacements();
     }
@@ -138,7 +139,7 @@ export class MyHayBales extends CGFobject {
 
             if (wagonPose) {
                 const dist = Math.hypot(placement.x - wagonPose.x, placement.z - wagonPose.z);
-                if (dist > this.visible) continue;
+                if (dist > this.visibleDist) continue;
             }
 
             this.scene.pushMatrix();
@@ -172,7 +173,4 @@ export class MyHayBales extends CGFobject {
             onPickup: () => this.collectBale(index)
         }));
     }
-    setWagon(wagon) {
-    this.wagon = wagon;
-}
 }
