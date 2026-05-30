@@ -68,6 +68,7 @@ export class MyScene extends CGFscene {
 		this.setUpdatePeriod(50);
 
 		this.cameraType = 'Follow Wagon';
+		this.toggleFreeCamera = false;
   	}
 
   	update(t) {
@@ -97,7 +98,12 @@ export class MyScene extends CGFscene {
 
 		this.hayBales.update(t);
 		
-		if (this.cameraType == 'Follow Wagon') this.setChaseCamera();
+		if (this.cameraType == 'Follow Wagon') {
+			this.setChaseCamera();
+		} else if (this.cameraType == 'Free Camera' && this.toggleFreeCamera) {
+			this.setFreeCamera();
+			this.toggleFreeCamera = false;
+		}
   	}
 
   	initLights() {

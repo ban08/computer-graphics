@@ -10,7 +10,7 @@ export class MyGameplay {
         this.initialHp = 100;
         this.maxBales = 2;
         this.hpLossPerSecond = 1;
-        this.hpPerBale = 50;
+        this.hpPerBale = 20;
         this.minObstacleDamage = 5;
         this.maxObstacleDamage = 15;
         this.hayBalePickupDistance = 1.5;
@@ -86,7 +86,7 @@ export class MyGameplay {
             if (!this.gameOver) {
                 this.elapsedSeconds += dt;
                 this.score = Math.floor(this.elapsedSeconds);
-                this.hp = Math.max(0, this.hp - this.hpLossPerSecond * dt);
+                this.hp = this.clamp(this.hp - this.hpLossPerSecond * dt, 0, this.initialHp);
 
                 if (this.hp === 0) this.gameOver = true;
             }
@@ -187,14 +187,15 @@ export class MyGameplay {
         if (this.currentBales === 0) return 0;
 
         const delivered = this.currentBales;
-        const restoredHp = delivered * this.hpPerBale;
+        const missingHp = this.clamp(this.initialHp - this.hp, 0, this.initialHp);
+        const restoredHp = this.clamp(delivered * this.hpPerBale, 0, missingHp);
 
         this.totalDeliveredBales += delivered;
         this.lastHealthRestored = restoredHp;
         this.lastHealthRestoredTime = this.elapsedSeconds;
 
         this.currentBales = 0;
-        this.hp += restoredHp;
+        this.hp = this.clamp(this.hp + restoredHp, 0, this.initialHp);
         
         return restoredHp;
     }
@@ -313,7 +314,7 @@ export class MyGameplay {
         this.lastDamage = damage;
         this.lastDamageTime = this.elapsedSeconds;
 
-        this.hp = Math.max(0, this.hp - damage);
+        this.hp = this.clamp(this.hp - damage, 0, this.initialHp);
         if (this.hp === 0) this.gameOver = true;
 
         return damage;
@@ -324,7 +325,7 @@ export class MyGameplay {
         this.lastDamage = 100;
         this.lastDamageTime = this.elapsedSeconds;
         
-        this.hp = Math.max(0, this.hp - damage);
+        this.hp = this.clamp(this.hp - damage, 0, this.initialHp);
         if (this.hp === 0) this.gameOver = true;
 
         return damage;

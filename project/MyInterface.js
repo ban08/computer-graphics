@@ -11,6 +11,7 @@ export class MyInterface extends CGFinterface {
     }
 
     // initkeys similar to the keyboard events example!
+
     initKeys() {
         this.scene.gui = this;
         this.processKeyboard = function() {};
@@ -30,6 +31,7 @@ export class MyInterface extends CGFinterface {
     }
 
     // locks out manual camera controls if the camera is set to follow the wagon
+
     processMouse() {
         if (this.scene.cameraType === 'Follow Wagon') return;
         super.processMouse();
@@ -45,28 +47,45 @@ export class MyInterface extends CGFinterface {
         super.processTouches();
     }
 
+    // disables gui controlls to make them read only
+
+    makeReadOnly(controller) {
+        controller.domElement.style.pointerEvents = 'none';
+
+        controller.domElement.querySelectorAll('input, select, button').forEach((element) => {
+            element.disabled = true;
+            element.tabIndex = -1;
+        });
+
+        return controller;
+    }
+
     init(application) {
         super.init(application);
 
         this.initKeys();
 
         this.gui = new dat.GUI();
-
-        const gameplay = this.gui.addFolder('Gameplay');
-        gameplay.add(this.scene, 'cameraType', ['Free Camera', 'Follow Wagon']).name('Camera Type')
-            .onChange((cameraType) => {
-                if (cameraType === 'Free Camera') this.scene.setFreeCamera();
-            });
-        gameplay.add(this.scene.gameplay, 'gameOver').name('Game Over').listen();
+        
+        const gameplayStats = this.gui.addFolder('Gameplay Statistics');
 
         // mandatory as per spec
-        gameplay.add(this.scene.gameplay, 'hp').name('Health Points').listen();
-        gameplay.add(this.scene.gameplay, 'lastDamage').name('Last Damage').listen();
-        gameplay.add(this.scene.gameplay, 'lastHealthRestored').name('Last Restored').listen();
-        gameplay.add(this.scene.gameplay, 'totalDeliveredBales').name('Delivered Bales').listen();
-        gameplay.add(this.scene.gameplay, 'score').name('Score').listen();
+        this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'hp', 0, this.scene.gameplay.initialHp).name('Health Points').listen());
+        this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'lastDamage').name('Last Damage').listen());
+        this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'lastHealthRestored').name('Last Restored').listen());
+        this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'totalDeliveredBales').name('Delivered Bales').listen());
+        this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'score').name('Score').listen());
+        
+        gameplayStats.open();
 
-        gameplay.open();
+        const gameplayConfigs = this.gui.addFolder('Gameplay Configuration');
+
+        gameplayConfigs.add(this.scene, 'cameraType', ['Free Camera', 'Follow Wagon']).name('Camera Type')
+            .onChange((cameraType) => {
+                if (cameraType === 'Free Camera') this.scene.toggleFreeCamera = true;
+            });
+
+        gameplayConfigs.open();
 
         return true;
     }
