@@ -16,6 +16,12 @@ export class MyPinpointArrow extends CGFobject {
         this.bobAmplitude = 0.28;
         this.bobSpeed = 2.4;
         this.timeSeconds = 0.0;
+        
+        this.normalBaseColor = [1.0, 0.18, 0.08];
+        this.normalTipColor = [1.0, 0.92, 0.12];
+
+        this.interactionBaseColor = [0.0, 0.85, 0.10];
+        this.interactionTipColor = [0.55, 1.0, 0.20];
 
         this.shader = new CGFshader(
             scene.gl,
@@ -28,8 +34,8 @@ export class MyPinpointArrow extends CGFobject {
             bobAmplitude: this.bobAmplitude,
             bobSpeed: this.bobSpeed,
             phase: 0.0,
-            baseColor: [1.0, 0.18, 0.08],
-            tipColor: [1.0, 0.92, 0.12],
+            baseColor: this.normalBaseColor,
+            tipColor: this.normalTipColor,
         });
     }
 
@@ -42,11 +48,23 @@ export class MyPinpointArrow extends CGFobject {
         });
     }
 
-    display(phase = 0.0) {
+    display(phase = 0.0, wagonInInteractionArea) {
         const gl = this.scene.gl;
         const cullWasEnabled = gl.isEnabled(gl.CULL_FACE);
 
         this.shader.setUniformsValues({ phase });
+
+        if (wagonInInteractionArea) {
+            this.shader.setUniformsValues({
+                baseColor: this.interactionBaseColor,
+                tipColor: this.interactionTipColor,
+            });
+        } else {
+            this.shader.setUniformsValues({
+                baseColor: this.normalBaseColor,
+                tipColor: this.normalTipColor,
+            });
+        }
 
         gl.disable(gl.CULL_FACE);
         this.scene.setActiveShader(this.shader);

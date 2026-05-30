@@ -93,11 +93,14 @@ export class MyGameplay {
 
             this.lastUpdateTime = t;
 
-            this.updateFeedbackTimers();
-            this.updateCargoInput(input);
             this.updateWagonMovement(t, this.clamp(dt, 0.0, 0.10), input);
+            this.updateCargoInput(input);
+
             this.syncWagonVisualState();
             this.syncBarnVisualState();
+            this.syncHayBalesVisualState();
+
+            this.updateFeedbackTimers();
 
             return;
         }
@@ -124,6 +127,18 @@ export class MyGameplay {
         const wagonPoint = this.wagon.getPose();
         
         this.barn.setWagonInDeliveryArea(this.isWagonOrDropInDeliveryArea(interactionPoint, wagonPoint));
+    }
+
+    syncHayBalesVisualState() {
+        if (!this.hayBales || !this.wagon) return;
+
+        const interactionPoint = this.wagon.getBaleInteractionPoint();
+
+        const interactionBaleIndex = this.hayBales.getPickupTargets().findIndex((target) =>
+            Math.hypot(interactionPoint.x - target.x, interactionPoint.z - target.z) <= this.hayBalePickupDistance
+        );
+
+        this.hayBales.setInteractionBaleIndex(interactionBaleIndex);
     }
 
     // --- input

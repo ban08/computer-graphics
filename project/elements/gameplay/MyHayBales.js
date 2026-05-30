@@ -23,10 +23,14 @@ export class MyHayBales extends CGFobject {
         this.flowers = flowers;
         this.rocks = rocks;
         this.wagon = wagon;
+
         this.placements = [];
+
         this.bale = new MyHayBale(this.scene);
         this.arrow = new MyPinpointArrow(this.scene);
+
         this.visibleDist = 20.0; // ajustar se necessário
+        this.interactionBaleIndex = -1;
 
         this.generateBalePlacements();
     }
@@ -149,13 +153,15 @@ export class MyHayBales extends CGFobject {
 
             this.bale.display();
 
-
             this.scene.popMatrix();
 
             this.scene.pushMatrix();
+
             this.scene.translate(placement.x, placement.y + 2.05, placement.z);
             this.scene.scale(0.85, 0.85, 0.85);
-            this.arrow.display(i * 1.31);
+
+            this.arrow.display(i * 1.31, i === this.interactionBaleIndex);
+
             this.scene.popMatrix();
         }
     }
@@ -172,5 +178,11 @@ export class MyHayBales extends CGFobject {
             z: placement.z,
             onPickup: () => this.collectBale(index)
         }));
+    }
+
+    // --- exposed setters
+
+    setInteractionBaleIndex(index) {
+        this.interactionBaleIndex = index;
     }
 }
