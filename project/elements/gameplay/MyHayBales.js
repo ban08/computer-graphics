@@ -24,7 +24,8 @@ export class MyHayBales extends CGFobject {
         this.placements = [];
         this.bale = new MyHayBale(this.scene);
         this.arrow = new MyPinpointArrow(this.scene);
-
+        this.wagon = null;
+        this.visible = 20.0; // ajustar se necessário
 
         this.generateBalePlacements();
     }
@@ -131,8 +132,15 @@ export class MyHayBales extends CGFobject {
     // --- displayers
 
     display() {
+      const wagonPose = this.wagon && this.wagon.getPose ? this.wagon.getPose() : undefined;
         for (let i = 0; i < this.placements.length; i++) {
             const placement = this.placements[i];
+
+            if (wagonPose) {
+                const dist = Math.hypot(placement.x - wagonPose.x, placement.z - wagonPose.z);
+                if (dist > this.visible) continue;
+            }
+
             this.scene.pushMatrix();
 
             this.scene.translate(placement.x, placement.y + 0.17, placement.z);
@@ -164,4 +172,7 @@ export class MyHayBales extends CGFobject {
             onPickup: () => this.collectBale(index)
         }));
     }
+    setWagon(wagon) {
+    this.wagon = wagon;
+}
 }

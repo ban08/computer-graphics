@@ -53,6 +53,7 @@ export class MyScene extends CGFscene {
 
 		// gameplay
 		this.hayBales = new MyHayBales(this, this.terrain, this.flowers, this.scatterElements);
+		this.hayBales.setWagon(this.wagon); 
 		this.barn = new MyBarn(this, this.terrain);
 
 		// extra
