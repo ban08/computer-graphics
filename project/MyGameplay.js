@@ -24,7 +24,11 @@ export class MyGameplay {
         this.totalDeliveredBales = 0;
         this.lastDamage = 0;
         this.lastHealthRestored = 0;
+        
         this.gameOver = false;
+        this.gameOverTime = null;
+        this.restartDelay = 5000;
+        this.onRestart = null;
 
         this.elapsedSeconds = 0;
         this.lastUpdateTime = null;
@@ -68,6 +72,8 @@ export class MyGameplay {
         this.barn = barn;
 
         this.syncWagonVisualState();
+        this.syncBarnVisualState();
+        this.syncHayBalesVisualState();
     }
 
     // --- update loop
@@ -77,33 +83,73 @@ export class MyGameplay {
 
         if (this.lastUpdateTime === null) {
             this.lastUpdateTime = t;
-            this.syncWagonVisualState();
             return;
         } else {
             dt = (t - this.lastUpdateTime) / 1000;
-            if (dt <= 0) return;
-
-            if (!this.gameOver) {
-                this.elapsedSeconds += dt;
-                this.score = Math.floor(this.elapsedSeconds);
-                this.hp = this.clamp(this.hp - this.hpLossPerSecond * dt, 0, this.initialHp);
-
-                if (this.hp === 0) this.gameOver = true;
-            }
-
             this.lastUpdateTime = t;
+            if (dt <= 0) return;
+        }
 
-            this.updateWagonMovement(t, this.clamp(dt, 0.0, 0.10), input);
-            this.updateCargoInput(input);
-
-            this.syncWagonVisualState();
-            this.syncBarnVisualState();
-            this.syncHayBalesVisualState();
-
-            this.updateFeedbackTimers();
-
+        if (this.gameOver) {
+            if (t - this.gameOverTime >= this.restartDelay) {
+                if (this.onRestart && typeof this.onRestart === 'function') {
+                    this.onRestart();
+                }
+            }
             return;
         }
+
+        this.elapsedSeconds += dt;
+        this.score = Math.floor(this.elapsedSeconds);
+        this.hp = this.clamp(this.hp - this.hpLossPerSecond * dt, 0, this.initialHp);
+
+        if (this.isGameOver()) {
+            this.setGameOver();
+        } else {
+            this.updateWagonMovement(t, this.clamp(dt, 0.0, 0.10), input);
+            if (!this.isGameOver()) this.updateCargoInput(input);
+        }
+
+        this.syncWagonVisualState();
+        this.syncBarnVisualState();
+        this.syncHayBalesVisualState();
+
+        this.updateFeedbackTimers();
+    }
+
+    // game over
+
+    isGameOver() {
+        return this.hp === 0;
+    }
+
+    setGameOver() {
+        this.gameOver = true;
+        this.gameOverTime = this.lastUpdateTime;
+        this.speed = 0.0;
+        this.steerAngle = 0.0;
+    }
+
+    reset() {
+        this.hp = this.initialHp;
+        this.score = 0;
+        this.currentBales = 0;
+        this.totalDeliveredBales = 0;
+        this.lastDamage = 0;
+        this.lastHealthRestored = 0;
+        this.gameOver = false;
+        this.gameOverTime = null;
+
+        this.elapsedSeconds = 0;
+        this.lastUpdateTime = null;
+        this.lastDamageTime = null;
+        this.lastHealthRestoredTime = null;
+
+        this.wasPickupPressed = false;
+        this.wasDropdownPressed = false;
+
+        this.speed = 0.0;
+        this.steerAngle = 0.0;
     }
 
     // --- render sync
@@ -370,7 +416,7 @@ export class MyGameplay {
         this.lastDamageTime = this.elapsedSeconds;
 
         this.hp = this.clamp(this.hp - damage, 0, this.initialHp);
-        if (this.hp === 0) this.gameOver = true;
+        if (this.isGameOver()) this.setGameOver();
 
         return damage;
     }
@@ -381,7 +427,7 @@ export class MyGameplay {
         this.lastDamageTime = this.elapsedSeconds;
         
         this.hp = this.clamp(this.hp - damage, 0, this.initialHp);
-        if (this.hp === 0) this.gameOver = true;
+        if (this.isGameOver()) this.setGameOver();
 
         return damage;
     }

@@ -33,8 +33,19 @@ export class MyScene extends CGFscene {
 		this.gl.enable(this.gl.DEPTH_TEST);
 		this.gl.enable(this.gl.CULL_FACE);
 		this.gl.depthFunc(this.gl.LEQUAL);
-		this.enableTextures(true);
 
+		this.enableTextures(true);
+		this.setUpdatePeriod(50);
+
+		this.gameplay = new MyGameplay();
+		this.createWorld();
+		this.gameplay.onRestart = () => this.restartWorld();
+
+		this.cameraType = 'Follow Wagon';
+		this.toggleFreeCamera = false;
+  	}
+
+	createWorld() {
 		// environment
 		this.sky = new MySky(this);
 		this.sun = new MySun(this);
@@ -56,7 +67,6 @@ export class MyScene extends CGFscene {
 		this.barn = new MyBarn(this, this.terrain);
 
 		// extra
-		this.gameplay = new MyGameplay();
 		this.gameplay.setWorld({
 			wagon: this.wagon,
 			hayBales: this.hayBales,
@@ -64,12 +74,12 @@ export class MyScene extends CGFscene {
 			barn: this.barn,
 		});
 		this.boundaryFence = new MyBoundaryFence(this, this.terrain);
+	}
 
-		this.setUpdatePeriod(50);
-
-		this.cameraType = 'Follow Wagon';
-		this.toggleFreeCamera = false;
-  	}
+	restartWorld() {
+		this.gameplay.reset();
+		this.createWorld();
+	}
 
   	update(t) {
 		this.sun.update(t);
