@@ -127,7 +127,6 @@ export class MyGameplay {
         this.gameOver = true;
         this.gameOverTime = this.lastUpdateTime;
         this.speed = 0.0;
-        this.steerAngle = 0.0;
     }
 
     reset() {
