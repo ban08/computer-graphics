@@ -102,6 +102,40 @@ The following points describe current limitations of the project and possible ar
 <!-- Screenshot thumbnails or links to the 5 required screenshots -->
 <!-- additionally we can also add the video delivery here -->
 
+The screenshots and video required for delivery can be found in [docs/final](docs/final/):
+
+- [Screenshot 1](docs/final/project-t11g03-1.png) - Overall scene overview
+
+[![Screenshot 1](docs/final/project-t11g03-1.png)](docs/final/project-t11g03-1.png)
+
+- [Screenshot 2](docs/final/project-t11g03-2.png) - Flower, rocks, and floor detail
+
+[![Screenshot 2](docs/final/project-t11g03-2.png)](docs/final/project-t11g03-2.png)
+
+- [Screenshot 3](docs/final/project-t11g03-3.png) - Wagon close-up
+
+[![Screenshot 3](docs/final/project-t11g03-3.png)](docs/final/project-t11g03-3.png)
+
+- [Animated screenshot 4](docs/final/project-t11g03-4.gif) - Multiple shader animation
+
+[![Animated screenshot 4](docs/final/project-t11g03-4.gif)](docs/final/project-t11g03-4.gif)
+
+- [Screenshot 5](docs/final/project-t11g03-5.png) - Gameplay camera
+
+[![Screenshot 5](docs/final/project-t11g03-5.png)](docs/final/project-t11g03-5.png)
+
+- [Demonstration video](docs/final/project-t11g03.mp4), including:
+    - A tour of the full scene
+    - Wagon movement and animations
+    - Pick-up and delivery of haybales
+    - Shaders
+
+<p align="center">
+  <video src="docs/final/project-t11g03.mp4" controls width="640">
+    Your browser does not support the video tag.
+  </video>
+</p>
+
 ### AI Usage Declaration
 
 <!-- A declaration on AI use, to what extent and for what purpose. -->
