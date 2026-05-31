@@ -19,12 +19,7 @@ export class MyGameplay {
         // gameplay state
 
         this.hp = this.initialHp;
-        this.displayHp = this.initialHp;
-        this.score = 0;
         this.currentBales = 0;
-        this.totalDeliveredBales = 0;
-        this.lastDamage = 0;
-        this.lastHealthRestored = 0;
         
         this.gameOver = false;
         this.gameOverTime = null;
@@ -38,6 +33,14 @@ export class MyGameplay {
 
         this.wasPickupPressed = false;
         this.wasDropdownPressed = false;
+
+        // displayed stats (spec mandatory)
+
+        this.displayHp = this.initialHp;
+        this.lastDamage = 0;
+        this.lastHealthRestored = 0;
+        this.totalDeliveredBales = 0;
+        this.score = 0;
 
         // movement settings and state
 
