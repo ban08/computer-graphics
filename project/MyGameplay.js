@@ -19,6 +19,7 @@ export class MyGameplay {
         // gameplay state
 
         this.hp = this.initialHp;
+        this.displayHp = this.initialHp;
         this.score = 0;
         this.currentBales = 0;
         this.totalDeliveredBales = 0;
@@ -115,6 +116,7 @@ export class MyGameplay {
         this.syncHayBalesVisualState();
 
         this.updateFeedbackTimers();
+        this.updateDisplayedStats();
     }
 
     // game over
@@ -131,6 +133,7 @@ export class MyGameplay {
 
     reset() {
         this.hp = this.initialHp;
+        this.displayHp = this.initialHp;
         this.score = 0;
         this.currentBales = 0;
         this.totalDeliveredBales = 0;
@@ -443,6 +446,10 @@ export class MyGameplay {
             this.lastHealthRestored = 0;
             this.lastHealthRestoredTime = null;
         }
+    }
+
+    updateDisplayedStats() {
+        this.displayHp = Math.ceil(this.clamp(this.hp, 0, this.initialHp));
     }
 
     // --- utilities

@@ -70,7 +70,7 @@ export class MyInterface extends CGFinterface {
         const gameplayStats = this.gui.addFolder('Gameplay Statistics');
 
         // mandatory as per spec
-        this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'hp', 0, this.scene.gameplay.initialHp).name('Health Points').listen());
+        this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'displayHp', 0, this.scene.gameplay.initialHp).name('Health Points').listen());
         this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'lastDamage').name('Last Damage').listen());
         this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'lastHealthRestored').name('Last Restored').listen());
         this.makeReadOnly(gameplayStats.add(this.scene.gameplay, 'totalDeliveredBales').name('Delivered Bales').listen());
