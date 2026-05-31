@@ -161,6 +161,8 @@ Any implementation work not declared above was carried out by the group members.
 
 ### Project Authors
 
+This project was developed by T11G03, composed of the following students:
+
 | Name                       | Number    | E-Mail            |
 | -------------------------- | --------- | ----------------- |
 | Filipe Camacho             | 202208040 | up202208040@up.pt |
