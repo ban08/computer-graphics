@@ -363,6 +363,8 @@ export class MyBarn extends CGFobject {
         this.displayWindow();  
         this.displayDoorFrame(); 
         this.scene.popMatrix();
+
+        this.scene.setDefaultAppearance();
     }
 
     // --- exposed getters

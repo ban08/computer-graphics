@@ -25,8 +25,8 @@ export class MyScene extends CGFscene {
   	init(application) {
     	super.init(application);
 
+		this.initLights();
     	this.initCameras();
-    	this.initLights();
 
     	this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		this.gl.clearDepth(100.0);
@@ -35,7 +35,7 @@ export class MyScene extends CGFscene {
 		this.gl.depthFunc(this.gl.LEQUAL);
 
 		this.enableTextures(true);
-		this.setUpdatePeriod(50);
+		this.setUpdatePeriod(16);
 
 		this.gameplay = new MyGameplay();
 		this.createWorld();
@@ -45,6 +45,32 @@ export class MyScene extends CGFscene {
 		this.toggleFreeCamera = false;
 
 		this.gameOverOverlay = document.getElementById('gameOverOverlay');
+  	}
+
+  	initLights() {
+    	this.lights[0].setPosition(15, 2, 5, 1);
+		this.lights[0].setDiffuse(1.25, 1.15, 0.85, 1.0);
+        this.lights[0].setSpecular(1.0, 0.9, 0.55, 1.0);
+        this.lights[0].setAmbient(0.28, 0.25, 0.18, 1.0);
+		this.lights[0].enable();
+		this.lights[0].update();
+
+		this.lights[1].setPosition(0, -1, 0, 0);
+		this.lights[1].setDiffuse(0.38, 0.44, 0.52, 1.0);
+        this.lights[1].setSpecular(0.0, 0.0, 0.0, 1.0);
+        this.lights[1].setAmbient(0.30, 0.34, 0.42, 1.0);
+		this.lights[1].enable();
+		this.lights[1].update();
+  	}
+
+  	initCameras() {
+    	this.camera = new CGFcamera(
+      		0.4,
+      		0.1,
+      		500,
+      		vec3.fromValues(0, 0, 0),
+      		vec3.fromValues(0, 0, 0)
+    	);
   	}
 
 	createWorld() {
@@ -82,69 +108,6 @@ export class MyScene extends CGFscene {
 		this.gameplay.reset();
 		this.createWorld();
 	}
-
-  	update(t) {
-		this.sun.update(t);
-		const sunPosition = this.sun.getPosition();
-		const sunAmount = Math.max(0.0, Math.min(sunPosition.y / 10.0, 1.0));
-
-		this.lights[0].setPosition(sunPosition.x, sunPosition.y, sunPosition.z, 0);
-		this.lights[0].setAmbient(0.28 * sunAmount, 0.25 * sunAmount, 0.18 * sunAmount, 1.0);
-		this.lights[0].setDiffuse(1.25 * sunAmount, 1.15 * sunAmount, 0.85 * sunAmount, 1.0);
-        this.lights[0].setSpecular(1.0 * sunAmount, 0.9 * sunAmount, 0.55 * sunAmount, 1.0);
-        this.lights[0].update();
-
-        this.sky.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
-
-        this.clouds.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
-		this.clouds.update(t);
-
-        this.terrain.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
-
-        this.grass.update(t, this.clouds);
-        this.grass.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
-
-		this.scatterElements.update(t);
-
-		this.gameplay.update(t, this.gui);
-
-		this.hayBales.update(t);
-		
-		if (this.cameraType == 'Follow Wagon') {
-			this.setChaseCamera();
-		} else if (this.cameraType == 'Free Camera' && this.toggleFreeCamera) {
-			this.setFreeCamera();
-			this.toggleFreeCamera = false;
-		}
-
-		this.updateGameOverOverlay(t);
-  	}
-
-  	initLights() {
-    	this.lights[0].setPosition(15, 2, 5, 1);
-		this.lights[0].setDiffuse(1.25, 1.15, 0.85, 1.0);
-        this.lights[0].setSpecular(1.0, 0.9, 0.55, 1.0);
-        this.lights[0].setAmbient(0.28, 0.25, 0.18, 1.0);
-		this.lights[0].enable();
-		this.lights[0].update();
-
-		this.lights[1].setPosition(0, -1, 0, 0);
-		this.lights[1].setDiffuse(0.38, 0.44, 0.52, 1.0);
-        this.lights[1].setSpecular(0.0, 0.0, 0.0, 1.0);
-        this.lights[1].setAmbient(0.30, 0.34, 0.42, 1.0);
-		this.lights[1].enable();
-		this.lights[1].update();
-  	}
-
-  	initCameras() {
-    	this.camera = new CGFcamera(
-      		0.4,
-      		0.1,
-      		500,
-      		vec3.fromValues(0, 0, 0),
-      		vec3.fromValues(0, 0, 0)
-    	);
-  	}
 
 	setChaseCamera() {
 		const pose = this.wagon.getTerrainPose();
@@ -187,30 +150,72 @@ export class MyScene extends CGFscene {
 		this.gameOverOverlay.style.display = 'flex';
 	}
 
+  	update(t) {
+		this.sun.update(t);
+		const sunPosition = this.sun.getPosition();
+		const sunAmount = Math.max(0.0, Math.min(sunPosition.y / 10.0, 1.0));
+
+		this.lights[0].setPosition(sunPosition.x, sunPosition.y, sunPosition.z, 0);
+		this.lights[0].setAmbient(0.28 * sunAmount, 0.25 * sunAmount, 0.18 * sunAmount, 1.0);
+		this.lights[0].setDiffuse(1.25 * sunAmount, 1.15 * sunAmount, 0.85 * sunAmount, 1.0);
+        this.lights[0].setSpecular(1.0 * sunAmount, 0.9 * sunAmount, 0.55 * sunAmount, 1.0);
+        this.lights[0].update();
+
+        this.sky.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
+
+        this.clouds.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
+		this.clouds.update(t);
+
+        this.terrain.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
+
+        this.grass.update(t, this.clouds);
+        this.grass.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
+
+		this.scatterElements.update(t);
+
+		this.gameplay.update(t, this.gui);
+
+		this.hayBales.update(t);
+		
+		if (this.cameraType == 'Follow Wagon') {
+			this.setChaseCamera();
+		} else if (this.cameraType == 'Free Camera' && this.toggleFreeCamera) {
+			this.setFreeCamera();
+			this.toggleFreeCamera = false;
+		}
+
+		this.updateGameOverOverlay(t);
+  	}
+
   	display() {
 		this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
 		this.updateProjectionMatrix();
 		this.loadIdentity();
-
 		this.applyViewMatrix();
 
 		this.lights[0].update();
 		this.lights[1].update();
 
 		this.setDefaultAppearance();
+		this.setActiveShader(this.defaultShader);
 
 		this.sky.display();
 		this.sun.display();
 		this.clouds.display();
+
 		this.terrain.display();
 		this.scatterElements.display();
+
 		this.flowers.display();
 		this.grass.display();
+
 		this.wagon.display();
+
 		this.hayBales.display();
 		this.barn.display();
+
 		this.boundaryFence.display();
 	}
 }

@@ -71,6 +71,7 @@ export class MySun extends CGFobject {
         this.sun.display();
         this.scene.setActiveShader(this.scene.defaultShader); 
         this.scene.popMatrix();
+        this.scene.setDefaultAppearance();
     }
 
     // --- exposed getters

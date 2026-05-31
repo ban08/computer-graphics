@@ -49,11 +49,12 @@ export class MyHayBale extends CGFobject {
         this.hay.apply();
         this.bale.display();
 
-
         this.leather.apply();
         this.drawAt(this.baleBandX, 0, 0.18, -0.14);
         this.drawAt(this.baleBandX, 0, 0.18, 0.14);
         this.drawAt(this.baleBandZ, -0.17, 0.19, 0);
         this.drawAt(this.baleBandZ, 0.17, 0.19, 0);
+
+        this.scene.setDefaultAppearance();
     }
 }

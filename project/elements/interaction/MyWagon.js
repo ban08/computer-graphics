@@ -1341,6 +1341,8 @@ export class MyWagon extends CGFobject {
         this.displayHarness();
 
         this.scene.popMatrix();
+
+        this.scene.setDefaultAppearance();
     }
 
     // --- exposed getters
