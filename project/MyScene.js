@@ -152,6 +152,7 @@ export class MyScene extends CGFscene {
 
   	update(t) {
 		this.sun.update(t);
+
 		const sunPosition = this.sun.getPosition();
 		const sunAmount = Math.max(0.0, Math.min(sunPosition.y / 10.0, 1.0));
 
@@ -168,8 +169,8 @@ export class MyScene extends CGFscene {
 
         this.terrain.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
 
-        this.grass.update(t, this.clouds);
         this.grass.updateSunDir(sunPosition.x, sunPosition.y, sunPosition.z);
+		this.grass.update(t, this.clouds);
 
 		this.scatterElements.update(t);
 
