@@ -42,7 +42,7 @@
 <!-- A declaration on AI use, to what extent and for what purpose. -->
 
 <!-- include aid in file organization towards software quality, generated obj, -->
-<!-- generation of jsdocs and other explanatory comments, ... -->
+<!-- generation of jsdocs and other explanatory comments, some textures such as flowers... -->
 
 ### Project Authors
 

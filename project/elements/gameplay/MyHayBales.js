@@ -137,12 +137,25 @@ export class MyHayBales extends CGFobject {
     // --- displayers
 
     display() {
-      const wagonPose = this.wagon && this.wagon.getPose ? this.wagon.getPose() : undefined;
+        const wagonPose = this.wagon && this.wagon.getPose ? this.wagon.getPose() : undefined;
+    
         for (let i = 0; i < this.placements.length; i++) {
             const placement = this.placements[i];
 
+            this.scene.pushMatrix();
+
+            this.scene.translate(placement.x, placement.y + 2.05, placement.z);
+            this.scene.scale(0.85, 0.85, 0.85);
+
+            this.arrow.display(i * 1.31, i === this.interactionBaleIndex);
+
+            this.scene.popMatrix();
+            
+            // "Hay bales are only visible when near them, but an animated arrow
+            // pinpoints them over the prairie.", so only hay bales are dist based
             if (wagonPose) {
                 const dist = Math.hypot(placement.x - wagonPose.x, placement.z - wagonPose.z);
+                
                 if (dist > this.visibleDist) continue;
             }
 
@@ -152,15 +165,6 @@ export class MyHayBales extends CGFobject {
             this.scene.rotate(placement.rotation, 0, 1, 0);
 
             this.bale.display();
-
-            this.scene.popMatrix();
-
-            this.scene.pushMatrix();
-
-            this.scene.translate(placement.x, placement.y + 2.05, placement.z);
-            this.scene.scale(0.85, 0.85, 0.85);
-
-            this.arrow.display(i * 1.31, i === this.interactionBaleIndex);
 
             this.scene.popMatrix();
         }
