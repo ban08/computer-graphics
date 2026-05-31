@@ -5,10 +5,10 @@
 | Name                       | Number    | E-Mail            |
 | -------------------------- | --------- | ----------------- |
 | Filipe Camacho             | 202208040 | up202208040@up.pt |
-| Yago Sentieiro Alba        | 202306314 | up202306314@up.pt |
 | Sara Marques Ribeiro       | 202305327 | up202305327@up.pt |
+| Yago Sentieiro Alba        | 202306314 | up202306314@up.pt |
 
-----
+---
 
   - [tp1](tp1/README.md)
   - [tp2](tp2/README.md)
