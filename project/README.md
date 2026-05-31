@@ -89,13 +89,13 @@ Additionally, the following controls may also be relevant for gameplay/showcase:
 
 <!-- Known issues or limitations (if any) -->
 
-The following points describe current limitations of the project and possible areas for future improvement.
+The following points describe current limitations of the project and possible areas for future improvement:
 
-Some of the project's constants, such as initial positions, element sizes, and placement rules, are currently scattered through multiple files. A more scalable structure would centralize these values in a dedicated configuration file, or reduce them to a single source of truth.
+- Some of the project's constants, such as initial positions, element sizes, and placement rules, are currently scattered through multiple files. A more scalable structure would centralize these values in a dedicated configuration file, or reduce them to a single source of truth;
 
-Hay bale interactions do not currently include any visual feedback for pick up. drop down, spawn, disappear, or deliver actions, and solid object (barn and fence) collisions do not either. Both of these could benefit from visual effects that smoothen these interactions, similarly to rock collisions. 
+- Hay bale interactions do not currently include any visual feedback for pick up. drop down, spawn, disappear, or deliver actions, and solid object (barn and fence) collisions do not either. Both of these could benefit from visual effects that smoothen these interactions, similarly to rock collisions;
 
-The scene's scatter elements are limited to rocks, and while the prairie environment already includes grass, flowers, rocks, terrain variation, dirt paths, and fencing, some extra elements like bushes (utilizing L systems) could improve scatter element variety.
+- The scene's scatter elements are limited to rocks, and while the prairie environment already includes grass, flowers, rocks, terrain variation, dirt paths, and fencing, some extra elements like bushes (utilizing L systems) could improve scatter element variety.
 
 ### Demo Video and Screenshots
 
@@ -106,8 +106,27 @@ The scene's scatter elements are limited to rocks, and while the prairie environ
 
 <!-- A declaration on AI use, to what extent and for what purpose. -->
 
-<!-- include aid in file organization towards software quality, generated obj, -->
-<!-- generation of jsdocs and other explanatory comments, some textures such as flowers... -->
+AI tools were used as support during the development of this project, mainly for clarification, organization, and polishing tasks. Their usage was limited to the following areas:
+
+- Implementation planning:
+    - Discussing possible implementation approaches for more complex features;
+    - Reviewing alternatives before manual implementation by the group.
+
+- Documentation:
+    - Wording and rewriting README;
+    - Refining and generating JSDoc;
+    - Generating and refining explanatory comments throughout the code.
+
+- Auxiliary assets:
+    - Generating mule object;
+    - Generating flower textures.
+
+- Software quality:
+    - Suggesting organization and responsibility separation;
+    - Assisting in identifying relevant code sections to move into more appropriate areas.
+
+In all cases of AI usage, the outputs were reviewed, adapted, and integrated manually by the group members.
+Any implementation work not declared above was carried out by the group members.
 
 ### Project Authors
 
