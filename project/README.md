@@ -95,7 +95,7 @@ Some of the project's constants, such as initial positions, element sizes, and p
 
 Hay bale interactions do not currently include any visual feedback for pick up. drop down, spawn, disappear, or deliver actions, and solid object (barn and fence) collisions do not either. Both of these could benefit from visual effects that smoothen these interactions, similarly to rock collisions. 
 
-The scene's scatter elements are limited to rocks, and while the prairie environment already includes grass, flowers, rocks, terrain variation, dirt paths, and fencing, some extra elements like bushes (and utilizing an L system) could improve scatter element variety.
+The scene's scatter elements are limited to rocks, and while the prairie environment already includes grass, flowers, rocks, terrain variation, dirt paths, and fencing, some extra elements like bushes (utilizing L systems) could improve scatter element variety.
 
 ### Demo Video and Screenshots
 
