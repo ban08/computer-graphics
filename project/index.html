@@ -1,32 +1,44 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>CGFProject</title>    
-    <link rel="icon" href="data:,">
-
-<style>
-body, html {
-    border: 0;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
-    background: #000;
-}
-
-canvas {
-    display: block;
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-}
-</style>
-</head>
-<body>
-
-<script type="module" src="main.js"></script>
-
-</body>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>CGFProject</title>    
+        <link rel="icon" href="data:,">
+        <style>
+            body, html {
+                border: 0;
+                height: 100%;
+                padding: 0;
+                margin: 0;
+                overflow: hidden;
+                background: #000;
+            }
+            canvas {
+                display: block;
+                position: fixed;
+                inset: 0;
+                width: 100vw;
+                height: 100vh;
+            }
+            #gameOverOverlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+                pointer-events: none;
+                font-family: Arial, sans-serif;
+                font-size: 56px;
+                font-weight: bold;
+                color: white;
+                text-shadow: 0 0 12px black;
+                background: rgba(0, 0, 0, 0.25);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="gameOverOverlay">Game Over</div>
+        <script type="module" src="main.js"></script>
+    </body>
 </html>

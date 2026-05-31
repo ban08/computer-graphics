@@ -43,6 +43,8 @@ export class MyScene extends CGFscene {
 
 		this.cameraType = 'Follow Wagon';
 		this.toggleFreeCamera = false;
+
+		this.gameOverOverlay = document.getElementById('gameOverOverlay');
   	}
 
 	createWorld() {
@@ -114,6 +116,8 @@ export class MyScene extends CGFscene {
 			this.setFreeCamera();
 			this.toggleFreeCamera = false;
 		}
+
+		this.updateGameOverOverlay(t);
   	}
 
   	initLights() {
@@ -166,6 +170,21 @@ export class MyScene extends CGFscene {
 		this.setDiffuse(0.2, 0.4, 0.8, 1.0);
 		this.setSpecular(0.2, 0.4, 0.8, 1.0);
 		this.setShininess(10.0);
+	}
+
+	updateGameOverOverlay(t) {
+		if (!this.gameOverOverlay) return;
+
+		if (!this.gameplay.gameOver) {
+			this.gameOverOverlay.style.display = 'none';
+			return;
+		}
+
+		const elapsed = t - (this.gameplay.gameOverTime ?? t);
+		const remaining = Math.max(0, Math.ceil((this.gameplay.restartDelay - elapsed) / 1000));
+
+		this.gameOverOverlay.textContent = `Game Over! Restarting in ${remaining}`;
+		this.gameOverOverlay.style.display = 'flex';
 	}
 
   	display() {
