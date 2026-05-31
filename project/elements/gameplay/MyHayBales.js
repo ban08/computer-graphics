@@ -43,7 +43,7 @@ export class MyHayBales extends CGFobject {
 
     generateBalePlacements() {
         const isValidPlacement = (x, z) => {
-            const awayFromStarterWagon = Math.hypot(x - 2.7, z - 21.6) > 6.0;
+            const awayFromStarterWagon = Math.hypot(x - 3.5, z + 20.8) > 6.0;
             const awayFromPathway = !this.terrain.isPointOnPath(x, z);
             const barnBaseZ = -26;
             const barnX = (Math.sin(barnBaseZ * 0.15) * 8.0) + (Math.cos(barnBaseZ * 0.05) * 4.0) + 4.0;
